@@ -1,0 +1,164 @@
+* {
+    box-sizing: border-box;
+}
+
+@font-face {
+    font-family: 'Jurassik';
+    src: url('font/JurassicPark.ttf');
+    font-weight: normal;
+    font-style: normal;
+}
+
+/*Css relatif au jeu*/
+
+#containerGame {
+    background: url('img/fond.png') repeat-x;
+    overflow: hidden;
+    width: 100%;
+    margin: 0 auto;
+    height: 580px;
+    position: relative;
+    max-width: 1400px;
+}
+
+.containerHero {
+    z-index: 40;
+position: absolute;
+overflow: hidden;
+
+}
+
+.containerHero img{
+    position:absolute;
+}
+
+#contenu {
+    /*!*-webkit-transform: matrix(-1, 0, 0, 1, 0, 0);*!*/
+    /*transform: scaleX(-1)*/
+}
+
+.how-to-play {
+    font-family: Jurassik, sans-serif;
+    width: 300px;
+    height: auto;
+    text-align: center;
+    font-size: 50px;
+    cursor: pointer;
+    margin: 0 auto;
+    position: absolute;
+    color: white;
+    background-color: black;
+    border: 1px solid #F7F936;
+    top: 550px;
+    left: 50%;
+    margin-left: -150px;
+    margin-top: -150px;
+
+}
+
+/*bouton play*/
+.launch {
+    font-family: Jurassik, sans-serif;
+    width: 300px;
+    height: auto;
+    text-align: center;
+    font-size: 50px;
+    cursor: pointer;
+    margin: 0 auto;
+    position: absolute;
+    color: white;
+    background-color: black;
+    border: 1px solid #F7F936;
+    top: 450px;
+    margin-top: -150px;
+    left: 50%;
+    margin-left: -150px;
+}
+
+/*Affichage des competences*/
+
+#skill img {
+    display: none;
+    padding-top: 30px;
+}
+
+#skill h2 {
+    padding-top: 0;
+    font-family: Jurassik, sans-serif;
+    font-size: 60px;
+    margin-bottom: -35px;
+}
+
+.misc {
+    background-color: black;
+    padding: 0px 0;
+    height: auto;
+    border: 1px red solid;
+    color: white;
+    text-align: center;
+    z-index: -1;
+}
+
+.misc span {
+    font-family: Jurassik, sans-serif;
+    font-size: 50px;
+    padding-left: 5px;
+    display: inline;
+
+}
+
+.glyphicon {
+    vertical-align: super;
+}
+
+.endGame, .explanations {
+    display: none;
+    background-color: black;
+    color: white;
+    letter-spacing: 0.2em;
+    font-family: Jurassik, sans-serif;
+    font-size: 40px;
+    position: absolute;
+    width: 600px;
+    left: 50%;
+    line-height: 40px;
+    text-align: center;
+    padding: 50px;
+    margin-left: -300px;
+    top: 250px;
+    z-index: 2000;
+}
+
+#health, #timer, #score, #supply {
+    font-size: 20px;
+    font-weight: bolder;
+}
+
+.sub-menu {
+    padding-top: 10px;
+    /*border-top:1px solid red;*/
+    font-family: Jurassik, sans-serif;
+    letter-spacing: 0.08em;
+    font-size: 35px;
+    padding-left: 5px;
+    cursor: pointer;
+}
+
+.sub-menu a {
+    text-decoration: none;
+    color: red;
+}
+
+.sub-menu .startAgain {
+    color: #FBCF00;
+
+}
+
+@keyframes App-logo-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
