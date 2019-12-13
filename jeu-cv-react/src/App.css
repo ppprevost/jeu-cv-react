@@ -11,6 +11,14 @@
 
 /*Css relatif au jeu*/
 
+.row{
+    display: flex;
+    flex-wrap: wrap;
+    margin-right: -15px;
+    justify-content: space-evenly;
+    margin-left: -15px;
+}
+
 #containerGame {
     background: url('img/fond.png') repeat-x;
     overflow: hidden;
@@ -27,6 +35,11 @@ position: absolute;
 overflow: hidden;
 
 }
+
+.dinosaurs{
+    position:absolute;
+}
+
 
 .containerHero img{
     position:absolute;

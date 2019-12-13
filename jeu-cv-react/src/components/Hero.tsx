@@ -1,7 +1,8 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react';
 import {useGameData} from "../store/GameProvider";
 import avatar from '../img/test.png'
-import {useAnimation, useKeyPress} from "../helpers/helpers";
+import {useAnimation, useKeyPress, useMoving} from "../helpers/helpers";
+import Character from './Characters';
 
 export const initHeroes = {
     name: 'player 1',
@@ -32,18 +33,46 @@ const spriteX = [-10, -126, -242, -358, -474, -590, -706, -822, -938, -1054]; //
 // 0 -> walk -100 -> Jump -200 -> Crouch -300 -> Walk Shoot  -400 -> Run -500 -> Die  -600 -> runShoot -700 -> crouchShoot -800 -> crouchDynamite -900->jumpShoot -1000 ->  Dynamite
 const spriteY = [0, -100, -200, -300, -400, -500, -600, -700, -800, -900, -1000]; //bullet
 
-const Hero = () => {
-    const [{player: {width, height, x, y}}, dispatch] = useGameData();
-    const {sprite, mood} = useAnimation(70, spriteX)
+const spriteValue = {
+    isIdle:0,
+    isRunning:-400,
+    isRunningLeft:-400,
+    isJumping:-100,
+    isCrouching:-200,
+    isWalkingShoot:-300,
+    isDying:-500,
+    isRunningShooting:-600,
+    isChrouchShooting:-700,
+    isCrouchDynamiting:-800,
+    isJumpingShooting: -900,
+    isDynmating: -1000
+}
 
-    const move = spriteY[0];
-    const right = useKeyPress('r')
-    const style = {
-        width, height, left: x, top: y
-    }
+const Hero = () => {
+    useKeyPress()
+    useMoving(70)
+    const [{player: {width, height, x, y,position}}] = useGameData();
+    const [behavior, setBehavior] = useState(0)
+    useLayoutEffect(()=>{
+        for(let [key,value] of Object.entries(position)){
+            if(value){
+                console.log(key)
+                const va = (spriteValue as any)[key]
+                setBehavior(va)
+                return;
+            }
+        }
+
+    },[position])
     return (
-        <div className="containerHero" style={style}>
-            <img src={avatar} style={{left: sprite + 'px', top: mood + 'px'}} /></div>)
+       <Character width={width}
+                  height={height}
+                  x={x}
+                  y={y}
+                  avatar={avatar}
+                  className="containerHero"
+                  spriteX={spriteX}
+                  behavior={behavior}/>)
 }
 
 

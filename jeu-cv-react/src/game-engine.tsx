@@ -17,18 +17,6 @@ const positionDefault =
         src: 'img/field.png'
     }
 
-export const animation = (...create: any) => (animateFunc: Function = () => {
-}) => {
-    const [position, myRef] = create
-    position.x--;
-    if (position.x <= -1004) {
-        position.x = 0;
-    }
-    animateFunc(position, myRef);
-    myRef.current.style.left = position.x + 'px';
-    window.requestAnimationFrame(() => animation(...create)(animateFunc));
-    return [position, myRef]
-}
 
 export const RenderItem = (Component: any) => (position: Position = positionDefault) => (extendsCreation: Function = () => {
 }) => (animateFunc: Function = () => {
