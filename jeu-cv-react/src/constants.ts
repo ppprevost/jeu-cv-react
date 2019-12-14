@@ -3,3 +3,7 @@ export const MOVE_RIGHT = 'MOVE_RIGHT';
 export const MOVE_LEFT = 'MOVE_LEFT';
 export const ADD_DINO = 'ADD_DINO';
 export const SET_SOUND = 'SET_SOUND';
+export const IDLE = 'IDLE';
+export const IS_CROUCHING = 'IS_CROUCHING';
+export const MOVE_DINO = 'MOVE_DINO';
+export const DELETE_DINO = 'DELETE_DINO';

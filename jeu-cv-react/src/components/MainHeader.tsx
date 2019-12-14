@@ -1,7 +1,13 @@
 import React, {useState} from 'react';
 import {useGameData} from "../store/GameProvider";
 
-const MainHeader = () => {
+type IPropsHeader = {
+    dynamite:number,
+    health:number,
+    score:number
+}
+
+const MainHeader = ({dynamite, health, score}: IPropsHeader) => {
     const [data, dispatch] = useGameData()
     const setSound = ()=>dispatch({type: 'SET_SOUND'});
     return (<div className="container">
@@ -16,19 +22,19 @@ const MainHeader = () => {
             <div className="col-xs-3 text-center">
                 <div className="glyphicon glyphicon-heart"></div>
                 <span>Health</span>
-                <div id="health"></div>
+                <div id="health">{health}</div>
             </div>
             <div className="col-xs-3 text-center">
                 <div className="glyphicon glyphicon-flash"></div>
                 <span>Dynamite</span>
-                <div id="supply"></div>
+                <div id="supply">{dynamite}</div>
             </div>
 
 
             <div className="col-xs-3 text-center">
                 <div className="glyphicon glyphicon-usd"></div>
                 <span>Score </span>
-                <div id="score"></div>
+                <div id="score">{score}</div>
             </div>
         </div>
 

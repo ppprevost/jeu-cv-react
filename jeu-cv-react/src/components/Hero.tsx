@@ -19,7 +19,7 @@ export const initHeroes = {
     isConflict: false, // test la collision
     score: 0,
     isDying: false, // Hero Die
-    supply: 3,
+    dynamite: 3,
     spriteHeight: 80,
     health: 100,
     timelast: 0,

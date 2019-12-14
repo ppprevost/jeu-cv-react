@@ -1,35 +1,35 @@
-import React, {useEffect, useState, useRef} from 'react';
+import React, {useEffect, useState, useRef, useLayoutEffect, useMemo} from 'react';
 import MainHeader from '../components/MainHeader';
 import {useGameData} from "../store/GameProvider";
 import {ADD_PLAYER, ADD_DINO} from "../constants";
 import Hero from "../components/Hero";
-import Dinosaur, {IPropsDino, raptorInit} from "../components/Dinosaurs";
-
-const addDinosaurs = (dinosaur: any) => {
-    switch (dinosaur.idSound) {
-        case 'raptor':
-            return <Dinosaur {...dinosaur} key={dinosaur.id} />
-    }
-}
+import {IPropsDino, createDinosaur, addDinosaurs} from "../components/Dinosaurs";
 
 const Game = () => {
     const [{player, dino}, dispatch] = useGameData()
-    useEffect(() => {
+    const DinoMemoizedLength = ()=>useMemo(()=>dino.map((dinosaur:IPropsDino) => addDinosaurs(dinosaur)),[dino.length])
+    const newRef= useRef(createDinosaur())
+const [newDino, setNewDino] = useState(createDinosaur())
+    useEffect(()=>{
         dispatch({type: ADD_PLAYER})
-        setInterval(() => {
-            dispatch({type: ADD_DINO, newDino: raptorInit})
-        }, 5000)
     }, [])
+    useLayoutEffect(() => {
+        newRef.current = createDinosaur()
+        setNewDino(newRef.current)
+        let f =setInterval(() => {
+            dispatch({type: ADD_DINO, newDino})
+        }, 5000)
+        return ()=>clearInterval(f)
+        console.log(dino)
+    }, [dino.length])
     return (
         <>
-            <MainHeader
-            />
-            {player && <Hero />}
-            {dino.map((dinosaur:IPropsDino) => addDinosaurs(dinosaur))}
+            {player && <MainHeader score={player.score} health={player.health} dynamite={player.dynamite}/>}
 
+            {player && <Hero />}
+            {DinoMemoizedLength()}
         </>
     )
-
 }
 
 export default Game;

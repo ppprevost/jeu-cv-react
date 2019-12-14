@@ -1,17 +1,15 @@
-import {useEffect, useRef, useState, useCallback, useLayoutEffect} from "react";
+import {useEffect, useRef, useState, useLayoutEffect} from "react";
 import {useGameData} from "../store/GameProvider";
 import {MOVE_LEFT} from "../constants";
 
-const spriteException = () => {
-    const [data] = useGameData()
+const useSpriteException = () => {
+    const [{player: {position}}] = useGameData()
     const [value, setValue] = useState(10)
     useEffect(() => {
-        console.log(value)
-        if (data.player.position.isRunning) {
+        if (position.isRunning) {
             setValue(8)
         } else setValue(10)
-        console.log('set to ', value)
-    }, [data])
+    }, [position.isRunning])
 
     return value
 }
@@ -19,6 +17,9 @@ const spriteException = () => {
 export const useAnimation = (tempo: number, spriteX: number[]) => {
     const requestRef = useRef(spriteX[0]);
     const [sprite, setSprite] = useState(spriteX[0]);
+    const value = useSpriteException()
+    const [valueLength, setvalueLenght] = useState(value)
+    const requestref = useRef(value)
     let animateRequestFrame = (tempo: number) => {
         let tActuel;
         let tPrecedent: number;
@@ -29,19 +30,27 @@ export const useAnimation = (tempo: number, spriteX: number[]) => {
             let delai = tActuel - tPrecedent;
             if (delai > tempo) {
                 frame++;
-                if (frame === spriteX.length) {
+                if (frame === valueLength) {
                     frame = 0;
                 }
                 requestRef.current = spriteX[frame]
                 setSprite(requestRef.current);
                 tPrecedent = tActuel;
             }
-            requestAnimationFrame(spriteAnimation);
+            requestref.current = requestAnimationFrame(spriteAnimation);
         };
         spriteAnimation(tempo)
     }
     useEffect(() => {
+
+
+    }, [])
+    useEffect(() => {
+        setvalueLenght(value)
         animateRequestFrame(tempo)
+        return () => {
+            cancelAnimationFrame(requestref.current)
+        }
     }, [])
 
     return {sprite}
@@ -60,20 +69,18 @@ export const useMoving = (tempo: number) => {
             tPrecedent = tPrecedent || actuel;
             let delai = tActuel - tPrecedent;
             if (delai > tempo) {
-                if(position.isRunning){
+                if (position.isRunning) {
                     refPosition.current += 10
-                }else {
-                refPosition.current -= 10
+                } else {
+                    refPosition.current -= 10
                 }
                 setPositionX(refPosition.current)
                 dispatch({type: 'ANIMATE_PLAYER', x: refPosition.current})
                 tPrecedent = tActuel;
             }
-            console.log('position.isRunning: ', position.isRunning);
-            if (position.isRunning || position.isRunningLeft){
+            if (position.isRunning || position.isRunningLeft) {
                 refCancel.current = requestAnimationFrame(moving);
-            }
-            else {
+            } else {
                 return;
             }
 
@@ -120,7 +127,6 @@ export function useKeyPress() {
         switch (keyCode) {
             case RIGHT:
                 if (position.isRunning) {
-                    console.log('isIdle nowjdskjfdjlhfjkdshfsd !!', position.isRunning);
                     dispatch({type: 'IDLE'})
                 }
             case LEFT:
