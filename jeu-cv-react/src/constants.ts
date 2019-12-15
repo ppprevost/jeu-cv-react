@@ -7,3 +7,4 @@ export const IDLE = 'IDLE';
 export const IS_CROUCHING = 'IS_CROUCHING';
 export const MOVE_DINO = 'MOVE_DINO';
 export const DELETE_DINO = 'DELETE_DINO';
+export const COLLISION = 'COLLISION';

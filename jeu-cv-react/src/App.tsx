@@ -1,16 +1,21 @@
-import React, {Component} from 'react';
+import React, {Component, useMemo} from 'react';
 import './App.css';
-import UserProvider from "./store/GameProvider"
+import UserProvider, {useGameData} from "./store/GameProvider"
 import Game from './page/Game';
+import MainHeader from "./components/MainHeader";
 
-class Play extends Component {
-    render() {
+const MainHeaderMemoized = ()=> {
+    const [{player:{dynamite, health, score}}] = useGameData()
+    return useMemo(()=><MainHeader score={score} health={health} dynamite={dynamite} />, [health])}
+
+const Play =() =>{
+    const [{player}] =useGameData()
         return (
             <div id="containerGame">
+                {player && MainHeaderMemoized()}
                 <Game />
             </div>
         );
-    }
 }
 
 const App = () => (

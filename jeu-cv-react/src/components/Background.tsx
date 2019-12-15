@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import background1 from '../img/background/background1.png'
 import background2 from '../img/background/background2.png'
 import background3 from '../img/background/background3.png'
@@ -17,7 +17,7 @@ const style = {
 
 const Background = ({left}: {left:number}) => {
     const {top, width, height} = style;
-    const objetRandom = Math.round(Math.random() * 6) + 1;
+    const objetRandom = Math.round(Math.random() * 5) + 1;
     const avatar = backgroundImg[objetRandom];
     return <img className='background' src={avatar} style={{top, width, height,left, position:'absolute'}} />
 }

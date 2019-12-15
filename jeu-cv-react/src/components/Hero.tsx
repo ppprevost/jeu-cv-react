@@ -1,7 +1,7 @@
-import React, {useCallback, useEffect, useLayoutEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import {useGameData} from "../store/GameProvider";
 import avatar from '../img/test.png'
-import {useAnimation, useKeyPress, useMoving} from "../helpers/helpers";
+import {useAnimation, useInterval, useKeyPress, useMoving, useRequestAnimationFrame} from "../helpers/helpers";
 import Character from './Characters';
 
 export const initHeroes = {
@@ -41,6 +41,7 @@ const spriteValue = {
     isCrouching:-200,
     isWalkingShoot:-300,
     isDying:-500,
+    isHurting:-500,
     isRunningShooting:-600,
     isChrouchShooting:-700,
     isCrouchDynamiting:-800,
@@ -49,9 +50,9 @@ const spriteValue = {
 }
 
 const Hero = () => {
+    const [{player: {width, height, x, y,position}}, dispatch] = useGameData();
     useKeyPress()
     useMoving(70)
-    const [{player: {width, height, x, y,position}}] = useGameData();
     const [behavior, setBehavior] = useState(0)
     useLayoutEffect(()=>{
         for(let [key,value] of Object.entries(position)){
@@ -62,7 +63,6 @@ const Hero = () => {
                 return;
             }
         }
-
     },[position])
     return (
        <Character width={width}
