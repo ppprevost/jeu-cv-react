@@ -100,8 +100,6 @@ export interface IPropsDino {
 }
 
 const Dinosaurs = ({id, x, y, width, widthDead, height, avatar, spriteX, spriteY, spriteXDead, className, idSound, speed, alive}: IPropsDino) => {
-
-    var leftValue = 0;
     const [{sound}, dispatch] = useGameData()
     const [frame, setFrame] = useState(0);
     const requestRef = useRef(spriteX[0]);
@@ -109,10 +107,10 @@ const Dinosaurs = ({id, x, y, width, widthDead, height, avatar, spriteX, spriteY
     const [typeSprite, setTypeSprite] = useState(0);
     const refPosition = useRef(x);
     const [positionX, setPositionX] = useState(x);
-    let cc = useInterval(() => {
+    let idIntervalMovingDinosaur = useInterval(() => {
         if (refPosition.current < -width) {
             dispatch({type: 'DELETE_DINO', payload: {id}})
-            clearInterval(cc)
+            clearInterval(idIntervalMovingDinosaur)
             return;
         } else {
             refPosition.current -= 8 + speed;

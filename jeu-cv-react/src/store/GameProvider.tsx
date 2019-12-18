@@ -42,7 +42,6 @@ const initialState = {
     chrono: {minute: 0, second: 0},
     gameOver: false,
     competency: 0,
-    score: 0,
     idBullet: 0
 };
 
@@ -80,7 +79,9 @@ export const reducer = (state: any, action: ActionType) => {
         case IS_CROUCHING:
             return repercutPositionHero(state, 'isCrouching');
         case 'DYNAMITE':
-            state.bullet = [...state.bullet, ({type: 'dynamite'})];
+            state.idBullet ++;
+            state.bullet = [...state.bullet, ({type: 'dynamite',id:state.idBullet})];
+            return {...state}
             break;
         case 'SHOOT':
             state.idBullet ++;
@@ -89,31 +90,40 @@ export const reducer = (state: any, action: ActionType) => {
             state = repercutPositionHero(state, 'isWalkingShoot')
             return {...state}
         case 'STOP_SHOOTING':
-            return repercutPositionHero(state, 'isIdle')
+            return repercutPositionHero(state, 'isIdle');
+            case 'STOP_JUMPING':
+                state.player.stopJump = false;
+            return repercutPositionHero(state, 'isIdle');
         case 'STOP_BULLET':
-            state.bullets = state.bullets.filter(({id}: IBulletProps) => action.id !== id)
-            console.log('new State', state.bullets)
+            state.bullets = state.bullets
+                .filter(({id}: IBulletProps) => action.id !== id)
             return {...state}
         case 'ANIMATE_PLAYER':
-            return {...state, player: {...state.player, x: action.x}}
+            console.log(action.y)
+            return {...state, player: {...state.player, x: action.x, y:action.y? action.y : {}}}
+        case 'LAND_PLAYER':
+            console.log('landing')
+            state.player.stopJump = true;
+            return {...state}
         case 'STOP_HURTING':
             console.log('stop hurt')
             if (state.player.health > 0) {
                 return repercutPositionHero(state, 'isIdle')
             }
-            return state
+            return {...state}
+        case 'JUMP':
+            return repercutPositionHero(state, 'isJumping');
         case ADD_DINO:
             const newDino = {...action.newDino}
             state.idDino += 1;
             newDino.alive = true;
-            newDino.speed = Math.round(Math.random() * 5) + 1
+            newDino.speed = Math.round(Math.random() * 8)
             newDino.id = state.idDino;
             return {...state, dino: [...state.dino, newDino]}
         case MOVE_DINO:
             let actualDino = state.dino.findIndex(findDino(action))
             if (actualDino >= 0) {
                 state.dino[actualDino].x = action.payload.x
-
             }
             return {...state}
         case DELETE_DINO:
@@ -124,17 +134,15 @@ export const reducer = (state: any, action: ActionType) => {
             let actualDinoToKill = state.dino.findIndex(findDino(action));
             console.log(actualDinoToKill)
             state.dino[actualDinoToKill].alive = false;
-            state.score += 1
+            state.player.score += 1
             return {...state}
         case COLLISION:
             if (!state.player.position.isHurting) {
-                console.log('isHurt!!')
                 const hurtedPlayerState = repercutPositionHero(state, 'isHurting');
                 if (hurtedPlayerState.player.health > 0) {
                     hurtedPlayerState.player.health -= 10
                 }
                 if (hurtedPlayerState.player.health <= 0) {
-                    console.log('stop game')
                     hurtedPlayerState.gameOver = true;
                 }
                 return {...hurtedPlayerState}

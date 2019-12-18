@@ -1,6 +1,7 @@
 import {useEffect, useRef, useState, useLayoutEffect,} from "react";
 import {useGameData} from "../store/GameProvider";
 import {MOVE_LEFT} from "../constants";
+import {initHeroes} from "../components/Hero";
 
 export function useInterval(callback: () => void, delay: number) {
     const savedCallback: any = useRef(null);
@@ -10,7 +11,6 @@ export function useInterval(callback: () => void, delay: number) {
     useEffect(() => {
         savedCallback.current = callback;
     }, [callback]);
-
     // Set up the interval.
     useEffect(() => {
         function tick() {
@@ -31,7 +31,7 @@ export const useChrono = () => {
         if (gameOver) {
             return clearInterval(id)
         }
-            dispatch({type: 'ADD_TIME'})
+        dispatch({type: 'ADD_TIME'})
     }, 1000)
 }
 
@@ -65,29 +65,13 @@ export const useSpriteException = () => {
     return value
 }
 
-export const useJump = ()=> {
-    const [{perso}] = useGameData();
-    if (perso.isJumpingUp) {
-        perso.y -= 15;
-        if(perso.isRunning){
-        perso.x += 2;
-        }
-        if (perso.y <= 200) {
-            perso.isJumpingUp = false;
-        }
-    }
-    if (!perso.isJumpingUp) {
-        perso.y += 15;
-        if (perso.y >= 454) {
-            perso.isJumping = false;
-        }
-    }
-};
-
 export const useMoving = (tempo: number) => {
-    const [{player: {x, position}}, dispatch] = useGameData();
+    const [{player: {x, y, position, stopJump}}, dispatch] = useGameData();
     const refPosition = useRef(x)
+    const refPositionY = useRef(y)
+    const stopJumpRef = useRef(stopJump);
     const [positionX, setPositionX] = useState(x);
+    const [positionY, setPositionY] = useState(y);
     const refCancel = useRef(0)
     let animateRequestFrame = (tempo: number) => {
         let tActuel;
@@ -99,18 +83,39 @@ export const useMoving = (tempo: number) => {
             if (delai > tempo) {
                 if (position.isRunning) {
                     refPosition.current += 10
-                } else {
+                }
+                if (position.isRunningLeft) {
                     refPosition.current -= 10
                 }
+                if (position.isJumping) {
+                    if (position.isRunning) {
+                        refPosition.current += 2
+                    }
+                    if (position.isRunningLeft) {
+                        refPosition.current -= 2
+                    }
+                    if (refPositionY.current <= 200) {
+                        dispatch({type:'LAND_PLAYER'})
+                    }
+                    console.log(stopJumpRef.current)
+                    if (stopJumpRef.current) {
+                        refPositionY.current += 10
+                    }else {
+                        refPositionY.current -= 10
+                    }
+                    console.log(refPositionY.current)
+                    if (refPositionY.current >= initHeroes.y) {
+
+                    }
+                }
                 setPositionX(refPosition.current)
-                dispatch({type: 'ANIMATE_PLAYER', x: refPosition.current})
+                setPositionY(refPositionY.current)
+                dispatch({type: 'ANIMATE_PLAYER', x: refPosition.current, y: refPositionY.current})
                 tPrecedent = tActuel;
             }
-            if (position.isRunning || position.isRunningLeft) {
+            if (position.isRunning || position.isRunningLeft || position.isJumping) {
                 console.log('isRunningAnimate !!')
                 refCancel.current = requestAnimationFrame(moving);
-            } else {
-                return;
             }
 
         };
@@ -120,10 +125,11 @@ export const useMoving = (tempo: number) => {
         animateRequestFrame(tempo)
         return () => cancelAnimationFrame(refCancel.current)
     }, [position])
-    return positionX
+    return [positionX, positionY]
 }
 
 const RIGHT = 39;
+const UP = 38;
 const BOTTOM = 40;
 const LEFT = 37;
 const SPACE = 32;
@@ -135,42 +141,52 @@ export function useKeyPress() {
     // If pressed key is our target key then set to true
     const downHandler = ({keyCode}: KeyboardEvent) => {
         switch (keyCode) {
+            case UP :
+                if (!position.isJumping) {
+                    dispatch({type: 'JUMP'})
+                }
+                break;
             case RIGHT:
-                if (!position.isRunning && !gameOver && !position.isHurting) {
+                if (!position.isRunning && !position.isHurting) {
                     dispatch({type: 'MOVE_RIGHT'})
                 }
                 break;
             case BOTTOM:
-                if (!position.isCrouching && !gameOver && !position.isHurting) {
+                if (!position.isCrouching && !position.isHurting) {
                     dispatch({type: 'IS_CROUCHING'})
                 }
                 break;
             case LEFT:
-                if (!position.isRunningLeft && !gameOver && !position.isHurting) {
+                if (!position.isRunningLeft && !position.isHurting) {
                     dispatch({type: MOVE_LEFT})
                 }
                 break;
             case SPACE :
-                if (!gameOver && !position.isWalkingShoot) {
+                if (!position.isWalkingShoot) {
                     dispatch({type: 'SHOOT'})
                 }
+
         }
     }
     // If released key is our target key then set to false
     const upHandler = ({keyCode}: KeyboardEvent) => {
         switch (keyCode) {
+            case UP:
+                if (position.isJumping) {
+                      dispatch({type: 'LAND_PLAYER'})
+                }
             case RIGHT:
-                if (position.isRunning && !gameOver) {
+                if (position.isRunning) {
                     dispatch({type: 'IDLE'})
                 }
                 break;
             case LEFT:
-                if (position.isRunningLeft && !gameOver) {
+                if (position.isRunningLeft) {
                     dispatch({type: 'IDLE'})
                 }
                 break;
             case BOTTOM:
-                if (position.isCrouching && !gameOver) {
+                if (position.isCrouching) {
                     dispatch({type: 'IDLE'})
                 }
                 break;
@@ -181,6 +197,10 @@ export function useKeyPress() {
     useEffect(() => {
         window.addEventListener('keydown', downHandler);
         window.addEventListener('keyup', upHandler);
+        if (gameOver) {
+            window.removeEventListener('keydown', downHandler);
+            window.removeEventListener('keyup', upHandler);
+        }
         // Remove event listeners on cleanup
         return () => {
             window.removeEventListener('keydown', downHandler);

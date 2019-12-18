@@ -1,4 +1,4 @@
-import React, {CSSProperties, useEffect, useState, useRef} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import bulletImg from "../img/item.png";
 import {useInterval} from "../helpers/helpers";
 import {useGameData} from "../store/GameProvider";
@@ -33,9 +33,7 @@ const BulletComponent = ({type, id}: IBulletProps) => {
     const idS = useInterval(() => {
         ref.current = x + 30
         setX(ref.current)
-        console.log(x,id, x >= windowSize)
         if (x >= windowSize || x < 0) {
-            dispatch({type: 'STOP_BULLET', id});
             clearInterval(id)
             return;
         }
