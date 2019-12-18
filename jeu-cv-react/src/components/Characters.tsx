@@ -1,5 +1,5 @@
 import React, {useRef, useState, useEffect} from "react";
-import {useAnimation, useInterval, useRequestAnimationFrame, useSpriteException} from "../helpers/helpers";
+import { useInterval, useSpriteException} from "../helpers/helpers";
 import {useGameData} from "../store/GameProvider";
 
 interface PropsCharacter {
@@ -34,7 +34,7 @@ const Character = ({width, height, x, y, className, spriteX, behavior, avatar}: 
         }
         requestRef.current = spriteX[frame]
         setSprite(requestRef.current);
-    }, 120)
+    }, 100)
     const style = {
         width, height, left: x, top: y
     }
@@ -42,7 +42,7 @@ const Character = ({width, height, x, y, className, spriteX, behavior, avatar}: 
         setFrame(0)
     }, [position])
     return (<div className={className} style={style}>
-        <img src={avatar} style={{left: sprite + 'px', top: behavior + 'px'}} /></div>)
+        <img alt="player" src={avatar} style={{left: sprite + 'px', top: behavior + 'px'}} /></div>)
 }
 
 export default Character

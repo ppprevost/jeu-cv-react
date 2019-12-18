@@ -16,81 +16,34 @@ export function useInterval(callback: () => void, delay: number) {
         function tick() {
             savedCallback.current();
         }
-
         if (delay !== null) {
-                saveCancelRef.current = setInterval(tick, delay);
-                setClearInterval(saveCancelRef.current)
+            saveCancelRef.current = setInterval(tick, delay);
+            setClearInterval(saveCancelRef.current)
             return () => clearInterval(saveCancelRef.current);
         }
     }, [delay]);
     return interval
 }
 
-let animateRequestFrame = (tempo: number, callback: any) => {
-    let tActuel;
-    let tPrecedent: number;
-    let spriteAnimation = function (actuel: number) {
-        tActuel = actuel;
-        tPrecedent = tPrecedent || actuel;
-        let delai = tActuel - tPrecedent;
-        if (delai > tempo) {
-            callback()
-            tPrecedent = tActuel;
-        }
-        return requestAnimationFrame(spriteAnimation);
-
-    };
-    return spriteAnimation(tempo)
-}
-
-export const useRequestAnimationFrame = (callback: () => void, delay: number, watcher?: any[]) => {
-    const savedCallback: any = useRef(null)
-    const saveCancelRef: any = useRef(null)
-    const watch: any[] = []
-    if (watcher) {
-        watch.concat(watch, watcher)
-    }
-    const [interval, setClearAnimationFrame] = useState(0)
-    useEffect(() => {
-        savedCallback.current = callback;
-    }, [callback]);
-    useEffect(() => {
-        function tick() {
-            savedCallback.current();
-        }
-
-        if (delay !== null) {
-            saveCancelRef.current = animateRequestFrame(delay, tick);
-            setClearAnimationFrame(saveCancelRef.current)
-        }
-        //cancelAnimationFrame(saveCancelRef.current)
-        return () => cancelAnimationFrame(interval)
-    }, [delay])
-    return saveCancelRef.current
-}
-
-
 export const useChrono = () => {
-    const [second, setSecond] = useState(0)
-    const [minute, setMinute] = useState(0)
-    useInterval(() => {
-        setSecond(second + 1)
-        if (second === 59) {
-            setSecond(0);
-            setMinute(minute + 1);
+    const [{gameOver}, dispatch] = useGameData();
+    const id = useInterval(() => {
+        if (gameOver) {
+            return clearInterval(id)
         }
+            dispatch({type: 'ADD_TIME'})
     }, 1000)
-
-    return {second, minute}
 }
 
 export const useConflict = () => {
-    const [{player, dino}, dispatch] = useGameData();
-    useInterval(() => {
+    const [{player, dino, gameOver}, dispatch] = useGameData();
+    const id = useInterval(() => {
+        if (gameOver) {
+            clearInterval(id)
+        }
         if (dino.length && player) {
             for (let i = 0; i < dino.length; i++) {
-                //console.log(player.x + player.width, dino[i].x)
-                if (player.x + player.width >= dino[i].x
+                if (dino[i].alive && player.x + player.width >= dino[i].x
                     && player.x + player.width <= dino[i].x + dino[i].width
                     && player.y + player.height >= dino[i].y
                     && player.y + player.height <= dino[i].y + dino[i].height) {
@@ -106,63 +59,30 @@ export const useSpriteException = () => {
     const [value, setValue] = useState(10)
     useEffect(() => {
         if (position.isRunning || position.isRunningLeft) {
-            console.log('true running')
             setValue(7)
         } else setValue(9)
     }, [position])
-
     return value
 }
 
-/**
- * use for hero and dinosaur sprite
- * @param tempo
- * @param spriteX
- */
-export const useAnimation = (tempo: number, spriteX: number[]) => {
-    const requestRef = useRef(spriteX[0]);
-    const [sprite, setSprite] = useState(spriteX[0]);
-    const [{player: {position}, gameOver}, dispatch] = useGameData()
-    const value = useSpriteException()
-    const [valueLength, setvalueLenght] = useState(value)
-    const requestref = useRef(value)
-    let animateRequestFrame = (tempo: number) => {
-        let tActuel;
-        let tPrecedent: number;
-        let frame = 0;
-        let spriteAnimation = function (actuel: number) {
-            tActuel = actuel;
-            tPrecedent = tPrecedent || actuel;
-            let delai = tActuel - tPrecedent;
-            if (delai > tempo) {
-                frame++;
-                if (frame === valueLength && position.isHurting) {
-                    cancelAnimationFrame(requestRef.current)
-                    return dispatch({type: 'STOP_HURTING'})
-                }
-                if (frame === valueLength) {
-                    frame = 0;
-                }
-                requestRef.current = spriteX[frame]
-                setSprite(requestRef.current);
-                tPrecedent = tActuel;
-            }
-            requestref.current = requestAnimationFrame(spriteAnimation);
-        };
-        spriteAnimation(tempo)
-    }
-    useEffect(() => {
-        setvalueLenght(value)
-        console.log(position.isRunning, position.isRunningLeft, valueLength)
-        if (!gameOver) animateRequestFrame(tempo)
-        return () => {
-            cancelAnimationFrame(requestref.current)
+export const useJump = ()=> {
+    const [{perso}] = useGameData();
+    if (perso.isJumpingUp) {
+        perso.y -= 15;
+        if(perso.isRunning){
+        perso.x += 2;
         }
-    }, [position, gameOver])
-
-    return {sprite}
-}
-
+        if (perso.y <= 200) {
+            perso.isJumpingUp = false;
+        }
+    }
+    if (!perso.isJumpingUp) {
+        perso.y += 15;
+        if (perso.y >= 454) {
+            perso.isJumping = false;
+        }
+    }
+};
 
 export const useMoving = (tempo: number) => {
     const [{player: {x, position}}, dispatch] = useGameData();
@@ -254,10 +174,6 @@ export function useKeyPress() {
                     dispatch({type: 'IDLE'})
                 }
                 break;
-            case SPACE:
-                if (position.isWalkingShoot && !gameOver) {
-                    dispatch({type: 'IDLE'})
-                }
         }
     };
 
@@ -274,4 +190,6 @@ export function useKeyPress() {
 
     return keyPressed;
 }
+
+
 

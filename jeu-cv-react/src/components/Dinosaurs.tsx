@@ -5,22 +5,22 @@ import raptorVert from '../img/Dino/raptor-vert.png';
 import pachy from '../img/Dino/pachy.png';
 import ptero from '../img/Dino/ptero.png';
 import diplo from '../img/Dino/diplo.png';
-import {useAnimation, useInterval} from "../helpers/helpers";
+import {useInterval} from "../helpers/helpers";
 import raptorNoise from '../sound/141.mp3';
 import pteroNoise from '../sound/16456.mp3';
 import diploNoise from '../sound/16467.mp3';
 import {useGameData} from "../store/GameProvider";
 import {MOVE_DINO} from "../constants";
 
-const takeSoundChoice = (idSound:string, sound:boolean)=> {
-const soundChoice = {
-    raptor:raptorNoise,
-    ptero:pteroNoise,
-    diplo:diploNoise
-}
-    for(let [s, val] of Object.entries(soundChoice)){
-        if(idSound === s){
-            const soundAudio =new Audio(val)
+const takeSoundChoice = (idSound: string, sound: boolean) => {
+    const soundChoice = {
+        raptor: raptorNoise,
+        ptero: pteroNoise,
+        diplo: diploNoise
+    }
+    for (let [s, val] of Object.entries(soundChoice)) {
+        if (idSound === s) {
+            const soundAudio = new Audio(val)
             if (sound) {
                 soundAudio.volume = 0.3
                 soundAudio.play()
@@ -53,11 +53,11 @@ export const raptorInit = () => {
 }
 
 const pteroInit = {
-        y: 282,
-        health: 60,
-        avatar: ptero,
-        className: 'containerPtero',
-        spriteX: [0, -128, -256, -384, -512],
+    y: 282,
+    health: 60,
+    avatar: ptero,
+    className: 'containerPtero',
+    spriteX: [0, -128, -256, -384, -512],
 // 	//0 -> Attack  -100 -> Run
     spriteY: [0, -100],
     spriteXDead: [],
@@ -99,20 +99,25 @@ export interface IPropsDino {
     alive: true,
 }
 
-const Dinosaurs = ({id, x, y, width, height, avatar, spriteX, className, idSound, speed}: IPropsDino) => {
+const Dinosaurs = ({id, x, y, width, widthDead, height, avatar, spriteX, spriteY, spriteXDead, className, idSound, speed, alive}: IPropsDino) => {
+
+    var leftValue = 0;
     const [{sound}, dispatch] = useGameData()
-    //const positionX = useMovingDinosaur(40, id, x, speed)
+    const [frame, setFrame] = useState(0);
+    const requestRef = useRef(spriteX[0]);
+    const [sprite, setSprite] = useState(spriteX[0]);
+    const [typeSprite, setTypeSprite] = useState(0);
     const refPosition = useRef(x);
     const [positionX, setPositionX] = useState(x);
-    let cc =useInterval(()=>{
+    let cc = useInterval(() => {
         if (refPosition.current < -width) {
             dispatch({type: 'DELETE_DINO', payload: {id}})
             clearInterval(cc)
             return;
         } else {
-        refPosition.current -= 8 + speed ;
-        setPositionX(refPosition.current)
-        dispatch({type: MOVE_DINO, payload: {x: positionX, id}})
+            refPosition.current -= 8 + speed;
+            setPositionX(refPosition.current)
+            dispatch({type: MOVE_DINO, payload: {x: positionX, id}})
         }
     }, 30)
 
@@ -120,18 +125,36 @@ const Dinosaurs = ({id, x, y, width, height, avatar, spriteX, className, idSound
         zIndex: 40,
         left: positionX + "px",
         top: y + "px",
-        width: width + "px",
+        width: alive ? width : widthDead + "px",
         height: height + "px",
         overflow: 'hidden'
     }
     useEffect(() => {
-       takeSoundChoice(idSound, sound)
+        takeSoundChoice(idSound, sound)
     }, [sound])
 
-    const {sprite} = useAnimation(170, spriteX)
+    const idS = useInterval(() => {
+        setFrame(frame + 1);
+        if (!alive) {
+            setTypeSprite(spriteY[1])
+            requestRef.current = spriteXDead[frame]
+            if (frame === spriteXDead.length) {
+                dispatch({type: 'DELETE_DINO', payload: {id}})
+                clearInterval(idS)
+                return;
+            }
+        } else {
+            if (frame >= spriteX.length) {
+                setFrame(0)
+            }
+            requestRef.current = spriteX[frame]
+        }
+
+        setSprite(requestRef.current);
+    }, 170)
     return (
         <div className={`dinosaurs ${className}`} style={style}>
-            <img src={avatar} style={{left: sprite + 'px', top: 0 + 'px', position: 'absolute'}} />
+            <img src={avatar} style={{left: sprite + 'px', top: typeSprite + 'px', position: 'absolute'}} />
         </div>
     )
 }

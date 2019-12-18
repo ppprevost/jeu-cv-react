@@ -5,8 +5,8 @@ import Game from './page/Game';
 import MainHeader from "./components/MainHeader";
 
 const MainHeaderMemoized = ()=> {
-    const [{player:{dynamite, health, score}}] = useGameData()
-    return useMemo(()=><MainHeader score={score} health={health} dynamite={dynamite} />, [health])}
+    const [{player:{dynamite, health}}] = useGameData()
+    return useMemo(()=><MainHeader health={health} dynamite={dynamite} />, [health])}
 
 const Play =() =>{
     const [{player}] =useGameData()

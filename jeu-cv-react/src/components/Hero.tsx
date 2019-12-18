@@ -1,8 +1,12 @@
 import React, {useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState} from 'react';
 import {useGameData} from "../store/GameProvider";
 import avatar from '../img/test.png'
-import {useAnimation, useInterval, useKeyPress, useMoving, useRequestAnimationFrame} from "../helpers/helpers";
+import { useInterval, useKeyPress, useMoving} from "../helpers/helpers";
 import Character from './Characters';
+import heroHurtSound from '../sound/cri.mp3';
+import Bullet, {IBulletProps} from './Bullet';
+
+const hurtSound = new Audio(heroHurtSound)
 
 export const initHeroes = {
     name: 'player 1',
@@ -34,45 +38,63 @@ const spriteX = [-10, -126, -242, -358, -474, -590, -706, -822, -938, -1054]; //
 const spriteY = [0, -100, -200, -300, -400, -500, -600, -700, -800, -900, -1000]; //bullet
 
 const spriteValue = {
-    isIdle:0,
-    isRunning:-400,
-    isRunningLeft:-400,
-    isJumping:-100,
-    isCrouching:-200,
-    isWalkingShoot:-300,
-    isDying:-500,
-    isHurting:-500,
-    isRunningShooting:-600,
-    isChrouchShooting:-700,
-    isCrouchDynamiting:-800,
+    isIdle: 0,
+    isRunning: -400,
+    isRunningLeft: -400,
+    isJumping: -100,
+    isCrouching: -200,
+    isWalkingShoot: -300,
+    isDying: -500,
+    isHurting: -500,
+    isRunningShooting: -600,
+    isChrouchShooting: -700,
+    isCrouchDynamiting: -800,
     isJumpingShooting: -900,
     isDynmating: -1000
 }
 
 const Hero = () => {
-    const [{player: {width, height, x, y,position}}, dispatch] = useGameData();
+    const [{player: {width, height, x, y, position}, gameOver, sound, bullets}, dispatch] = useGameData();
     useKeyPress()
     useMoving(70)
     const [behavior, setBehavior] = useState(0)
-    useLayoutEffect(()=>{
-        for(let [key,value] of Object.entries(position)){
-            if(value){
-                console.log(key)
+    useLayoutEffect(() => {
+        for (let [key, value] of Object.entries(position)) {
+            if (value) {
                 const va = (spriteValue as any)[key]
                 setBehavior(va)
                 return;
             }
         }
-    },[position])
+    }, [position])
+    useEffect(() => {
+        if (sound && position.isHurting && !gameOver) {
+            hurtSound.play()
+            hurtSound.volume = 0.7
+        }
+
+    }, [sound])
+    useEffect(()=>{
+        setTimeout(()=>{
+            if(position.isWalkingShoot)
+                dispatch({type:'STOP_SHOOTING'})
+        },700)
+    }, [position.isWalkingShoot])
     return (
-       <Character width={width}
-                  height={height}
-                  x={x}
-                  y={y}
-                  avatar={avatar}
-                  className="containerHero"
-                  spriteX={spriteX}
-                  behavior={behavior}/>)
+        <>
+            <Character width={width}
+                       height={height}
+                       x={x}
+                       y={y}
+                       avatar={avatar}
+                       className="containerHero"
+                       spriteX={spriteX}
+                       behavior={behavior} />
+            {bullets.length > 0 && bullets.map(({id, type}: IBulletProps) => <Bullet key={id}
+                                                                                          id={id}
+                                                                                                   type={type} />)}
+                       </>
+    )
 }
 
 

@@ -1,4 +1,4 @@
-import React, {useEffect, useMemo, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useGameData} from "../store/GameProvider";
 import {useChrono} from "../helpers/helpers";
 import nodejs from '../img/competences/nodejs-logo.png';
@@ -8,15 +8,14 @@ import meteor from '../img/competences/meteor_framework_logo.png'
 type IPropsHeader = {
     dynamite: number,
     health: number,
-    score: number
 }
 
 export const tabCompetences = [html5, nodejs, meteor];
 
-const MainHeader = ({dynamite, health, score}: IPropsHeader) => {
-    const [{sound, competency}, dispatch] = useGameData();
+const MainHeader = ({dynamite, health}: IPropsHeader) => {
+    const [{sound,score, competency, chrono:{second, minute}}, dispatch] = useGameData();
     const setSound = () => dispatch({type: 'SET_SOUND'});
-    const {second, minute} = useChrono()
+    useChrono()
     const [chronoHeader, setChronoHeader] = useState("00:00")
     useEffect(()=>{
         if (second < 10 && minute < 10) {
@@ -67,13 +66,7 @@ const MainHeader = ({dynamite, health, score}: IPropsHeader) => {
                 </div>
             </div>
         <div className="row sub-menu misc">
-            {competency > 0? tabCompetences
-                .splice(0, competency)
-                .map((comp:any)=>{
-console.log('fdsfdsfds', comp)
-                return(<img key={comp} src={comp} alt="" />)
-
-            }) :  <span>no competency</span>}
+            {competency &&   <span>no competency</span>}
 
         </div>
         </div>)
