@@ -6,7 +6,7 @@ import {initHeroes} from "../components/Hero";
 export function useInterval(callback: () => void, delay: number) {
     const savedCallback: any = useRef(null);
     const saveCancelRef: any = useRef(null)
-    const [interval, setClearInterval] = useState(saveCancelRef)
+    const [interval, setClearInterval] = useState(saveCancelRef);
     // Remember the latest callback.
     useEffect(() => {
         savedCallback.current = callback;
@@ -65,69 +65,6 @@ export const useSpriteException = () => {
     return value
 }
 
-export const useMoving = (tempo: number) => {
-    const [{player: {x, y, position, stopJump}}, dispatch] = useGameData();
-    const refPosition = useRef(x)
-    const refPositionY = useRef(y)
-    const stopJumpRef = useRef(stopJump);
-    const [positionX, setPositionX] = useState(x);
-    const [positionY, setPositionY] = useState(y);
-    const refCancel = useRef(0)
-    let animateRequestFrame = (tempo: number) => {
-        let tActuel;
-        let tPrecedent: number;
-        let moving = function (actuel: number) {
-            tActuel = actuel;
-            tPrecedent = tPrecedent || actuel;
-            let delai = tActuel - tPrecedent;
-            if (delai > tempo) {
-                if (position.isRunning) {
-                    refPosition.current += 10
-                }
-                if (position.isRunningLeft) {
-                    refPosition.current -= 10
-                }
-                if (position.isJumping) {
-                    if (position.isRunning) {
-                        refPosition.current += 2
-                    }
-                    if (position.isRunningLeft) {
-                        refPosition.current -= 2
-                    }
-                    if (refPositionY.current <= 200) {
-                        dispatch({type:'LAND_PLAYER'})
-                    }
-                    console.log(stopJumpRef.current)
-                    if (stopJumpRef.current) {
-                        refPositionY.current += 10
-                    }else {
-                        refPositionY.current -= 10
-                    }
-                    console.log(refPositionY.current)
-                    if (refPositionY.current >= initHeroes.y) {
-
-                    }
-                }
-                setPositionX(refPosition.current)
-                setPositionY(refPositionY.current)
-                dispatch({type: 'ANIMATE_PLAYER', x: refPosition.current, y: refPositionY.current})
-                tPrecedent = tActuel;
-            }
-            if (position.isRunning || position.isRunningLeft || position.isJumping) {
-                console.log('isRunningAnimate !!')
-                refCancel.current = requestAnimationFrame(moving);
-            }
-
-        };
-        moving(tempo)
-    }
-    useLayoutEffect(() => {
-        animateRequestFrame(tempo)
-        return () => cancelAnimationFrame(refCancel.current)
-    }, [position])
-    return [positionX, positionY]
-}
-
 const RIGHT = 39;
 const UP = 38;
 const BOTTOM = 40;
@@ -173,7 +110,7 @@ export function useKeyPress() {
         switch (keyCode) {
             case UP:
                 if (position.isJumping) {
-                      dispatch({type: 'LAND_PLAYER'})
+                    dispatch({type: 'LAND_PLAYER'})
                 }
             case RIGHT:
                 if (position.isRunning) {

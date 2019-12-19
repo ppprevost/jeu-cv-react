@@ -18,6 +18,9 @@ const MainHeader = () => {
     const setSound = () => dispatch({type: 'SET_SOUND'});
     useChrono();
     const [chronoHeader, setChronoHeader] = useState("00:00")
+    const resetGame = ()=>{
+        dispatch({type:'RESET_GAME'})
+    }
     useEffect(() => {
         if (second < 10 && minute < 10) {
             setChronoHeader("0" + minute + ": 0" + second);
@@ -59,7 +62,9 @@ const MainHeader = () => {
             <div className="cv col-xs-4">
                 <a href="document/cv_ppprevost_ifocop.pdf" target="_blank">Download My CV</a>
             </div>
-            <div className="startAgain col-xs-4">
+            <div
+                onClick={resetGame}
+                className="startAgain col-xs-4">
                 Start Again
             </div>
             <div className="col-xs-4 sound" onClick={setSound}>

@@ -14,6 +14,7 @@ import {
 } from "../constants";
 import {initHeroes} from "../components/Hero";
 import {IPropsDino} from "../components/Dinosaurs";
+import {windowSize} from "../constants/contants.tsx";
 
 type ActionType = {
     type: string
@@ -117,6 +118,9 @@ export const reducer = (state: any, action: ActionType) => {
             const newDino = {...action.newDino}
             state.idDino += 1;
             newDino.alive = true;
+            if(newDino.className==='spike'){
+               // newDino.x = [windowSize, 0][Math.round(Math.random())]
+            }
             newDino.speed = Math.round(Math.random() * 8)
             newDino.id = state.idDino;
             return {...state, dino: [...state.dino, newDino]}
@@ -161,6 +165,11 @@ export const reducer = (state: any, action: ActionType) => {
                 state.chrono.minute += 1
             }
             return {...state}
+        case 'RESET_GAME':
+            console.log('reset')
+            const initialState = {...state}
+            initialState.player = initHeroes
+            return initialState
         default: {
             throw new Error(`Unhandled action type: ${action.type}`)
         }

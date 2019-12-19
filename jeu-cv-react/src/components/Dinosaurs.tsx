@@ -5,6 +5,7 @@ import raptorVert from '../img/Dino/raptor-vert.png';
 import pachy from '../img/Dino/pachy.png';
 import ptero from '../img/Dino/ptero.png';
 import diplo from '../img/Dino/diplo.png';
+import spike from '../img/Dino/spike.png';
 import {useInterval} from "../helpers/helpers";
 import raptorNoise from '../sound/141.mp3';
 import pteroNoise from '../sound/16456.mp3';
@@ -22,6 +23,7 @@ const takeSoundChoice = (idSound: string, sound: boolean) => {
         if (idSound === s) {
             const soundAudio = new Audio(val)
             if (sound) {
+                soundAudio.currentTime = 0
                 soundAudio.volume = 0.3
                 soundAudio.play()
             } else {
@@ -29,7 +31,17 @@ const takeSoundChoice = (idSound: string, sound: boolean) => {
             }
             return;
         }
+        return;
     }
+}
+
+export const peaksInit = {
+    y: 484,
+    avatar: spike,
+    className: "spike",
+    width: 70,
+    height: 70,
+
 }
 
 export const raptorInit = () => {
@@ -39,7 +51,6 @@ export const raptorInit = () => {
     return ({
         y: 410,
         className: 'raptor',
-        x: windowSize,
         health: 200,
         avatar: raptorChoice,
         spriteX: [0, -249, -498, -747, -996, -1245, -1494, -1743],
@@ -56,12 +67,10 @@ const pteroInit = {
     y: 282,
     health: 60,
     avatar: ptero,
-    className: 'containerPtero',
+    className: 'ptero',
     spriteX: [0, -128, -256, -384, -512],
-// 	//0 -> Attack  -100 -> Run
     spriteY: [0, -100],
-    spriteXDead: [],
-    width: 128, // retranchement de 28px
+    width: 128,
     height: 100,
     idSound: "ptero"
 }
@@ -90,38 +99,37 @@ export interface IPropsDino {
     className: string,
     width: string | number,
     height: string | number,
-    spriteXDead: number[],
+    spriteXDead?: number[],
     health: number,
-    spriteX: number[],
-    spriteY: number[],
-    widthDead: number,
-    idSound: string,
-    alive: true,
+    spriteX?: number[],
+    spriteY?: number[],
+    widthDead?: number,
+    idSound?: string,
+    alive: boolean,
 }
 
-const Dinosaurs = ({id, x, y, width, widthDead, height, avatar, spriteX, spriteY, spriteXDead, className, idSound, speed, alive}: IPropsDino) => {
-    const [{sound}, dispatch] = useGameData()
+const Dinosaurs = ({id, x=windowSize, y, width, widthDead = 0, height, avatar, spriteX = [], spriteY = [], spriteXDead = [], className, idSound = '', speed, alive}: IPropsDino) => {
+    const [{sound}, dispatch] = useGameData();
     const [frame, setFrame] = useState(0);
     const requestRef = useRef(spriteX[0]);
-    const [sprite, setSprite] = useState(spriteX[0]);
     const [typeSprite, setTypeSprite] = useState(0);
     const refPosition = useRef(x);
-    const [positionX, setPositionX] = useState(x);
-    let idIntervalMovingDinosaur = useInterval(() => {
+    const delayDinosaur: any = useRef(30);
+    const [d, setD]= useState(false)
+    useInterval(() => {
         if (refPosition.current < -width) {
             dispatch({type: 'DELETE_DINO', payload: {id}})
-            clearInterval(idIntervalMovingDinosaur)
+            delayDinosaur.current = null;
             return;
         } else {
             refPosition.current -= 8 + speed;
-            setPositionX(refPosition.current)
-            dispatch({type: MOVE_DINO, payload: {x: positionX, id}})
+            dispatch({type: MOVE_DINO, payload: {x: refPosition.current, id}})
         }
-    }, 30)
+    }, delayDinosaur.current)
 
     const style = {
         zIndex: 40,
-        left: positionX + "px",
+        left: refPosition.current + "px",
         top: y + "px",
         width: alive ? width : widthDead + "px",
         height: height + "px",
@@ -134,13 +142,13 @@ const Dinosaurs = ({id, x, y, width, widthDead, height, avatar, spriteX, spriteY
     const idS = useInterval(() => {
         setFrame(frame + 1);
         if (!alive) {
-            setTypeSprite(spriteY[1])
-            requestRef.current = spriteXDead[frame]
-            if (frame === spriteXDead.length) {
-                dispatch({type: 'DELETE_DINO', payload: {id}})
-                clearInterval(idS)
-                return;
-            }
+                setTypeSprite(spriteY[1])
+                requestRef.current = spriteXDead[frame]
+                if (frame === spriteXDead.length) {
+                    dispatch({type: 'DELETE_DINO', payload: {id}})
+                    clearInterval(idS)
+                    return;
+                }
         } else {
             if (frame >= spriteX.length) {
                 setFrame(0)
@@ -148,37 +156,18 @@ const Dinosaurs = ({id, x, y, width, widthDead, height, avatar, spriteX, spriteY
             requestRef.current = spriteX[frame]
         }
 
-        setSprite(requestRef.current);
     }, 170)
     return (
         <div className={`dinosaurs ${className}`} style={style}>
-            <img src={avatar} style={{left: sprite + 'px', top: typeSprite + 'px', position: 'absolute'}} />
+            <img src={avatar} style={{left: requestRef.current + 'px', top: typeSprite + 'px', position: 'absolute'}} />
         </div>
     )
 }
 
-Dinosaurs.defaultProps = {
-    id: 1,
-    speed: Math.round(Math.random() * 10) + 1, //random value for random speed
-    x: windowSize,
-    health: null,
-    y: null,
-    src: null,
-    className: null,
-    spriteX: null,
-    spriteXDead: null,
-    spriteY: null,
-    width: null,
-    widthDead: null,
-    height: null,
-    alive: true,
-    idSound: null
-}
-
 export const createDinosaur = () => {
-    const tableDinosaur = [pteroInit, raptorInit(), diploInit]
-    const random = Math.round(Math.random() * 2)
-    return tableDinosaur[random]
+    const tableDinosaur = [pteroInit, raptorInit(), diploInit, peaksInit]
+    const random = Math.round(Math.random() * 3)
+     return tableDinosaur[random]
 }
 
 export default Dinosaurs;

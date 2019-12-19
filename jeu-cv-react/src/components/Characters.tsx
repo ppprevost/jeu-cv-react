@@ -24,6 +24,7 @@ const Character = ({width, height, x, y, className, spriteX, behavior, avatar}: 
         if (frame >= value) {
             if (position.isHurting) {
                 if (gameOver) {
+                    console.log('id player', id)
                     clearInterval(id)
                     return ;
                 }

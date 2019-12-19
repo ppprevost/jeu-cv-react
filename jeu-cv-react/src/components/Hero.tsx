@@ -57,11 +57,8 @@ const spriteValue = {
 const Hero = () => {
     const [{player: {width, height, x, y, position, stopJump}, gameOver, sound, bullets}, dispatch] = useGameData();
     useKeyPress();
-    //   useMoving(70)
     const refPosition = useRef(x)
     const refPositionY = useRef(y)
-    const [positionX, setPositionX] = useState(x);
-    const [positionY, setPositionY] = useState(y);
     const delayRef = useRef<any>(null);
     useEffect(()=>{
         if(!position.isIdle){
@@ -71,6 +68,9 @@ const Hero = () => {
         }
     },[position])
     useInterval(() => {
+        if(gameOver){
+            delayRef.current = null;
+        }
         if (position.isJumping) {
             if (position.isRunning) {
                 refPosition.current += 2
@@ -85,7 +85,7 @@ const Hero = () => {
             if (stopJump) {
                 refPositionY.current += 30
             } else {
-                refPositionY.current -= 20
+                refPositionY.current -= 30
             }
             console.log(refPositionY.current)
             if (refPositionY.current >= initHeroes.y) {
@@ -101,8 +101,7 @@ const Hero = () => {
                 refPosition.current -= 10
             }
         }
-        setPositionX(refPosition.current)
-        setPositionY(refPositionY.current)
+
         dispatch({type: 'ANIMATE_PLAYER', x: refPosition.current, y: refPositionY.current})
 
     },delayRef.current);
@@ -119,11 +118,14 @@ const Hero = () => {
     }, [position])
     useEffect(() => {
         if (sound && position.isHurting && !gameOver) {
+            hurtSound.currentTime=0
             hurtSound.play()
-           // hurtSound.volume = 0.7
+            hurtSound.volume = 0.4
+        }else {
+            hurtSound.pause()
         }
 
-    }, [sound])
+    }, [sound, position])
     useEffect(() => {
         setTimeout(() => {
             if (position.isWalkingShoot)

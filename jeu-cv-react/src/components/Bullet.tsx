@@ -9,7 +9,6 @@ export interface IBulletProps {
     id: number
     type: string
 }
-
 const rifleSound = new Audio(shotSound)
 
 const BulletComponent = ({type, id}: IBulletProps) => {
@@ -22,28 +21,32 @@ const BulletComponent = ({type, id}: IBulletProps) => {
     const [x, setX] = useState(player.x + 100);
     const spriteItemX = [0, -29, -58, -87, -116, -145, -174, -203, -232, -261];
     const avatar = bulletImg;
+    const refDelayBullet:any = useRef(80)
+
     useEffect(() => {
-        if(sound){
+        if(sound && player.position.isWalkingShoot){
         rifleSound.currentTime = 0
         rifleSound.volume = 0.4
         rifleSound.play();
         rifleSound.volume = 0.1;
+        }else {
+            rifleSound.pause();
         }
     }, [sound])
     const idS = useInterval(() => {
         ref.current = x + 30
         setX(ref.current)
         if (x >= windowSize || x < 0) {
-            clearInterval(id)
+            refDelayBullet.current = null
             return;
         }
         for (var i = 0; i < dino.length; i++) {
             if (dino[i].alive) {
                 if (x + width >= dino[i].x && x + width <= dino[i].x + dino[i].width &&
                     y + height >= dino[i].y && y + height <= dino[i].y + dino[i].height) {
-                    dispatch({type: 'STOP_BULLET', id});
-                    clearInterval(idS);
-                    if (type === 'bullet') {
+                     dispatch({type: 'STOP_BULLET', id});
+                    refDelayBullet.current = null
+                    if (type === 'bullet' && dino[i].className !== 'spike') {
                         dispatch({type: 'KILL_DINO', payload: {id: dino[i].id}});
                     } else {
                         dispatch({type: 'RAMPAGE'})
@@ -51,9 +54,7 @@ const BulletComponent = ({type, id}: IBulletProps) => {
                 }
             }
         }
-
-
-    }, 80)
+    }, refDelayBullet.current)
 
     return (
         <div className="bullet"

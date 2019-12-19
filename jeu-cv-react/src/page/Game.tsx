@@ -8,6 +8,7 @@ import {useConflict, useInterval} from "../helpers/helpers";
 import field from '../img/field.png';
 import mainSound from '../sound/main.mp3'
 import BulletComponent, {IBulletProps} from "../components/Bullet";
+import {delay} from "q";
 
 const MemoizedHero = () => {
     const [player] = useGameData()
@@ -17,30 +18,6 @@ const MemoizedHero = () => {
 
 const useCorrectSendingDiosaur = ()=>{
 
-}
-
-// TODO correct problem of closing onglet on chrome
-let interval: number; //30fps
-let before = new Date();
-let now: Date;
-if (window.matchMedia("(min-width: 1400px)").matches) {
-    interval = 1700;
-} else {
-    interval = 2000;
-}
-let leftValue = 0;
-
-function animationFrame() {
-    now = new Date();
-    var elapsedTime = (now.getTime() - before.getTime());
-    if (elapsedTime > interval) {
-        // Recover the motion lost while inactive
-        leftValue += Math.floor(elapsedTime / interval);
-    } else {
-        leftValue++;
-    }
-    before = now;
-    //requestAnimationFrame();
 }
 
 const Field = () => {
@@ -65,18 +42,29 @@ const Game = () => {
     const [{player, dino, gameOver, sound, bullets}, dispatch] = useGameData();
     useConflict();
     const FixedBackground = (compute: number) => useMemo(() => <Background left={compute} />, [xBackground])
-    const DinoMemoizedLength = () => useMemo(() => dino.map((dinosaur: IPropsDino) => <Dinosaurs {...dinosaur}
-                                                                                                 key={dinosaur.id} />), [])
     const newRef = useRef(createDinosaur());
-    const [newDino, setNewDino] = useState(createDinosaur())
+    const [newDino, setNewDino] = useState(createDinosaur());
+
+    const visibilityGame = useRef(document.visibilityState === 'visible');
+    const delayDino:any = useRef(2000);
     const id = useInterval(() => {
         newRef.current = createDinosaur()
         setNewDino(newRef.current)
+        console.log(newDino)
         dispatch({type: ADD_DINO, newDino});
         if (gameOver) {
             clearInterval(id)
         }
-    }, 2000)
+    }, delayDino.current)
+
+    useEffect(()=>{
+        if(!visibilityGame.current){
+            delayDino.current = null
+        }
+        else{
+            delayDino.current = 2000;
+        }
+    }, [])
     useEffect(() => {
         dispatch({type: ADD_PLAYER})
     }, [])
