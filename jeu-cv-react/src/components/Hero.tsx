@@ -1,4 +1,4 @@
-import React, { useEffect, useLayoutEffect, useRef, useState} from 'react';
+import React, {RefObject, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {useGameData} from "../store/GameProvider";
 import avatar from '../img/test.png'
 import {useInterval, useKeyPress} from "../helpers/helpers";
@@ -59,7 +59,7 @@ const Hero = () => {
     useKeyPress();
     const refPosition = useRef(x)
     const refPositionY = useRef(y)
-    const delayRef = useRef<any>(null);
+    const delayRef = useRef<number | null>(null);
     useEffect(()=>{
         if(!position.isIdle){
             delayRef.current = 70;

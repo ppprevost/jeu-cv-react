@@ -1,4 +1,4 @@
-import React, {createContext, useContext, useReducer} from "react";
+import React, {createContext, Reducer, useContext, useReducer} from "react";
 import {IBulletProps} from "../components/Bullet";
 import {
     ADD_PLAYER,
@@ -14,7 +14,6 @@ import {
 } from "../constants";
 import {initHeroes} from "../components/Hero";
 import {IPropsDino} from "../components/Dinosaurs";
-import {windowSize} from "../constants/contants.tsx";
 
 type ActionType = {
     type: string
@@ -23,17 +22,18 @@ type ActionType = {
 
 type State = {
     sound: boolean,
-    player: typeof initHeroes
-    dino: IPropsDino[]
+    player: typeof initHeroes | null
+    dino: IPropsDino[] | []
     idDino: number
+    idBullet:number
     gameOver: boolean
     competency: number
-    bullets: IBulletProps[]
+    bullets: IBulletProps[] | []
     chrono: { minute: number, second: number }
 }
 
-
 const UserContext = createContext<any>([]);
+
 const initialState = {
     sound: false,
     player: null,
@@ -48,21 +48,23 @@ const initialState = {
 
 const repercutPositionHero = (state: State, newPosition: string) => {
     const initObject = {};
+    if(state.player){
     Object.keys(state.player.position)
-        .map((key) => (initObject as any)[key] = false)
+        .map((key) => (initObject as any)[key] = false);
     return {
         ...state,
         player:
             {...state.player, position: {...initObject, [newPosition]: true,}}
     }
+    }
+    return state
 }
 
 const findDino = (action: ActionType) => {
     return ({id}: IPropsDino) => action.payload.id === id
 }
 
-
-export const reducer = (state: any, action: ActionType) => {
+export const reducer = (state: State, action: ActionType) => {
     switch (action.type) {
         case SET_SOUND:
             return {...state, sound: !state.sound};
@@ -81,19 +83,20 @@ export const reducer = (state: any, action: ActionType) => {
             return repercutPositionHero(state, 'isCrouching');
         case 'DYNAMITE':
             state.idBullet ++;
-            state.bullet = [...state.bullet, ({type: 'dynamite',id:state.idBullet})];
+            state.bullets = [...state.bullets, ({type: 'dynamite',id:state.idBullet})];
             return {...state}
             break;
         case 'SHOOT':
             state.idBullet ++;
             const newBullet = {type: 'bullet', id: state.idBullet};
             state.bullets = [...state.bullets, newBullet]
-            state = repercutPositionHero(state, 'isWalkingShoot')
-            return {...state}
+            return repercutPositionHero(state, 'isWalkingShoot')
         case 'STOP_SHOOTING':
             return repercutPositionHero(state, 'isIdle');
             case 'STOP_JUMPING':
+                if (state.player){
                 state.player.stopJump = false;
+                }
             return repercutPositionHero(state, 'isIdle');
         case 'STOP_BULLET':
             state.bullets = state.bullets
@@ -104,11 +107,13 @@ export const reducer = (state: any, action: ActionType) => {
             return {...state, player: {...state.player, x: action.x, y:action.y? action.y : {}}}
         case 'LAND_PLAYER':
             console.log('landing')
+            if(state.player){
             state.player.stopJump = true;
+            }
             return {...state}
         case 'STOP_HURTING':
             console.log('stop hurt')
-            if (state.player.health > 0) {
+            if (state.player && state.player.health > 0) {
                 return repercutPositionHero(state, 'isIdle')
             }
             return {...state}
@@ -138,15 +143,17 @@ export const reducer = (state: any, action: ActionType) => {
             let actualDinoToKill = state.dino.findIndex(findDino(action));
             console.log(actualDinoToKill)
             state.dino[actualDinoToKill].alive = false;
+            if(state.player){
             state.player.score += 1
+            }
             return {...state}
         case COLLISION:
-            if (!state.player.position.isHurting) {
+            if (state.player && !state.player.position.isHurting) {
                 const hurtedPlayerState = repercutPositionHero(state, 'isHurting');
-                if (hurtedPlayerState.player.health > 0) {
-                    hurtedPlayerState.player.health -= 10
+                if (hurtedPlayerState.player && hurtedPlayerState.player.health > 0) {
+                    hurtedPlayerState.player.health -= 10;
                 }
-                if (hurtedPlayerState.player.health <= 0) {
+                if (hurtedPlayerState &&hurtedPlayerState.player && hurtedPlayerState.player.health <= 0) {
                     hurtedPlayerState.gameOver = true;
                 }
                 return {...hurtedPlayerState}
@@ -177,9 +184,9 @@ export const reducer = (state: any, action: ActionType) => {
 }
 
 const GameProvider: React.FunctionComponent = ({children}) => {
-    const contextValue = useReducer(reducer, initialState)
+    // @ts-ignore
+    const contextValue = useReducer<Reducer<State,ActionType>, State>(reducer, initialState, )
     return (
-        // @ts-ignore
         <UserContext.Provider value={contextValue}>
             {children}
         </UserContext.Provider>

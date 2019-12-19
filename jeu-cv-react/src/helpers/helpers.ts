@@ -1,11 +1,10 @@
-import {useEffect, useRef, useState, useLayoutEffect,} from "react";
+import {useEffect, useRef, useState,} from "react";
 import {useGameData} from "../store/GameProvider";
 import {MOVE_LEFT} from "../constants";
-import {initHeroes} from "../components/Hero";
 
-export function useInterval(callback: () => void, delay: number) {
-    const savedCallback: any = useRef(null);
-    const saveCancelRef: any = useRef(null)
+export function useInterval(callback: () => void, delay: number | null) {
+    const savedCallback = useRef<any>(null);
+    const saveCancelRef = useRef<any>(null)
     const [interval, setClearInterval] = useState(saveCancelRef);
     // Remember the latest callback.
     useEffect(() => {
@@ -14,7 +13,7 @@ export function useInterval(callback: () => void, delay: number) {
     // Set up the interval.
     useEffect(() => {
         function tick() {
-            savedCallback.current();
+            savedCallback.current()
         }
         if (delay !== null) {
             saveCancelRef.current = setInterval(tick, delay);

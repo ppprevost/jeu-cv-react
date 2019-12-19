@@ -114,7 +114,7 @@ const Dinosaurs = ({id, x=windowSize, y, width, widthDead = 0, height, avatar, s
     const requestRef = useRef(spriteX[0]);
     const [typeSprite, setTypeSprite] = useState(0);
     const refPosition = useRef(x);
-    const delayDinosaur: any = useRef(30);
+    const delayDinosaur = useRef<number | null>(30);
     const [d, setD]= useState(false)
     useInterval(() => {
         if (refPosition.current < -width) {
