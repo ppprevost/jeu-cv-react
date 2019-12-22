@@ -14,7 +14,7 @@ interface PropsCharacter {
 }
 
 const Character = ({width, height, x, y, className, spriteX, behavior, avatar}: PropsCharacter) => {
-    const [{player: {position}, gameOver}, dispatch] = useGameData();
+    const [{player: {position}, gameOver, direction}, dispatch] = useGameData();
     const requestRef = useRef(spriteX[0]);
     const [sprite, setSprite] = useState(spriteX[0]);
     const [frame, setFrame] = useState(0);

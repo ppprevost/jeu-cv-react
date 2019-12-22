@@ -3,8 +3,8 @@ import {useGameData} from "../store/GameProvider";
 import {MOVE_LEFT} from "../constants";
 
 export function useInterval(callback: () => void, delay: number | null) {
-    const savedCallback = useRef<any>(null);
-    const saveCancelRef = useRef<any>(null)
+    const savedCallback:any = useRef(null);
+    const saveCancelRef: any = useRef(0)
     const [interval, setClearInterval] = useState(saveCancelRef);
     // Remember the latest callback.
     useEffect(() => {
@@ -34,25 +34,6 @@ export const useChrono = () => {
     }, 1000)
 }
 
-export const useConflict = () => {
-    const [{player, dino, gameOver}, dispatch] = useGameData();
-    const id = useInterval(() => {
-        if (gameOver) {
-            clearInterval(id)
-        }
-        if (dino.length && player) {
-            for (let i = 0; i < dino.length; i++) {
-                if (dino[i].alive && player.x + player.width >= dino[i].x
-                    && player.x + player.width <= dino[i].x + dino[i].width
-                    && player.y + player.height >= dino[i].y
-                    && player.y + player.height <= dino[i].y + dino[i].height) {
-                    dispatch({type: 'COLLISION'})
-                }
-            }
-        }
-    }, 300)
-}
-
 export const useSpriteException = () => {
     const [{player: {position}}] = useGameData()
     const [value, setValue] = useState(10)
@@ -69,6 +50,28 @@ const UP = 38;
 const BOTTOM = 40;
 const LEFT = 37;
 const SPACE = 32;
+
+export const useSound = (soundChoice:HTMLAudioElement,volume=0,condition =[], loop=false)=>{
+    const [{sound}] = useGameData();
+    useEffect(()=>{
+        const takeCondition = ()=>{
+            for(let cond of condition){
+                if(!cond){
+                    return false;
+                }
+                return true;
+            }
+        }
+        if(sound && takeCondition()){
+            soundChoice['currentTime'] = 0
+            soundChoice['loop'] = loop
+            soundChoice['volume'] = volume
+            soundChoice['play']()
+        }else {
+            soundChoice.pause()
+        }
+    }, [sound, ...condition])
+}
 
 export function useKeyPress() {
     const [{player: {position}, gameOver}, dispatch] = useGameData();

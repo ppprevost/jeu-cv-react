@@ -1,14 +1,34 @@
-import React, {RefObject, useEffect, useLayoutEffect, useRef, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {useGameData} from "../store/GameProvider";
-import avatar from '../img/test.png'
+import avatar from '../img/hunter.png';
+import avatarLeft from "../img/hunter_left.png"
 import {useInterval, useKeyPress} from "../helpers/helpers";
 import Character from './Characters';
 import heroHurtSound from '../sound/cri.mp3';
 import Bullet, {IBulletProps} from './Bullet';
+import {windowSize} from "../constants/contants";
+import {Competency} from "./Competency";
+import getItem from '../sound/OOT_Get_SmallItem1.mp3'
+
+export interface Hero {
+    name: string,
+    position: any,
+    stopJump: boolean
+    isConflict: boolean
+    score: number,
+    dynamite: number,
+    spriteHeight: number,
+    health: number,
+    width: number,
+    height: number,
+    x: number,
+    y: number
+}
 
 const hurtSound = new Audio(heroHurtSound)
+const getItemSound = new Audio(getItem)
 
-export const initHeroes = {
+export const initHeroes: Hero = {
     name: 'player 1',
     position: {
         isJumping: false, // Frame Saut
@@ -19,20 +39,20 @@ export const initHeroes = {
         isDynamiting: false, // Dynamite Attack
         isRunningLeft: false,
         isCrouching: false,
+        isDying: false
     },
     stopJump: false,
     isConflict: false, // test la collision
     score: 0,
-    isDying: false, // Hero Die
     dynamite: 3,
     spriteHeight: 80,
     health: 100,
-    timelast: 0,
     width: 110,
     height: 100,
-    x: 200,
+    x: 0,
     y: 454,
 }
+initHeroes.x = windowSize / 2 - initHeroes.width / 2
 
 const spriteX = [-10, -126, -242, -358, -474, -590, -706, -822, -938, -1054]; // coordonnées X des sprites pour 10 frames
 // 0 -> walk -100 -> Jump -200 -> Crouch -300 -> Walk Shoot  -400 -> Run -500 -> Die  -600 -> runShoot -700 -> crouchShoot -800 -> crouchDynamite -900->jumpShoot -1000 ->  Dynamite
@@ -55,22 +75,40 @@ const spriteValue = {
 }
 
 const Hero = () => {
-    const [{player: {width, height, x, y, position, stopJump}, gameOver, sound, bullets}, dispatch] = useGameData();
+    const [{player: {width, height, x, y, position, stopJump}, gameOver, direction, sound, bullets, competency}, dispatch] = useGameData();
     useKeyPress();
     const refPosition = useRef(x)
     const refPositionY = useRef(y)
-    const delayRef = useRef<number | null>(null);
-    useEffect(()=>{
-        if(!position.isIdle){
-            delayRef.current = 70;
-        }else {
+    const avatarRef = useRef(avatar)
+    const delayRef = useRef<number | null>(null);
+    useEffect(() => {
+        if (!position.isIdle) {
+            delayRef.current = 50;
+        } else {
             delayRef.current = null;
         }
-    },[position])
+    }, [position])
+    useEffect(() => {
+        if (direction === 'right') {
+            avatarRef.current = avatar
+        } else {
+            avatarRef.current = avatarLeft
+        }
+    }, [direction])
     useInterval(() => {
-        if(gameOver){
+        if (gameOver) {
             delayRef.current = null;
         }
+        const heroSize = direction === 'left' ? refPosition.current : refPosition.current + width
+        competency.forEach((comp: Competency) => {
+            if (!comp.catched && heroSize >= comp.x
+                && heroSize <= comp.x + 50
+            ) {
+                if (sound) getItemSound.play();
+                dispatch({type: 'GET_COMPETENCY', payload: {newComp: comp.type}})
+            }
+        })
+
         if (position.isJumping) {
             if (position.isRunning) {
                 refPosition.current += 2
@@ -90,10 +128,9 @@ const Hero = () => {
             console.log(refPositionY.current)
             if (refPositionY.current >= initHeroes.y) {
                 refPositionY.current = initHeroes.y
-                dispatch({type:'STOP_JUMPING'})
+                dispatch({type: 'STOP_JUMPING'})
             }
-        }
-        else {
+        } else {
             if (position.isRunning) {
                 refPosition.current += 10
             }
@@ -104,7 +141,7 @@ const Hero = () => {
 
         dispatch({type: 'ANIMATE_PLAYER', x: refPosition.current, y: refPositionY.current})
 
-    },delayRef.current);
+    }, delayRef.current);
 
     const [behavior, setBehavior] = useState(0)
     useLayoutEffect(() => {
@@ -118,10 +155,10 @@ const Hero = () => {
     }, [position])
     useEffect(() => {
         if (sound && position.isHurting && !gameOver) {
-            hurtSound.currentTime=0
+            hurtSound.currentTime = 0
             hurtSound.play()
             hurtSound.volume = 0.4
-        }else {
+        } else {
             hurtSound.pause()
         }
 
@@ -138,7 +175,7 @@ const Hero = () => {
                        height={height}
                        x={x}
                        y={y}
-                       avatar={avatar}
+                       avatar={avatarRef.current}
                        className="containerHero"
                        spriteX={spriteX}
                        behavior={behavior} />
