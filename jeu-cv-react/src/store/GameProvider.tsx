@@ -1,4 +1,4 @@
-import React, {createContext, Reducer, useContext, useReducer} from "react";
+import React, {createContext, FunctionComponent, useContext, useEffect, useReducer, useState} from "react";
 import {IBulletProps} from "../components/Bullet";
 import {
     ADD_PLAYER,
@@ -10,13 +10,13 @@ import {
     IS_CROUCHING,
     MOVE_DINO,
     DELETE_DINO,
-    COLLISION
+    COLLISION, STOP_HURTING, LAND_PLAYER, STOP_SHOOTING, DYNAMITE, JUMP, KILL_DINO
 } from "../constants";
 import {initHeroes, Hero} from "../components/Hero";
 import {IPropsDino} from "../components/Dinosaurs";
 import {competencyArray} from "../constants/contants";
-import getItem from "../sound/OOT_Get_SmallItem1.mp3";
 import watchOutSound from "../sound/OOT_Navi_WatchOut1.mp3";
+import shotSound from "../sound/fusil.mp3";
 
 type ActionType = {
     type: string
@@ -53,18 +53,99 @@ const initialState = {
     idBullet: 0
 };
 const watchSound = new Audio(watchOutSound)
-const getItemSound = new Audio(getItem)
+const rifleSound = new Audio(shotSound)
 
-const repercutPositionHero = (state: State, newPosition: string) => {
-    const initObject = {};
+export const repercutPositionHero = (state: State, newPosition: string, stop?: boolean) => {
+    let initObject: any = {};
     if (state.player) {
+        if (newPosition === "isCrouching") {
+            initObject = {...state.player.position}
+            if (stop) {
+                if (!state.player.position.isRunning || !state.player.position.isRunningLeft) {
+                    initObject.isIdle = true;
+
+                }
+                initObject.isCrouching = false;
+            } else {
+                initObject.isRunning = false;
+                initObject.isRunningLeft = false;
+                initObject.isCrouching = true;
+                initObject.isIdle = false;
+                console.log('isCrouch', initObject, stop)
+            }
+            return {
+                ...state,
+                player:
+                    {...state.player, position: {...initObject}}
+            }
+        }
+        if (newPosition === "isShooting") {
+            initObject = {...state.player.position}
+            if (stop) {
+                initObject.isShooting = false;
+            } else {
+                initObject.isShooting = true;
+            }
+            return {
+                ...state,
+                player:
+                    {...state.player, position: {...initObject}}
+            }
+        }
+        if (newPosition === "isRunning") {
+            initObject = {...state.player.position}
+            if (stop) {
+                initObject.isRunning = false;
+                initObject.isIdle = true;
+            } else {
+                initObject.isRunning = true;
+                initObject.isIdle = false;
+            }
+            return {
+                ...state,
+                player:
+                    {...state.player, position: {...initObject}}
+            }
+        }
+        if (newPosition === "isRunningLeft") {
+            initObject = {...state.player.position}
+            if (stop) {
+                initObject.isIdle = true;
+                initObject.isRunningLeft = false;
+            } else {
+                initObject.isIdle = false;
+                initObject.isRunningLeft = true;
+            }
+            return {
+                ...state,
+                player:
+                    {...state.player, position: {...initObject}}
+            }
+        }
+        if(newPosition=== "isIdle"){
+            initObject = {...state.player.position}
+            initObject.isRunning = false;
+            initObject.isRunningLeft = false;
+            initObject.isJumping = false;
+            initObject.isCrouching = false;
+            initObject.isHurting = false;
+            initObject.isIdle = true;
+            return {
+                ...state,
+                player:
+                    {...state.player, position: {...initObject}}
+            }
+        }
         Object.keys(state.player.position)
-            .map((key) => (initObject as any)[key] = false);
+            .map((key) => {
+                return (initObject as any)[key] = false
+            });
         return {
             ...state,
             player:
                 {...state.player, position: {...initObject, [newPosition]: true,}}
         }
+
     }
     return state
 }
@@ -73,7 +154,7 @@ const findDino = (action: ActionType) => {
     return ({id}: IPropsDino) => action.payload.id === id
 }
 
-export const reducer = (state: State, action: ActionType) => {
+export const reducer = (state: State = initialState, action: ActionType) => {
     switch (action.type) {
         case SET_SOUND:
             return {...state, sound: !state.sound};
@@ -84,15 +165,15 @@ export const reducer = (state: State, action: ActionType) => {
             }
         case MOVE_RIGHT:
             state.direction = 'right';
-            return repercutPositionHero(state, 'isRunning');
+            return repercutPositionHero(state, "isRunning", action.stop)
         case MOVE_LEFT:
             state.direction = 'left';
-            return repercutPositionHero(state, 'isRunningLeft');
+            return repercutPositionHero(state, "isRunningLeft", action.stop)
         case IDLE:
-            return repercutPositionHero(state, 'isIdle');
+            return repercutPositionHero(state, "isIdle")
         case IS_CROUCHING:
-            return repercutPositionHero(state, 'isCrouching');
-        case 'DYNAMITE':
+            return repercutPositionHero(state, 'isCrouching', action.stop)
+        case DYNAMITE:
             state.idBullet++;
             state.bullets = [...state.bullets, ({type: 'dynamite', id: state.idBullet})];
             return {...state}
@@ -101,9 +182,16 @@ export const reducer = (state: State, action: ActionType) => {
             state.idBullet++;
             const newBullet = {type: 'bullet', id: state.idBullet};
             state.bullets = [...state.bullets, newBullet]
-            return repercutPositionHero(state, 'isWalkingShoot')
-        case 'STOP_SHOOTING':
-            return repercutPositionHero(state, 'isIdle');
+            if (state.sound) {
+                rifleSound.currentTime = 0;
+                rifleSound.volume = 0.2;
+                rifleSound.play();
+            } else {
+                rifleSound.pause();
+            }
+            return repercutPositionHero(state, 'isShooting')
+        case STOP_SHOOTING:
+            return repercutPositionHero(state, 'isShooting', true);
         case 'STOP_JUMPING':
             if (state.player) {
                 state.player.stopJump = false;
@@ -116,19 +204,19 @@ export const reducer = (state: State, action: ActionType) => {
         case 'ANIMATE_PLAYER':
             console.log(action.y)
             return {...state, player: {...state.player, x: action.x, y: action.y ? action.y : {}}}
-        case 'LAND_PLAYER':
+        case LAND_PLAYER:
             console.log('landing')
             if (state.player) {
                 state.player.stopJump = true;
             }
             return {...state}
-        case 'STOP_HURTING':
+        case STOP_HURTING:
             console.log('stop hurt')
             if (state.player && state.player.health > 0) {
                 return repercutPositionHero(state, 'isIdle')
             }
             return {...state}
-        case 'JUMP':
+        case JUMP:
             return repercutPositionHero(state, 'isJumping');
         case ADD_DINO:
             const newDino = {...action.newDino}
@@ -147,27 +235,26 @@ export const reducer = (state: State, action: ActionType) => {
             let actualDinoToDelete = state.dino.findIndex(findDino(action));
             state.dino.splice(actualDinoToDelete, 1);
             return {...state}
-        case 'KILL_DINO':
+        case KILL_DINO:
             let actualDinoToKill = state.dino.find(findDino(action));
             let actualDinoToKillIndex = state.dino.findIndex(findDino(action));
-            console.log(actualDinoToKill)
             if (actualDinoToKill) {
                 state.dino[actualDinoToKillIndex].alive = false;
                 if (state.player) {
                     state.player.score += 10
                     state.target += 1
-                    if (state.target > 0 && state.target % 2 === 0) {
-                        if(state.sound){
+                    if (state.target > 0 && state.target % 2 === 0 && competencyArray[state.competency.length]) {
+                        if (state.sound) {
                             watchSound.currentTime = 0
                             watchSound.volume = 0.7;
                             watchSound.play()
-                        }else {
+                        } else {
                             watchSound.pause()
                         }
                         const newCompetency = {
                             avatar: competencyArray[state.competency.length].img,
                             type: competencyArray[state.competency.length].type,
-                            website:competencyArray[state.competency.length].website,
+                            website: competencyArray[state.competency.length].website,
                             catched: false,
                             x: state.direction === 'right' ? actualDinoToKill.x : actualDinoToKill.x + actualDinoToKill.width,
                             y: actualDinoToKill.y + 50
@@ -218,7 +305,7 @@ export const reducer = (state: State, action: ActionType) => {
             return {...state}
         case 'RESET_GAME':
             console.log('reset')
-            state = {...initialState, player:initHeroes}
+            state = {...initialState, player: initHeroes}
             return {...state}
         default: {
             throw new Error(`Unhandled action type: ${action.type}`)
@@ -226,12 +313,16 @@ export const reducer = (state: State, action: ActionType) => {
     }
 }
 
-const GameProvider: React.FunctionComponent = ({children}) => {
+const GameProvider: FunctionComponent = ({children}) => {
+    const [state, setState] = useState({isLoaded: false});
     // @ts-ignore
-    const contextValue = useReducer<Reducer<State, ActionType>, State>(reducer, initialState,)
+    const contextValue = useReducer(reducer, initialState);
+    useEffect(() => {
+        setState({isLoaded: true});
+    }, []);
     return (
         <UserContext.Provider value={contextValue}>
-            {children}
+            {state.isLoaded && children}
         </UserContext.Provider>
     )
 }

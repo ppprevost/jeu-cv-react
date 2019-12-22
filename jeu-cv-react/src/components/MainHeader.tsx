@@ -15,7 +15,7 @@ const MainHeader = () => {
                     <div key={comp.type}>
                         {comp.catched ?
                             <a target="_blank" href={comp.website}><img key={comp.type} style={{width: '50px', height: '50px'}} src={comp.avatar} alt={comp.type} /></a>
-                            : <div></div>
+                            : <div>Take the competency</div>
                         }
                     </div>
                 )

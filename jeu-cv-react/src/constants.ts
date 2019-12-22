@@ -8,3 +8,12 @@ export const IS_CROUCHING = 'IS_CROUCHING';
 export const MOVE_DINO = 'MOVE_DINO';
 export const DELETE_DINO = 'DELETE_DINO';
 export const COLLISION = 'COLLISION';
+
+export const ANIMATE_PLAYER = "ANIMATE_PLAYER";
+export const LAND_PLAYER = "LAND_PLAYER";
+export const STOP_HURTING = "STOP_HURTING";
+export const JUMP = "JUMP";
+export const KILL_DINO = "KILL_DINO";
+export const STOP_SHOOTING = "STOP_SHOOTING";
+export const STOP_JUMPING = "STOP_JUMPING";
+export const DYNAMITE = "DYNAMITE";

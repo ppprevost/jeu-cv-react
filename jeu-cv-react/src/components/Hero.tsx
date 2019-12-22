@@ -1,4 +1,4 @@
-import React, {useEffect, useLayoutEffect, useRef, useState} from 'react';
+import React, {SetStateAction, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {useGameData} from "../store/GameProvider";
 import avatar from '../img/hunter.png';
 import avatarLeft from "../img/hunter_left.png"
@@ -23,6 +23,31 @@ export interface Hero {
     height: number,
     x: number,
     y: number
+}
+
+const getCorrectSprite = (position:typeof initHeroes.position, setBehavior:SetStateAction<any>)=>{
+    if (position.isShooting) {
+        if (position.isRunning || position.isRunningLeft) {
+            return setBehavior(spriteValue.isRunningShooting)
+        }
+        if (position.isIdle) {
+            return setBehavior(spriteValue.isWalkingShoot)
+        }
+    }
+    if (position.isCrouching) {
+        if (position.isShooting) {
+            return setBehavior(spriteValue.isChrouchShooting)
+        }
+
+    }
+    for (let [key, value] of Object.entries(position)) {
+        if (value) {
+            const va = (spriteValue as any)[key]
+            return setBehavior(va)
+
+        }
+    }
+    return position
 }
 
 const hurtSound = new Audio(heroHurtSound)
@@ -52,11 +77,10 @@ export const initHeroes: Hero = {
     x: 0,
     y: 454,
 }
-initHeroes.x = windowSize / 2 - initHeroes.width / 2
+initHeroes.x = windowSize / 2 - initHeroes.width / 2 // initial position of the player
 
 const spriteX = [-10, -126, -242, -358, -474, -590, -706, -822, -938, -1054]; // coordonnées X des sprites pour 10 frames
 // 0 -> walk -100 -> Jump -200 -> Crouch -300 -> Walk Shoot  -400 -> Run -500 -> Die  -600 -> runShoot -700 -> crouchShoot -800 -> crouchDynamite -900->jumpShoot -1000 ->  Dynamite
-const spriteY = [0, -100, -200, -300, -400, -500, -600, -700, -800, -900, -1000]; //bullet
 
 const spriteValue = {
     isIdle: 0,
@@ -79,7 +103,8 @@ const Hero = () => {
     useKeyPress();
     const refPosition = useRef(x)
     const refPositionY = useRef(y)
-    const avatarRef = useRef(avatar)
+    const avatarRef = useRef(avatar);
+    const [behavior, setBehavior] = useState(0)
     const delayRef = useRef<number | null>(null);
     useEffect(() => {
         if (!position.isIdle) {
@@ -99,7 +124,7 @@ const Hero = () => {
         if (gameOver) {
             delayRef.current = null;
         }
-        const heroSize = direction === 'left' ? refPosition.current : refPosition.current + width
+        const heroSize = direction === 'left' ? refPosition.current : refPosition.current + (width /2)
         competency.forEach((comp: Competency) => {
             if (!comp.catched && heroSize >= comp.x
                 && heroSize <= comp.x + 50
@@ -125,7 +150,6 @@ const Hero = () => {
             } else {
                 refPositionY.current -= 30
             }
-            console.log(refPositionY.current)
             if (refPositionY.current >= initHeroes.y) {
                 refPositionY.current = initHeroes.y
                 dispatch({type: 'STOP_JUMPING'})
@@ -138,21 +162,12 @@ const Hero = () => {
                 refPosition.current -= 10
             }
         }
-
         dispatch({type: 'ANIMATE_PLAYER', x: refPosition.current, y: refPositionY.current})
-
     }, delayRef.current);
 
-    const [behavior, setBehavior] = useState(0)
     useLayoutEffect(() => {
-        for (let [key, value] of Object.entries(position)) {
-            if (value) {
-                const va = (spriteValue as any)[key]
-                setBehavior(va)
-                return;
-            }
-        }
-    }, [position])
+       getCorrectSprite(position, setBehavior)
+    }, [position]);
     useEffect(() => {
         if (sound && position.isHurting && !gameOver) {
             hurtSound.currentTime = 0
@@ -164,11 +179,12 @@ const Hero = () => {
 
     }, [sound, position])
     useEffect(() => {
+        console.log(position.isShooting)
         setTimeout(() => {
-            if (position.isWalkingShoot)
+            if (position.isShooting)
                 dispatch({type: 'STOP_SHOOTING'})
         }, 700)
-    }, [position.isWalkingShoot])
+    }, [position.isShooting])
     return (
         <>
             <Character width={width}

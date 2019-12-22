@@ -35,12 +35,17 @@ export const useChrono = () => {
 }
 
 export const useSpriteException = () => {
-    const [{player: {position}}] = useGameData()
-    const [value, setValue] = useState(10)
+    const [{player: {position}}] = useGameData();
+    const [value, setValue] = useState(10);
     useEffect(() => {
         if (position.isRunning || position.isRunningLeft) {
             setValue(7)
-        } else setValue(9)
+        }
+        else if(position.isCrouching && position.isShooting){
+    console.log(position.isCrouching, position.isShooting)
+            setValue(4)
+        }
+        else setValue(9)
     }, [position])
     return value
 }
@@ -101,7 +106,7 @@ export function useKeyPress() {
                 }
                 break;
             case SPACE :
-                if (!position.isWalkingShoot) {
+                if (!position.isShooting && !position.isHurting) {
                     dispatch({type: 'SHOOT'})
                 }
 
@@ -116,17 +121,17 @@ export function useKeyPress() {
                 }
             case RIGHT:
                 if (position.isRunning) {
-                    dispatch({type: 'IDLE'})
+                    dispatch({type: 'MOVE_RIGHT', stop:true})
                 }
                 break;
             case LEFT:
                 if (position.isRunningLeft) {
-                    dispatch({type: 'IDLE'})
+                    dispatch({type: MOVE_LEFT,  stop:true})
                 }
                 break;
             case BOTTOM:
                 if (position.isCrouching) {
-                    dispatch({type: 'IDLE'})
+                    dispatch({type: 'IS_CROUCHING',  stop:true})
                 }
                 break;
         }

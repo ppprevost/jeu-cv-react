@@ -1,12 +1,19 @@
 import React, {useMemo} from 'react';
 import './App.css';
-import UserProvider, {useGameData} from "./store/GameProvider"
+import GameProvider, {useGameData} from "./store/GameProvider"
 import Game from './page/Game';
 import MainHeader from "./components/MainHeader";
+
+import favorite from "./reducers/player_reducer";
 
 const MainHeaderMemoized = () => {
     return useMemo(() => <MainHeader />, [])
 }
+
+const App = () => (
+    <GameProvider><Play /></GameProvider>
+
+)
 
 const Play = () => {
     const [{player}] = useGameData()
@@ -17,10 +24,5 @@ const Play = () => {
         </div>
     );
 }
-
-const App = () => (
-    <UserProvider><Play /></UserProvider>
-
-)
 
 export default App;

@@ -5,6 +5,7 @@ import raptorVert from '../img/Dino/raptor-vert.png';
 import pachy from '../img/Dino/pachy.png';
 import ptero from '../img/Dino/ptero.png';
 import pteroLeft from '../img/Dino/ptero_left.png';
+import vine from '../img/Dino/vine.png';
 import diplo from '../img/Dino/diplo.png';
 import diploLeft from '../img/Dino/diplo_left.png';
 import spike from '../img/Dino/spike.png';
@@ -14,20 +15,21 @@ import pteroNoise from '../sound/16456.mp3';
 import diploNoise from '../sound/16467.mp3';
 import {useGameData} from "../store/GameProvider";
 import {MOVE_DINO} from "../constants";
+import {initHeroes} from "./Hero";
 
 interface EnemyInit {
-    x?:number,
-    y:number,
-    avatar:string| string[]
-    spriteX: number[]
+    x?: number,
+    y: number,
+    avatar: string | string[]
+    spriteX?: number[]
     spriteXDead?: number[]
-    width:number
-    height:number
-    widthDead?:number
-    idSound?:string
-    className:string
-    spriteY? : number[]
-    health?:number
+    width: number
+    height: number
+    widthDead?: number
+    idSound?: string
+    className: string
+    spriteY?: number[]
+    health?: number
 }
 
 const takeSoundChoice = (idSound: string, sound: boolean) => {
@@ -54,12 +56,20 @@ const takeSoundChoice = (idSound: string, sound: boolean) => {
 
 
 export const peaksInit = {
-    y: 484,
+    y: 504,
     avatar: [spike],
     className: "spike",
     width: 70,
-    height: 70,
+    height: 50,
 
+}
+
+export const vinesInit = {
+    y: 0,
+    avatar: [vine],
+    className: "vine",
+    width: 41,
+    height: 477,
 }
 
 export const raptorInit = (): EnemyInit => {
@@ -93,7 +103,7 @@ const pteroInit: EnemyInit = {
 }
 
 const diploInit: EnemyInit = {
-    y: 425,
+    y: 415,
     spriteXDead: [0, -228, -456, -684, -912, -1140, -1368, -1596, -1824, -2052],
     health: 100,
     avatar: [diplo, diploLeft],
@@ -102,7 +112,7 @@ const diploInit: EnemyInit = {
     spriteY: [-15, -150, -300, -450],
     width: 185,
     widthDead: 228,
-    height: 130,
+    height: 140,
     idSound: "diplo"
 }
 
@@ -124,7 +134,19 @@ export interface IPropsDino {
     alive: boolean,
 }
 
-const Dinosaurs = ({id, x = windowSize, y, width, widthDead = 0, height, avatar, spriteX = [], spriteY = [], spriteXDead = [], className, idSound='', speed, alive}: IPropsDino) => {
+
+const conditionToConflict =(className:string, positionHero:number, refPosition:any, width:number, player:typeof initHeroes, y:number , height:number)=>{
+    if(className ==='vine' && !player.position.isCrouching){
+        return  positionHero >= refPosition.current
+        && positionHero <= refPosition.current + width
+    }
+    return positionHero >= refPosition.current
+        && positionHero <= refPosition.current + width
+        && player.y + player.height >= y
+        && player.y + player.height <= y + height
+}
+
+const Dinosaurs = ({id, x = windowSize, y, width, widthDead = 0, height, avatar, spriteX = [], spriteY = [], spriteXDead = [], className, idSound = '', speed, alive}: IPropsDino) => {
     const [{sound, player}, dispatch] = useGameData();
     const [frame, setFrame] = useState(0);
     const requestRef = useRef(spriteX[0]);
@@ -138,11 +160,7 @@ const Dinosaurs = ({id, x = windowSize, y, width, widthDead = 0, height, avatar,
 
     useInterval(() => {
         const positionHero = positionInitial.current === -width ? player.x : player.x + player.width
-        if (alive
-            && positionHero >= refPosition.current
-            && positionHero <= refPosition.current + width
-            && player.y + player.height >= y
-            && player.y + player.height <= y + height) {
+        if (alive && conditionToConflict(className, positionHero, refPosition, width, player, y, height)) {
             dispatch({type: 'COLLISION'})
         }
         if (positionInitial.current === -width) {
@@ -204,11 +222,11 @@ const Dinosaurs = ({id, x = windowSize, y, width, widthDead = 0, height, avatar,
 }
 
 export const createDinosaur = (): EnemyInit => {
-    const tableDinosaur = [pteroInit, raptorInit(), diploInit, peaksInit]
-    const random = Math.round(Math.random() * 3)
+    const tableDinosaur = [pteroInit, raptorInit(), diploInit, peaksInit, vinesInit]
+    const random = Math.round(Math.random() * (tableDinosaur.length-1))
     const chosenDinosaur = {...tableDinosaur[random]} as EnemyInit
     const randomPosition = [windowSize, -chosenDinosaur.width][Math.round(Math.random())];
-    chosenDinosaur.x = chosenDinosaur.avatar.length > 1 || chosenDinosaur.className === 'spike' ? randomPosition : windowSize;
+    chosenDinosaur.x = chosenDinosaur.avatar.length > 1 || chosenDinosaur.className === 'spike' || chosenDinosaur.className === 'vine' ? randomPosition : windowSize;
     chosenDinosaur.avatar = randomPosition === windowSize || chosenDinosaur.avatar.length < 2 ? chosenDinosaur.avatar[0] : chosenDinosaur.avatar[1]
     return chosenDinosaur
 }

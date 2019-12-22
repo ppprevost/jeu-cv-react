@@ -5,11 +5,9 @@ import Hero from "../components/Hero";
 import Dinosaurs, {IPropsDino, createDinosaur} from "../components/Dinosaurs";
 import Competency from "../components/Competency";
 import Background, {Field} from "../components/Background";
-import {useInterval, useSound} from "../helpers/helpers";
+import {useInterval} from "../helpers/helpers";
 import mainSound from '../sound/main.mp3';
-import watchOutSound from '../sound/OOT_Navi_WatchOut1.mp3';
 import {windowSize} from "../constants/contants";
-import {watch} from "fs";
 
 const MemoizedHero = () => {
     const [player] = useGameData()
@@ -17,7 +15,6 @@ const MemoizedHero = () => {
 }
 
 const ambianceSound = new Audio(mainSound)
-
 
 const useCalculateIntervalDino = () => {
     const ratio = 500 // 550 px Size / second appartion of dinosaur

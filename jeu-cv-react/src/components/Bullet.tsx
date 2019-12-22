@@ -10,7 +10,7 @@ export interface IBulletProps {
     type: string
 }
 
-const rifleSound = new Audio(shotSound)
+
 
 const BulletComponent = ({type, id}: IBulletProps) => {
     const [{player, dino, sound, direction}, dispatch] = useGameData();
@@ -19,20 +19,11 @@ const BulletComponent = ({type, id}: IBulletProps) => {
     const spriteY = type === 'bullet' ? 0 : -13;
     const width = 29;
     const height = 13;
-    const y = player.y;
+    const y = player.position.isCrouching ? player.y + 65 : player.y + 45;
     const [x, setX] = useState(0);
     const spriteItemX = [0, -29, -58, -87, -116, -145, -174, -203, -232, -261];
     const avatar = bulletImg;
     const refDelayBullet: any = useRef(40)
-    useEffect(() => {
-        if (sound && player.position.isWalkingShoot) {
-            rifleSound.currentTime = 0
-            rifleSound.volume = 0.2
-            rifleSound.play();
-        } else {
-            rifleSound.pause();
-        }
-    }, [sound])
     useEffect(() => {
         setX(player.x + 100)
     }, [])
@@ -52,18 +43,20 @@ const BulletComponent = ({type, id}: IBulletProps) => {
             refDelayBullet.current = null
             return;
         }
-        const directionBullet = player.direction === 'left'? x : x + width
+        const directionBullet = player.direction === 'left' ? x : x + width
         for (var i = 0; i < dino.length; i++) {
             if (dino[i].alive) {
                 if (
-                    x + width >= dino[i].x
-                    && x + width <= dino[i].x + dino[i].width
+                    x >= dino[i].x
+                    && x <= dino[i].x + dino[i].width
                     && y + height >= dino[i].y
                     && y + height <= dino[i].y + dino[i].height) {
                     dispatch({type: 'STOP_BULLET', id});
                     refDelayBullet.current = null
-                    if (type === 'bullet' && dino[i].className !== 'spike') {
-                        dispatch({type: 'KILL_DINO', payload: {id: dino[i].id}});
+                    if (type === 'bullet') {
+                        if (dino[i].className !== 'spike') {
+                            dispatch({type: 'KILL_DINO', payload: {id: dino[i].id}});
+                        }
                     } else {
                         dispatch({type: 'RAMPAGE'})
                     }
@@ -76,7 +69,7 @@ const BulletComponent = ({type, id}: IBulletProps) => {
         <div className="bullet"
              style={{
                  left: refDirection.current == 'right' ? x : x - player.width,
-                 top: y + 45,
+                 top: y,
                  position: 'absolute',
                  width,
                  height: 13,
