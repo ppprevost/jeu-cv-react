@@ -10,13 +10,18 @@ import {
     IS_CROUCHING,
     MOVE_DINO,
     DELETE_DINO,
-    COLLISION, STOP_HURTING, LAND_PLAYER, STOP_SHOOTING, DYNAMITE, JUMP, KILL_DINO
+    COLLISION, STOP_HURTING, LAND_PLAYER, STOP_SHOOTING, JUMP, KILL_DINO
 } from "../constants";
 import {initHeroes, Hero} from "../components/Hero";
 import {IPropsDino} from "../components/Dinosaurs";
 import {competencyArray} from "../constants/contants";
 import watchOutSound from "../sound/OOT_Navi_WatchOut1.mp3";
 import shotSound from "../sound/fusil.mp3";
+import explode from "../sound/explode.mp3";
+import winner from "../sound/winner.mp3";
+import doubleKill from "../sound/double_kill.mp3";
+import ultrakill from "../sound/ultrakill.mp3";
+import {Competency} from "../components/Competency";
 
 type ActionType = {
     type: string
@@ -29,9 +34,11 @@ type State = {
     dino: IPropsDino[] | []
     idDino: number
     direction: string
+    win: boolean
     idBullet: number
     target: number
     gameOver: boolean
+    pause: boolean,
     competency: any[]
     bullets: IBulletProps[] | []
     chrono: { minute: number, second: number }
@@ -44,7 +51,9 @@ const initialState = {
     sound: false,
     player: null,
     dino: [],
+    pause: false,
     bullets: [],
+    win: false,
     idDino: 0,
     target: 0,
     chrono: {minute: 0, second: 0},
@@ -54,10 +63,43 @@ const initialState = {
 };
 const watchSound = new Audio(watchOutSound)
 const rifleSound = new Audio(shotSound)
+const winnerSound = new Audio(winner)
+const explodeSound = new Audio(explode)
+const doubleKillSound = new Audio(doubleKill)
+const ultraKillSound = new Audio(ultrakill)
+
+const allItemCatched = (competency: Competency[]) => {
+    for (let competence of competency) {
+        if (!competence.catched) {
+            return false
+        }
+    }
+    return true
+}
+
+export const playSoundRampage = (dinoLength: number, sound: boolean) => {
+    if (sound) {
+        ultraKillSound.currentTime = 0
+        explodeSound.play()
+        explodeSound.volume = 0.8;
+        if (dinoLength >= 3) {
+            ultraKillSound.currentTime = 0
+            ultraKillSound.play()
+            ultraKillSound.volume = 0.4;
+        }
+        if (dinoLength < 3 && dinoLength > 1) {
+            doubleKillSound.play()
+            doubleKillSound.volume = 0.4
+            doubleKillSound.currentTime = 0
+        }
+
+    }
+
+}
 
 export const repercutPositionHero = (state: State, newPosition: string, stop?: boolean) => {
     let initObject: any = {};
-    if (state.player) {
+    if (state.player && !state.pause) {
         if (newPosition === "isCrouching") {
             initObject = {...state.player.position}
             if (stop) {
@@ -122,7 +164,21 @@ export const repercutPositionHero = (state: State, newPosition: string, stop?: b
                     {...state.player, position: {...initObject}}
             }
         }
-        if(newPosition=== "isIdle"){
+        if (newPosition === 'isDynamiting') {
+            initObject = {...state.player.position}
+            if (stop) {
+                initObject.isDynamiting = false;
+            } else {
+                initObject.isDynamiting = true;
+            }
+            return {
+                ...state,
+                player:
+                    {...state.player, position: {...initObject}}
+            }
+
+        }
+        if (newPosition === "isIdle") {
             initObject = {...state.player.position}
             initObject.isRunning = false;
             initObject.isRunningLeft = false;
@@ -158,6 +214,11 @@ export const reducer = (state: State = initialState, action: ActionType) => {
     switch (action.type) {
         case SET_SOUND:
             return {...state, sound: !state.sound};
+        case 'SET_PAUSE':
+            if(state.player){
+                // if pause you have to prevent shooting behavior
+            return {...state,player:{...state.player, position:{...state.player.position, isDynamiting:false, isShooting:false}}, sound: state.pause, pause: !state.pause}
+            }
         case ADD_PLAYER:
             return {
                 ...state,
@@ -173,23 +234,29 @@ export const reducer = (state: State = initialState, action: ActionType) => {
             return repercutPositionHero(state, "isIdle")
         case IS_CROUCHING:
             return repercutPositionHero(state, 'isCrouching', action.stop)
-        case DYNAMITE:
+        case 'IS_DYNAMITING':
             state.idBullet++;
+            if(state.player && state.player.dynamite > 0){
+                state.player.dynamite -= 1
             state.bullets = [...state.bullets, ({type: 'dynamite', id: state.idBullet})];
-            return {...state}
-            break;
-        case 'SHOOT':
-            state.idBullet++;
-            const newBullet = {type: 'bullet', id: state.idBullet};
-            state.bullets = [...state.bullets, newBullet]
-            if (state.sound) {
-                rifleSound.currentTime = 0;
-                rifleSound.volume = 0.2;
-                rifleSound.play();
-            } else {
-                rifleSound.pause();
+            return repercutPositionHero(state, 'isDynamiting');
+
             }
-            return repercutPositionHero(state, 'isShooting')
+            return {...state}
+        case 'SHOOT':
+            if (!state.win && !state.pause) {
+                state.idBullet++;
+                const newBullet = {type: 'bullet', id: state.idBullet};
+                state.bullets = [...state.bullets, newBullet]
+                if (state.sound) {
+                    rifleSound.currentTime = 0;
+                    rifleSound.volume = 0.2;
+                    rifleSound.play();
+                } else {
+                    rifleSound.pause();
+                }
+                return repercutPositionHero(state, 'isShooting')
+            }
         case STOP_SHOOTING:
             return repercutPositionHero(state, 'isShooting', true);
         case 'STOP_JUMPING':
@@ -235,14 +302,25 @@ export const reducer = (state: State = initialState, action: ActionType) => {
             let actualDinoToDelete = state.dino.findIndex(findDino(action));
             state.dino.splice(actualDinoToDelete, 1);
             return {...state}
+
+        case 'RAMPAGE':
+            // @ts-ignore
+            const existingDino = state.dino.filter(elem => elem.alive)
+            console.log(existingDino)
+            playSoundRampage(existingDino.length, state.sound)
+            // @ts-ignore
+            const newDinoArray = state.dino.map(dinosaur => {
+                return ({...dinosaur, alive: false})
+            })
+            return repercutPositionHero({...state, dino: newDinoArray}, 'isDynamiting');
         case KILL_DINO:
             let actualDinoToKill = state.dino.find(findDino(action));
             let actualDinoToKillIndex = state.dino.findIndex(findDino(action));
             if (actualDinoToKill) {
                 state.dino[actualDinoToKillIndex].alive = false;
                 if (state.player) {
-                    state.player.score += 10
-                    state.target += 1
+                    state.player.score += 10;
+                    state.target += 1;
                     if (state.target > 0 && state.target % 2 === 0 && competencyArray[state.competency.length]) {
                         if (state.sound) {
                             watchSound.currentTime = 0
@@ -287,9 +365,13 @@ export const reducer = (state: State = initialState, action: ActionType) => {
                 if (comp.type === action.payload.newComp) {
                     comp.catched = true;
                 }
-                if (state.player && competencyArray.length === state.competency.length) {
+
+                if (state.player && competencyArray.length === state.competency.length && allItemCatched(state.competency)) {
+                    if (state.sound) {
+                        winnerSound.play()
+                    }
                     state.gameOver = true;
-                    state.player.position.isHurting = true
+                    state.win = true;
                 }
                 return comp
             })

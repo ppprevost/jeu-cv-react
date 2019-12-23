@@ -1,19 +1,17 @@
 import React, {useEffect, useState, useRef} from "react";
 import bulletImg from "../img/item.png";
-import {useInterval} from "../helpers/helpers";
+import {useInterval} from "../helpers/hooks";
 import {useGameData} from "../store/GameProvider";
 import {windowSize} from "../constants/contants";
-import shotSound from '../sound/fusil.mp3';
+import BulletSprite from "./SpriteElement"
 
 export interface IBulletProps {
     id: number
     type: string
 }
 
-
-
 const BulletComponent = ({type, id}: IBulletProps) => {
-    const [{player, dino, sound, direction}, dispatch] = useGameData();
+    const [{player, dino, direction}, dispatch] = useGameData();
     const ref = useRef(player.x + 100);
     const refDirection = useRef(null)
     const spriteY = type === 'bullet' ? 0 : -13;
@@ -66,17 +64,17 @@ const BulletComponent = ({type, id}: IBulletProps) => {
     }, refDelayBullet.current)
 
     return (
-        <div className="bullet"
-             style={{
-                 left: refDirection.current == 'right' ? x : x - player.width,
-                 top: y,
-                 position: 'absolute',
-                 width,
-                 height: 13,
-                 overflow: 'hidden'
-             }}>
-            <img src={avatar} style={{left: spriteItemX[0] + 'px', top: spriteY + 'px', position: 'absolute'}} />
-        </div>)
+        <BulletSprite
+        className={"bullet"}
+        width={width}
+        height={13}
+        y={y}
+        x={refDirection.current == 'right' ? x : x - player.width}
+        src={avatar}
+        behavior={spriteY}
+        sprite={spriteItemX[0]}
+        />
+       )
 }
 
 export default BulletComponent

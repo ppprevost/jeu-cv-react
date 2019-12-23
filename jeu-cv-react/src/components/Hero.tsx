@@ -1,12 +1,12 @@
-import React, {SetStateAction, useEffect, useLayoutEffect, useRef, useState} from 'react';
+import React, {FunctionComponent, SetStateAction, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {useGameData} from "../store/GameProvider";
 import avatar from '../img/hunter.png';
 import avatarLeft from "../img/hunter_left.png"
-import {useInterval, useKeyPress} from "../helpers/helpers";
+import {useInterval, useKeyPress} from "../helpers/hooks";
 import Character from './Characters';
 import heroHurtSound from '../sound/cri.mp3';
 import Bullet, {IBulletProps} from './Bullet';
-import {windowSize} from "../constants/contants";
+import {speedPlayer, windowSize} from "../constants/contants";
 import {Competency} from "./Competency";
 import getItem from '../sound/OOT_Get_SmallItem1.mp3'
 
@@ -40,11 +40,18 @@ const getCorrectSprite = (position:typeof initHeroes.position, setBehavior:SetSt
         }
 
     }
+    if (position.isDynamiting) {
+        if (position.isCrouching) {
+            return setBehavior(spriteValue.isCrouchDynamiting)
+        }
+        return setBehavior(spriteValue.isDynamiting)
+
+    }
+    console.log(position)
     for (let [key, value] of Object.entries(position)) {
         if (value) {
             const va = (spriteValue as any)[key]
             return setBehavior(va)
-
         }
     }
     return position
@@ -95,15 +102,15 @@ const spriteValue = {
     isChrouchShooting: -700,
     isCrouchDynamiting: -800,
     isJumpingShooting: -900,
-    isDynmating: -1000
+    isDynamiting: -1000
 }
 
-const Hero = () => {
-    const [{player: {width, height, x, y, position, stopJump}, gameOver, direction, sound, bullets, competency}, dispatch] = useGameData();
+const Hero:FunctionComponent<Hero> = ({width, height, x, y, position, stopJump}) => {
+    const [{gameOver, direction, sound, bullets, competency}, dispatch] = useGameData();
     useKeyPress();
     const refPosition = useRef(x)
     const refPositionY = useRef(y)
-    const avatarRef = useRef(avatar);
+    const avatarRef = useRef(direction === 'right'?avatar: avatarLeft);
     const [behavior, setBehavior] = useState(0)
     const delayRef = useRef<number | null>(null);
     useEffect(() => {
@@ -135,10 +142,10 @@ const Hero = () => {
         })
 
         if (position.isJumping) {
-            if (position.isRunning) {
+            if (position.isRunning ) {
                 refPosition.current += 2
             }
-            if (position.isRunningLeft) {
+            if (position.isRunningLeft ) {
                 refPosition.current -= 2
             }
             if (refPositionY.current <= 300) {
@@ -155,11 +162,11 @@ const Hero = () => {
                 dispatch({type: 'STOP_JUMPING'})
             }
         } else {
-            if (position.isRunning) {
-                refPosition.current += 10
+            if (position.isRunning && (refPosition.current + width/2< windowSize)) {
+                refPosition.current += speedPlayer
             }
-            if (position.isRunningLeft) {
-                refPosition.current -= 10
+            if (position.isRunningLeft && (refPosition.current+40 > 0)) {
+                refPosition.current -= speedPlayer
             }
         }
         dispatch({type: 'ANIMATE_PLAYER', x: refPosition.current, y: refPositionY.current})

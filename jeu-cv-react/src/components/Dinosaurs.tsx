@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {windowSize} from "../constants/contants";
+import {dinoSpeed, windowSize} from "../constants/contants";
 import raptorBleu from '../img/Dino/raptor-bleu.png';
 import raptorVert from '../img/Dino/raptor-vert.png';
 import pachy from '../img/Dino/pachy.png';
@@ -9,13 +9,15 @@ import vine from '../img/Dino/vine.png';
 import diplo from '../img/Dino/diplo.png';
 import diploLeft from '../img/Dino/diplo_left.png';
 import spike from '../img/Dino/spike.png';
-import {useInterval} from "../helpers/helpers";
-import raptorNoise from '../sound/141.mp3';
-import pteroNoise from '../sound/16456.mp3';
-import diploNoise from '../sound/16467.mp3';
+import {useInterval} from "../helpers/hooks";
+import raptorNoise from '../sound/raptor.mp3';
+import pteroNoise from '../sound/pterodactyl.mp3';
+import diploNoise from '../sound/diplo.mp3';
 import {useGameData} from "../store/GameProvider";
 import {MOVE_DINO} from "../constants";
 import {initHeroes} from "./Hero";
+import Explosion from "./Explosion";
+import DinosaurSprite from "./SpriteElement"
 
 interface EnemyInit {
     x?: number,
@@ -91,7 +93,7 @@ export const raptorInit = (): EnemyInit => {
     })
 }
 
-const pteroInit: EnemyInit = {
+export const pteroInit: EnemyInit = {
     y: 282,
     avatar: [ptero, pteroLeft],
     className: 'ptero',
@@ -102,7 +104,7 @@ const pteroInit: EnemyInit = {
     idSound: "ptero"
 }
 
-const diploInit: EnemyInit = {
+export const diploInit: EnemyInit = {
     y: 415,
     spriteXDead: [0, -228, -456, -684, -912, -1140, -1368, -1596, -1824, -2052],
     health: 100,
@@ -169,7 +171,7 @@ const Dinosaurs = ({id, x = windowSize, y, width, widthDead = 0, height, avatar,
                 delayDinosaur.current = null;
                 return;
             } else {
-                refPosition.current += 8 + speed;
+                refPosition.current += dinoSpeed + speed;
                 dispatch({type: MOVE_DINO, payload: {x: refPosition.current, id}})
             }
         } else {
@@ -178,20 +180,11 @@ const Dinosaurs = ({id, x = windowSize, y, width, widthDead = 0, height, avatar,
                 delayDinosaur.current = null;
                 return;
             } else {
-                refPosition.current -= 8 + speed;
+                refPosition.current -= dinoSpeed + speed;
                 dispatch({type: MOVE_DINO, payload: {x: refPosition.current, id}})
             }
         }
     }, delayDinosaur.current)
-
-    const style = {
-        zIndex: 40,
-        left: refPosition.current + "px",
-        top: y + "px",
-        width: alive ? width : widthDead + "px",
-        height: height + "px",
-        overflow: 'hidden'
-    }
     useEffect(() => {
         takeSoundChoice(idSound, sound)
     }, [sound])
@@ -214,10 +207,26 @@ const Dinosaurs = ({id, x = windowSize, y, width, widthDead = 0, height, avatar,
         }
 
     }, 170)
+    useEffect(()=>{
+        setFrame(0)
+    }, [alive])
     return (
-        <div className={`dinosaurs ${className}`} style={style}>
-            <img src={avatar} style={{left: requestRef.current + 'px', top: typeSprite + 'px', position: 'absolute'}} />
-        </div>
+       <>
+           <DinosaurSprite
+               zIndex={40}
+               className={`dinosaurs ${className}`}
+               src={avatar}
+               x={x}
+               behavior={typeSprite}
+               width={alive ? width : widthDead}
+               height={height}
+               y={y}
+               sprite={requestRef.current}
+
+           />
+
+          { !alive && player.position.isDynamiting && <Explosion x={refPosition.current} y={y}/>}
+           </>
     )
 }
 

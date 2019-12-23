@@ -29,27 +29,6 @@
     max-width: 1400px;
 }
 
-.containerHero {
-    z-index: 40;
-position: absolute;
-overflow: hidden;
-
-}
-
-.dinosaurs{
-    position:absolute;
-}
-
-
-.containerHero img{
-    position:absolute;
-}
-
-#contenu {
-    /*!*-webkit-transform: matrix(-1, 0, 0, 1, 0, 0);*!*/
-    /*transform: scaleX(-1)*/
-}
-
 .how-to-play {
     font-family: Jurassik, sans-serif;
     width: 300px;
@@ -86,20 +65,6 @@ overflow: hidden;
     margin-top: -150px;
     left: 50%;
     margin-left: -150px;
-}
-
-/*Affichage des competences*/
-
-#skill img {
-    display: none;
-    padding-top: 30px;
-}
-
-#skill h2 {
-    padding-top: 0;
-    font-family: Jurassik, sans-serif;
-    font-size: 60px;
-    margin-bottom: -35px;
 }
 
 .misc {
@@ -167,11 +132,3 @@ overflow: hidden;
 
 }
 
-@keyframes App-logo-spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}

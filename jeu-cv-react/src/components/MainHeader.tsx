@@ -1,6 +1,6 @@
-import React, {FunctionComponent, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useGameData} from "../store/GameProvider";
-import {useChrono} from "../helpers/helpers";
+import {useChrono} from "../helpers/hooks";
 import {Competency} from "./Competency";
 
 const MainHeader = () => {
@@ -15,7 +15,7 @@ const MainHeader = () => {
                     <div key={comp.type}>
                         {comp.catched ?
                             <a target="_blank" href={comp.website}><img key={comp.type} style={{width: '50px', height: '50px'}} src={comp.avatar} alt={comp.type} /></a>
-                            : <div>Take the competency</div>
+                            : <div>Take {comp.type} !</div>
                         }
                     </div>
                 )

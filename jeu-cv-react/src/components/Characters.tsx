@@ -1,6 +1,7 @@
 import React, {useRef, useState, useEffect} from "react";
-import { useInterval, useSpriteException} from "../helpers/helpers";
+import {useInterval, useSpriteException} from "../helpers/hooks";
 import {useGameData} from "../store/GameProvider";
+import HeroSprite from "./SpriteElement"
 
 interface PropsCharacter {
     width: number,
@@ -14,19 +15,18 @@ interface PropsCharacter {
 }
 
 const Character = ({width, height, x, y, className, spriteX, behavior, avatar}: PropsCharacter) => {
-    const [{player: {position}, gameOver, direction}, dispatch] = useGameData();
+    const [{player: {position}, gameOver}, dispatch] = useGameData();
     const requestRef = useRef(spriteX[0]);
+    const delayRef = useRef<number | null>(100);
     const [sprite, setSprite] = useState(spriteX[0]);
     const [frame, setFrame] = useState(0);
     const value = useSpriteException()
-    const id = useInterval(() => {
+    useInterval(() => {
         setFrame(frame + 1);
         if (frame >= value) {
             if (position.isHurting) {
                 if (gameOver) {
-                    console.log('id player', id)
-                    clearInterval(id)
-                    return ;
+                    delayRef.current = null
                 }
                 dispatch({type: 'STOP_HURTING'})
             }
@@ -34,15 +34,34 @@ const Character = ({width, height, x, y, className, spriteX, behavior, avatar}: 
         }
         requestRef.current = spriteX[frame]
         setSprite(requestRef.current);
-    }, 100)
-    const style = {
-        width, height, left: x, top: y
-    }
-    useEffect(()=>{
+    }, delayRef.current)
+
+    useEffect(() => {
         setFrame(0)
-    }, [position])
-    return (<div className={className} style={style}>
-        <img alt="player" src={avatar} style={{left: sprite + 'px', top: behavior + 'px'}} /></div>)
+    }, [position, behavior])
+    useEffect(() => {
+        delayRef.current = null
+        setFrame(0)
+        if (position.isDynamiting && position.isCrouching) {
+            setFrame(0)
+            delayRef.current = 400
+        } else if (position.isDynamiting) {
+            setFrame(0)
+            delayRef.current = 200
+        } else {
+            delayRef.current = 100
+        }
+    }, [position.isDynamiting])
+    return <HeroSprite
+        className={className}
+        src={avatar}
+        behavior={behavior}
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        sprite={sprite}
+    />
 }
 
 export default Character

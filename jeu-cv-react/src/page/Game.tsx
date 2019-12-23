@@ -5,25 +5,21 @@ import Hero from "../components/Hero";
 import Dinosaurs, {IPropsDino, createDinosaur} from "../components/Dinosaurs";
 import Competency from "../components/Competency";
 import Background, {Field} from "../components/Background";
-import {useInterval} from "../helpers/helpers";
+import {useInterval} from "../helpers/hooks";
 import mainSound from '../sound/main.mp3';
 import {windowSize} from "../constants/contants";
-
-const MemoizedHero = () => {
-    const [player] = useGameData()
-    return useMemo(() => <Hero />, [player])
-}
+import {ModalPause, ModalWin} from "../components/Modal";
 
 const ambianceSound = new Audio(mainSound)
 
-const useCalculateIntervalDino = () => {
+export const useCalculateIntervalDino = () => {
     const ratio = 500 // 550 px Size / second appartion of dinosaur
     return windowSize * 1000 / ratio;
 }
 
 const Game = () => {
     const xBackground = window.innerWidth / 4;
-    const [{player, dino, gameOver, sound, competency}, dispatch] = useGameData();
+    const [{player, dino, gameOver, sound, competency, win, pause}, dispatch] = useGameData();
     const FixedBackground = (compute: number) => useMemo(() => <Background left={compute} />, [xBackground])
     const newRef = useRef(createDinosaur());
     const visibilityGame = useRef(true); // bug fixing
@@ -39,7 +35,7 @@ const Game = () => {
     useEffect(() => {
         dispatch({type: ADD_PLAYER})
     }, [])
-    useEffect(()=>{
+    useEffect(() => {
 
     }, [sound, competency.length])
     useEffect(() => {
@@ -53,14 +49,16 @@ const Game = () => {
     }, [sound, gameOver])
     return (
         <>
+            {useMemo(() => pause && <ModalPause />, [pause])}
+            {useMemo(() => win && <ModalWin />, [win])}
             {useMemo(() => competency
-                .filter((elem:any)=> !elem.catched)
-                .map((elem:any)=><Competency key={elem.type} {...elem} />), [competency])
+                .filter((elem: any) => !elem.catched)
+                .map((elem: any) => <Competency key={elem.type} {...elem} />), [competency])
             }
             {FixedBackground(xBackground)}
             {FixedBackground(xBackground * 2)}
             {FixedBackground(xBackground * 3)}
-            {player && MemoizedHero()}
+            {useMemo(() => player && <Hero {...player} />, [player])}
             {dino.map((dinosaur: IPropsDino) => <Dinosaurs {...dinosaur}
                                                            key={dinosaur.id} />)}
             <Field />
