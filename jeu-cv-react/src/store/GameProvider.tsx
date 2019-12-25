@@ -1,5 +1,4 @@
 import React, {createContext, FunctionComponent, useContext, useEffect, useReducer, useState} from "react";
-import {IBulletProps} from "../components/Bullet";
 import {
     ADD_PLAYER,
     SET_SOUND,
@@ -12,9 +11,7 @@ import {
     DELETE_DINO,
     COLLISION, STOP_HURTING, LAND_PLAYER, STOP_SHOOTING, JUMP, KILL_DINO
 } from "../constants";
-import {initHeroes, Hero} from "../components/Hero";
-import {IPropsDino} from "../components/Dinosaurs";
-import {competencyArray} from "../constants/contants";
+import {competencyArray, heightCompetency} from "../constants/contants";
 import watchOutSound from "../sound/OOT_Navi_WatchOut1.mp3";
 import shotSound from "../sound/fusil.mp3";
 import explode from "../sound/explode.mp3";
@@ -22,6 +19,11 @@ import winner from "../sound/winner.mp3";
 import doubleKill from "../sound/double_kill.mp3";
 import ultrakill from "../sound/ultrakill.mp3";
 import {Competency} from "../components/Competency";
+import {IHero, initHeroes} from "../data/player";
+import {IPropsDino} from "../components/Dinosaurs";
+import {IBulletProps} from "../components/Bullet";
+import {bulletInit, dynamiteInit} from "../data/bullet";
+import {repercutPositionHero} from "../helpers/main_helpers";
 
 type ActionType = {
     type: string
@@ -29,9 +31,10 @@ type ActionType = {
 }
 
 type State = {
+    gameType:string | null
     sound: boolean,
-    player: Hero | null
-    dino: IPropsDino[] | []
+    player: IHero
+    dino: IPropsDino[]
     idDino: number
     direction: string
     win: boolean
@@ -40,13 +43,14 @@ type State = {
     gameOver: boolean
     pause: boolean,
     competency: any[]
-    bullets: IBulletProps[] | []
+    bullets: IBulletProps[]
     chrono: { minute: number, second: number }
 }
 
 const UserContext = createContext<any>([]);
 
 const initialState = {
+    gameType:"game",
     direction: 'right',
     sound: false,
     player: null,
@@ -97,127 +101,32 @@ export const playSoundRampage = (dinoLength: number, sound: boolean) => {
 
 }
 
-export const repercutPositionHero = (state: State, newPosition: string, stop?: boolean) => {
-    let initObject: any = {};
-    if (state.player && !state.pause) {
-        if (newPosition === "isCrouching") {
-            initObject = {...state.player.position}
-            if (stop) {
-                if (!state.player.position.isRunning || !state.player.position.isRunningLeft) {
-                    initObject.isIdle = true;
-
-                }
-                initObject.isCrouching = false;
-            } else {
-                initObject.isRunning = false;
-                initObject.isRunningLeft = false;
-                initObject.isCrouching = true;
-                initObject.isIdle = false;
-                console.log('isCrouch', initObject, stop)
-            }
-            return {
-                ...state,
-                player:
-                    {...state.player, position: {...initObject}}
-            }
-        }
-        if (newPosition === "isShooting") {
-            initObject = {...state.player.position}
-            if (stop) {
-                initObject.isShooting = false;
-            } else {
-                initObject.isShooting = true;
-            }
-            return {
-                ...state,
-                player:
-                    {...state.player, position: {...initObject}}
-            }
-        }
-        if (newPosition === "isRunning") {
-            initObject = {...state.player.position}
-            if (stop) {
-                initObject.isRunning = false;
-                initObject.isIdle = true;
-            } else {
-                initObject.isRunning = true;
-                initObject.isIdle = false;
-            }
-            return {
-                ...state,
-                player:
-                    {...state.player, position: {...initObject}}
-            }
-        }
-        if (newPosition === "isRunningLeft") {
-            initObject = {...state.player.position}
-            if (stop) {
-                initObject.isIdle = true;
-                initObject.isRunningLeft = false;
-            } else {
-                initObject.isIdle = false;
-                initObject.isRunningLeft = true;
-            }
-            return {
-                ...state,
-                player:
-                    {...state.player, position: {...initObject}}
-            }
-        }
-        if (newPosition === 'isDynamiting') {
-            initObject = {...state.player.position}
-            if (stop) {
-                initObject.isDynamiting = false;
-            } else {
-                initObject.isDynamiting = true;
-            }
-            return {
-                ...state,
-                player:
-                    {...state.player, position: {...initObject}}
-            }
-
-        }
-        if (newPosition === "isIdle") {
-            initObject = {...state.player.position}
-            initObject.isRunning = false;
-            initObject.isRunningLeft = false;
-            initObject.isJumping = false;
-            initObject.isCrouching = false;
-            initObject.isHurting = false;
-            initObject.isIdle = true;
-            return {
-                ...state,
-                player:
-                    {...state.player, position: {...initObject}}
-            }
-        }
-        Object.keys(state.player.position)
-            .map((key) => {
-                return (initObject as any)[key] = false
-            });
-        return {
-            ...state,
-            player:
-                {...state.player, position: {...initObject, [newPosition]: true,}}
-        }
-
-    }
-    return state
-}
-
 const findDino = (action: ActionType) => {
     return ({id}: IPropsDino) => action.payload.id === id
 }
 
-export const reducer = (state: State = initialState, action: ActionType) => {
+export const reducer = (state: State, action: ActionType) => {
     switch (action.type) {
+        case 'START_GAME':
+            initHeroes.email= action.payload.email;
+            initHeroes.name=action.payload.name;
+            state.gameType="game"
+            return {...state}
+
         case SET_SOUND:
             return {...state, sound: !state.sound};
         case 'SET_PAUSE':
-            if(state.player){
+            if (state.player) {
                 // if pause you have to prevent shooting behavior
-            return {...state,player:{...state.player, position:{...state.player.position, isDynamiting:false, isShooting:false}}, sound: state.pause, pause: !state.pause}
+                return {
+                    ...state,
+                    player: {
+                        ...state.player,
+                        position: {...state.player.position, isDynamiting: false, isShooting: false}
+                    },
+                    sound: state.pause,
+                    pause: !state.pause
+                }
             }
         case ADD_PLAYER:
             return {
@@ -235,18 +144,18 @@ export const reducer = (state: State = initialState, action: ActionType) => {
         case IS_CROUCHING:
             return repercutPositionHero(state, 'isCrouching', action.stop)
         case 'IS_DYNAMITING':
-            state.idBullet++;
-            if(state.player && state.player.dynamite > 0){
+            if (state.player && state.player.dynamite > 0) {
+                state.idBullet++;
                 state.player.dynamite -= 1
-            state.bullets = [...state.bullets, ({type: 'dynamite', id: state.idBullet})];
-            return repercutPositionHero(state, 'isDynamiting');
-
+                console.log(dynamiteInit)
+                state.bullets = [...state.bullets, ({...dynamiteInit, id: state.idBullet})];
+                return repercutPositionHero(state, 'isDynamiting');
             }
             return {...state}
         case 'SHOOT':
             if (!state.win && !state.pause) {
                 state.idBullet++;
-                const newBullet = {type: 'bullet', id: state.idBullet};
+                const newBullet = {...bulletInit, id: state.idBullet};
                 state.bullets = [...state.bullets, newBullet]
                 if (state.sound) {
                     rifleSound.currentTime = 0;
@@ -263,16 +172,18 @@ export const reducer = (state: State = initialState, action: ActionType) => {
             if (state.player) {
                 state.player.stopJump = false;
             }
-            return repercutPositionHero(state, 'isIdle');
+            return repercutPositionHero(state, 'isJumping', true);
         case 'STOP_BULLET':
             state.bullets = state.bullets
-                .filter(({id}: IBulletProps) => action.id !== id)
+                .filter(({id}: IBulletProps) => action.payload.id !== id)
+            if (action.payload.type === 'dynamite') {
+                return repercutPositionHero(state, 'isDynamiting', true)
+            }
             return {...state}
         case 'ANIMATE_PLAYER':
             console.log(action.y)
             return {...state, player: {...state.player, x: action.x, y: action.y ? action.y : {}}}
         case LAND_PLAYER:
-            console.log('landing')
             if (state.player) {
                 state.player.stopJump = true;
             }
@@ -280,7 +191,7 @@ export const reducer = (state: State = initialState, action: ActionType) => {
         case STOP_HURTING:
             console.log('stop hurt')
             if (state.player && state.player.health > 0) {
-                return repercutPositionHero(state, 'isIdle')
+                return repercutPositionHero(state, 'isHurting', true)
             }
             return {...state}
         case JUMP:
@@ -304,15 +215,13 @@ export const reducer = (state: State = initialState, action: ActionType) => {
             return {...state}
 
         case 'RAMPAGE':
-            // @ts-ignore
             const existingDino = state.dino.filter(elem => elem.alive)
             console.log(existingDino)
             playSoundRampage(existingDino.length, state.sound)
-            // @ts-ignore
             const newDinoArray = state.dino.map(dinosaur => {
                 return ({...dinosaur, alive: false})
             })
-            return repercutPositionHero({...state, dino: newDinoArray}, 'isDynamiting');
+            return {...state, dino: newDinoArray}
         case KILL_DINO:
             let actualDinoToKill = state.dino.find(findDino(action));
             let actualDinoToKillIndex = state.dino.findIndex(findDino(action));
@@ -335,7 +244,7 @@ export const reducer = (state: State = initialState, action: ActionType) => {
                             website: competencyArray[state.competency.length].website,
                             catched: false,
                             x: state.direction === 'right' ? actualDinoToKill.x : actualDinoToKill.x + actualDinoToKill.width,
-                            y: actualDinoToKill.y + 50
+                            y: actualDinoToKill.y + heightCompetency
                         }
                         return {...state, competency: [...state.competency, newCompetency]}
                     }
@@ -343,7 +252,8 @@ export const reducer = (state: State = initialState, action: ActionType) => {
             }
             return {...state}
         case COLLISION:
-            if (state.player && !state.player.position.isHurting) {
+            if (!state.player.position.isHurting) {
+                console.log('Hurted man')
                 const hurtedPlayerState = repercutPositionHero(state, 'isHurting');
                 if (hurtedPlayerState.player && hurtedPlayerState.player.health > 0) {
                     hurtedPlayerState.player.health -= 10;
@@ -355,8 +265,6 @@ export const reducer = (state: State = initialState, action: ActionType) => {
             }
             return {...state}
         case 'ADD_COMPETENCY':
-            console.log(action)
-
             const newCompetency = [...state.competency, action.payload.newCompetency]
             return {...state, competency: newCompetency}
             break;
@@ -370,7 +278,6 @@ export const reducer = (state: State = initialState, action: ActionType) => {
                     if (state.sound) {
                         winnerSound.play()
                     }
-                    state.gameOver = true;
                     state.win = true;
                 }
                 return comp
@@ -409,7 +316,7 @@ const GameProvider: FunctionComponent = ({children}) => {
     )
 }
 
-export const useGameData = () => useContext(UserContext)
+export const useGameData = (): [State, any] => useContext(UserContext)
 
 export {UserContext, GameProvider};
 

@@ -2,58 +2,64 @@ import React, {useEffect, useState, useRef} from "react";
 import bulletImg from "../img/item.png";
 import {useInterval} from "../helpers/hooks";
 import {useGameData} from "../store/GameProvider";
-import {windowSize} from "../constants/contants";
+import {intervalBullet, speedBullet, windowSize} from "../constants/contants";
 import BulletSprite from "./SpriteElement"
 
 export interface IBulletProps {
     id: number
     type: string
+    width:number
+    height:number
+    spriteItemX:number[]
+    spriteItemY:number
+    className:string
 }
 
-const BulletComponent = ({type, id}: IBulletProps) => {
+const BulletComponent = ({type, id, width, height, spriteItemX, spriteItemY, className}: IBulletProps) => {
     const [{player, dino, direction}, dispatch] = useGameData();
     const ref = useRef(player.x + 100);
-    const refDirection = useRef(null)
-    const spriteY = type === 'bullet' ? 0 : -13;
-    const width = 29;
-    const height = 13;
-    const y = player.position.isCrouching ? player.y + 65 : player.y + 45;
-    const [x, setX] = useState(0);
-    const spriteItemX = [0, -29, -58, -87, -116, -145, -174, -203, -232, -261];
+    const refDirection = useRef<string | null>(null)
+    const y = useRef(player.position.isCrouching ? player.y + 65 : player.y + 45);
+    const [x, setX] = useState(player.x + 100);
+    const [sprite, setSprite] = useState(spriteItemX[0]);
+    const [frame, setFrame] = useState(0)
     const avatar = bulletImg;
-    const refDelayBullet: any = useRef(40)
-    useEffect(() => {
-        setX(player.x + 100)
-    }, [])
+    const refDelayBullet: any = useRef(intervalBullet)
+
     useEffect(() => {
         refDirection.current = direction
-
     }, [])
     useInterval(() => {
-        console.log(refDirection.current)
+        setFrame(frame+1)
+        setSprite(spriteItemX[frame])
+        if(frame === spriteItemX.length){
+            setFrame(0)
+        }
         if (refDirection.current === 'right') {
-            ref.current = x + 30
+            ref.current = x + speedBullet
         } else {
-            ref.current = x - 30
+            ref.current = x - speedBullet
         }
         setX(ref.current)
-        if (x >= windowSize || x < 0) {
+        if (x >= windowSize*1.5 || x < -windowSize/2) {
             refDelayBullet.current = null
-            return;
+            dispatch({type: 'STOP_BULLET', payload:{type,id}});
         }
-        const directionBullet = player.direction === 'left' ? x : x + width
+        const directionBullet = direction === 'left' ? x : x + width
         for (var i = 0; i < dino.length; i++) {
             if (dino[i].alive) {
                 if (
-                    x >= dino[i].x
-                    && x <= dino[i].x + dino[i].width
-                    && y + height >= dino[i].y
-                    && y + height <= dino[i].y + dino[i].height) {
-                    dispatch({type: 'STOP_BULLET', id});
-                    refDelayBullet.current = null
+                    directionBullet >= dino[i].x
+                    && directionBullet <= dino[i].x + dino[i].width
+                    && y.current + height >= dino[i].y
+                    && y.current + height <= dino[i].y + dino[i].height) {
                     if (type === 'bullet') {
                         if (dino[i].className !== 'spike') {
+                            dispatch({type: 'STOP_BULLET', payload:{type,id}});
+                            refDelayBullet.current = null
                             dispatch({type: 'KILL_DINO', payload: {id: dino[i].id}});
+                        }else {
+                            continue;
                         }
                     } else {
                         dispatch({type: 'RAMPAGE'})
@@ -65,14 +71,14 @@ const BulletComponent = ({type, id}: IBulletProps) => {
 
     return (
         <BulletSprite
-        className={"bullet"}
+        className={className}
         width={width}
-        height={13}
-        y={y}
+        height={height}
+        y={y.current}
         x={refDirection.current == 'right' ? x : x - player.width}
         src={avatar}
-        behavior={spriteY}
-        sprite={spriteItemX[0]}
+        behavior={spriteItemY}
+        sprite={sprite}
         />
        )
 }

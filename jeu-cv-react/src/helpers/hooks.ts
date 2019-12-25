@@ -1,7 +1,7 @@
 import {useEffect, useRef, useState,} from "react";
 import {useGameData} from "../store/GameProvider";
 import {MOVE_LEFT} from "../constants";
-
+import {RIGHT, LEFT, BOTTOM, DYNAMITE, UP, SPACE, PAUSE} from "../constants/contants";
 
 export function useFetch<T>(url: string, options = {}): { response: T | null, error: Error | null, isLoading: boolean } {
     const [response, setResponse] = useState(null);
@@ -12,17 +12,43 @@ export function useFetch<T>(url: string, options = {}): { response: T | null, er
             setIsLoading(true);
             try {
                 const fetched = await fetch(url, options)
+                if (!fetched.ok) {
+                    throw new Error(await fetched.text())
+                }
                 const responsed = await fetched.json()
                 setResponse(responsed)
                 setIsLoading(false)
             } catch (e) {
-                setError(e)
+                setIsLoading(false)
+                if (e.message) {
+                    return setError(e.message)
+                }
+                return setError(e)
             }
         }
         asyncFetch()
     }, [])
     console.log(response, error)
     return {response, error, isLoading}
+}
+
+export const useTimeOut = (callback: () => void, delay: number | null) => {
+    const refCancel = useRef(0)
+    const savedCallback = useRef< any>(null);
+    // Remember the latest callback.
+    useEffect(() => {
+        savedCallback.current = callback;
+    }, [callback]);
+    useEffect(() => {
+        function tick() {
+            savedCallback.current()
+        }
+        if (delay !== null) {
+            refCancel.current = setTimeout(tick, delay)
+        }
+        return ()=> {clearTimeout(refCancel.current)}
+    }, [delay])
+
 }
 
 export function useInterval(callback: () => void, delay: number | null) {
@@ -36,11 +62,9 @@ export function useInterval(callback: () => void, delay: number | null) {
     }, [callback]);
     // Set up the interval.
     useEffect(() => {
-
         function tick() {
             savedCallback.current()
         }
-
         if (delay !== null && !win && !pause) {
 
             saveCancelRef.current = setInterval(tick, delay);
@@ -70,29 +94,20 @@ export const useSpriteException = () => {
         } else if (position.isCrouching && position.isShooting) {
             console.log(position.isCrouching, position.isShooting)
             setValue(4)
-        }
-        else if(position.isDynamiting){
-            if(position.isCrouching){
+        } else if (position.isDynamiting) {
+            if (position.isCrouching) {
                 setValue(2)
-            }else {
+            } else {
                 setValue(7)
             }
-        }
-        else setValue(9)
+        } else setValue(9)
     }, [position])
     return value
 }
 
-const RIGHT = 39;
-const UP = 38;
-const BOTTOM = 40;
-const LEFT = 37;
-const SPACE = 32;
-export const PAUSE = 80;
-export const DYNAMITE = 68;
 
 export function useKeyPress() {
-    const [{player: {position}, gameOver, pause}, dispatch] = useGameData();
+    const [{player: {position}, gameOver}, dispatch] = useGameData();
     // State for keeping track of whether key is pressed
     const [keyPressed] = useState(false);
     // If pressed key is our target key then set to true
@@ -104,17 +119,17 @@ export function useKeyPress() {
                 }
                 break;
             case RIGHT:
-                if (!position.isRunning && !position.isHurting) {
+                if (!position.isRunning) {
                     dispatch({type: 'MOVE_RIGHT'})
                 }
                 break;
             case BOTTOM:
-                if (!position.isCrouching && !position.isHurting) {
+                if (!position.isCrouching) {
                     dispatch({type: 'IS_CROUCHING'})
                 }
                 break;
             case LEFT:
-                if (!position.isRunningLeft && !position.isHurting) {
+                if (!position.isRunningLeft) {
                     dispatch({type: MOVE_LEFT})
                 }
                 break;
@@ -127,7 +142,7 @@ export function useKeyPress() {
                 dispatch({type: 'SET_PAUSE'})
                 break;
             case DYNAMITE:
-                dispatch({type:'IS_DYNAMITING'})
+                dispatch({type: 'IS_DYNAMITING'})
 
         }
     }
@@ -138,6 +153,7 @@ export function useKeyPress() {
                 if (position.isJumping) {
                     dispatch({type: 'LAND_PLAYER'})
                 }
+                break;
             case RIGHT:
                 if (position.isRunning) {
                     dispatch({type: 'MOVE_RIGHT', stop: true})

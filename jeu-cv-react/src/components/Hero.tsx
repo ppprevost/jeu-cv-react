@@ -1,171 +1,80 @@
-import React, {FunctionComponent, SetStateAction, useEffect, useLayoutEffect, useRef, useState} from 'react';
+import React, {FunctionComponent, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {useGameData} from "../store/GameProvider";
 import avatar from '../img/hunter.png';
 import avatarLeft from "../img/hunter_left.png"
 import {useInterval, useKeyPress} from "../helpers/hooks";
 import Character from './Characters';
 import heroHurtSound from '../sound/cri.mp3';
-import Bullet, {IBulletProps} from './Bullet';
-import {speedPlayer, windowSize} from "../constants/contants";
+import Bullet from './Bullet';
+import {intervalSpeedHero, jumpSpeed, speedPlayer, stopJumpingHeight, windowSize} from "../constants/contants";
 import {Competency} from "./Competency";
 import getItem from '../sound/OOT_Get_SmallItem1.mp3'
-
-export interface Hero {
-    name: string,
-    position: any,
-    stopJump: boolean
-    isConflict: boolean
-    score: number,
-    dynamite: number,
-    spriteHeight: number,
-    health: number,
-    width: number,
-    height: number,
-    x: number,
-    y: number
-}
-
-const getCorrectSprite = (position:typeof initHeroes.position, setBehavior:SetStateAction<any>)=>{
-    if (position.isShooting) {
-        if (position.isRunning || position.isRunningLeft) {
-            return setBehavior(spriteValue.isRunningShooting)
-        }
-        if (position.isIdle) {
-            return setBehavior(spriteValue.isWalkingShoot)
-        }
-    }
-    if (position.isCrouching) {
-        if (position.isShooting) {
-            return setBehavior(spriteValue.isChrouchShooting)
-        }
-
-    }
-    if (position.isDynamiting) {
-        if (position.isCrouching) {
-            return setBehavior(spriteValue.isCrouchDynamiting)
-        }
-        return setBehavior(spriteValue.isDynamiting)
-
-    }
-    console.log(position)
-    for (let [key, value] of Object.entries(position)) {
-        if (value) {
-            const va = (spriteValue as any)[key]
-            return setBehavior(va)
-        }
-    }
-    return position
-}
+import {IHero, initHeroes} from "../data/player";
+import {getCorrectSprite} from "../helpers/player_helpers";
 
 const hurtSound = new Audio(heroHurtSound)
 const getItemSound = new Audio(getItem)
 
-export const initHeroes: Hero = {
-    name: 'player 1',
-    position: {
-        isJumping: false, // Frame Saut
-        isIdle: true, // Frame idle
-        isShooting: false, //Frame attack
-        isRunning: false, //Frame attack
-        isHurting: false, // frame Hurt
-        isDynamiting: false, // Dynamite Attack
-        isRunningLeft: false,
-        isCrouching: false,
-        isDying: false
-    },
-    stopJump: false,
-    isConflict: false, // test la collision
-    score: 0,
-    dynamite: 3,
-    spriteHeight: 80,
-    health: 100,
-    width: 110,
-    height: 100,
-    x: 0,
-    y: 454,
-}
-initHeroes.x = windowSize / 2 - initHeroes.width / 2 // initial position of the player
-
-const spriteX = [-10, -126, -242, -358, -474, -590, -706, -822, -938, -1054]; // coordonnées X des sprites pour 10 frames
-// 0 -> walk -100 -> Jump -200 -> Crouch -300 -> Walk Shoot  -400 -> Run -500 -> Die  -600 -> runShoot -700 -> crouchShoot -800 -> crouchDynamite -900->jumpShoot -1000 ->  Dynamite
-
-const spriteValue = {
-    isIdle: 0,
-    isRunning: -400,
-    isRunningLeft: -400,
-    isJumping: -100,
-    isCrouching: -200,
-    isWalkingShoot: -300,
-    isDying: -500,
-    isHurting: -500,
-    isRunningShooting: -600,
-    isChrouchShooting: -700,
-    isCrouchDynamiting: -800,
-    isJumpingShooting: -900,
-    isDynamiting: -1000
-}
-
-const Hero:FunctionComponent<Hero> = ({width, height, x, y, position, stopJump}) => {
+const Hero: FunctionComponent<IHero> = ({width, height, x, y, position, stopJump}) => {
     const [{gameOver, direction, sound, bullets, competency}, dispatch] = useGameData();
     useKeyPress();
     const refPosition = useRef(x)
     const refPositionY = useRef(y)
-    const avatarRef = useRef(direction === 'right'?avatar: avatarLeft);
+    const avatarRef = useRef(direction === 'right' ? avatar : avatarLeft);
     const [behavior, setBehavior] = useState(0)
     const delayRef = useRef<number | null>(null);
     useEffect(() => {
         if (!position.isIdle) {
-            delayRef.current = 50;
+            delayRef.current = intervalSpeedHero;
         } else {
             delayRef.current = null;
         }
-    }, [position])
+    }, [position, delayRef.current])
     useEffect(() => {
         if (direction === 'right') {
             avatarRef.current = avatar
         } else {
             avatarRef.current = avatarLeft
         }
-    }, [direction])
+    }, [direction, avatarRef.current])
     useInterval(() => {
         if (gameOver) {
             delayRef.current = null;
         }
-        const heroSize = direction === 'left' ? refPosition.current : refPosition.current + (width /2)
+        const heroSize = direction === 'left' ? refPosition.current : refPosition.current + (width / 3)
         competency.forEach((comp: Competency) => {
             if (!comp.catched && heroSize >= comp.x
-                && heroSize <= comp.x + 50
+                && heroSize <= comp.x + 50 && comp.y > refPositionY.current && comp.y < refPositionY.current + height
             ) {
                 if (sound) getItemSound.play();
                 dispatch({type: 'GET_COMPETENCY', payload: {newComp: comp.type}})
             }
         })
-
         if (position.isJumping) {
-            if (position.isRunning ) {
-                refPosition.current += 2
+            if (position.isRunning) {
+                refPosition.current += 15
             }
-            if (position.isRunningLeft ) {
-                refPosition.current -= 2
+            if (position.isRunningLeft) {
+                refPosition.current -= 15
             }
-            if (refPositionY.current <= 300) {
+            if (refPositionY.current <= stopJumpingHeight) {
                 dispatch({type: 'LAND_PLAYER'})
             }
-            console.log(stopJump)
             if (stopJump) {
-                refPositionY.current += 30
+                refPositionY.current += jumpSpeed
             } else {
-                refPositionY.current -= 30
+                refPositionY.current -= jumpSpeed
             }
             if (refPositionY.current >= initHeroes.y) {
                 refPositionY.current = initHeroes.y
                 dispatch({type: 'STOP_JUMPING'})
             }
         } else {
-            if (position.isRunning && (refPosition.current + width/2< windowSize)) {
+            // width/2 a little space for taking competency
+            if (position.isRunning && (refPosition.current + width / 2 < windowSize)) {
                 refPosition.current += speedPlayer
             }
-            if (position.isRunningLeft && (refPosition.current+40 > 0)) {
+            if (position.isRunningLeft && (refPosition.current + 40 > 0)) {
                 refPosition.current -= speedPlayer
             }
         }
@@ -173,7 +82,7 @@ const Hero:FunctionComponent<Hero> = ({width, height, x, y, position, stopJump})
     }, delayRef.current);
 
     useLayoutEffect(() => {
-       getCorrectSprite(position, setBehavior)
+        getCorrectSprite(position, setBehavior)
     }, [position]);
     useEffect(() => {
         if (sound && position.isHurting && !gameOver) {
@@ -200,11 +109,10 @@ const Hero:FunctionComponent<Hero> = ({width, height, x, y, position, stopJump})
                        y={y}
                        avatar={avatarRef.current}
                        className="containerHero"
-                       spriteX={spriteX}
                        behavior={behavior} />
-            {bullets.length > 0 && bullets.map(({id, type}: IBulletProps) => <Bullet key={id}
-                                                                                     id={id}
-                                                                                     type={type} />)}
+            {bullets.length > 0 && bullets
+                .map((bull) => <Bullet key={bull.id}
+                                       {...bull} />)}
         </>
     )
 }

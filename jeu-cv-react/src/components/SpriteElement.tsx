@@ -1,6 +1,6 @@
 import React, {FunctionComponent} from "react";
 
-interface IContainerSprite {
+export interface IContainerSprite {
     className: string
     zIndex?: number,
     width: number,

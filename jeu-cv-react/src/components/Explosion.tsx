@@ -4,13 +4,7 @@ import {useInterval} from "../helpers/hooks";
 import {IPropsDino} from "./Dinosaurs";
 import explodeImg from "../img/dynamite.png"
 import ExplosionContainer from "./SpriteElement";
-
-const explodeInit = {
-    spriteX: [0, -198, -396, -594, -792, -980],
-    width: 198,
-    height: 173,
-    delayIntervalSprite: 100
-}
+import {explodeInit} from "../data/explode";
 
 const Explosion = ({x, y}: Pick<IPropsDino, 'x'|'y'>) => {
     const [sprite, setSprite] = useState(explodeInit.spriteX[0]);

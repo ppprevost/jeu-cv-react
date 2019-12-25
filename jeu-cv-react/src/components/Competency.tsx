@@ -1,6 +1,7 @@
 import React, {FunctionComponent} from 'react';
 import styled from 'styled-components';
 import {rotate} from "../helpers/styled";
+import {heightCompetency, widthCompetency} from "../constants/contants";
 
 export interface Competency {
     avatar: string
@@ -16,8 +17,8 @@ animation: ${rotate} 2s linear infinite;
 z-index: 1000;
 position:absolute;
 top:${({y}) => y + 'px'};
-width:50px;
-height:50px;
+width:${widthCompetency + 'px'};
+height:${heightCompetency + 'px'};
 left:${({x}) => x + 'px'}
 `
 

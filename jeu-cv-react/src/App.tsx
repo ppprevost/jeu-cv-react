@@ -5,6 +5,7 @@ import Game from './page/Game';
 import MainHeader from "./components/MainHeader";
 
 import favorite from "./reducers/player_reducer";
+import {ModalPreGame} from "./components/Modal";
 
 const MainHeaderMemoized = () => {
     return useMemo(() => <MainHeader />, [])
@@ -16,11 +17,12 @@ const App = () => (
 )
 
 const Play = () => {
-    const [{player}] = useGameData()
+    const [{player, gameType}] = useGameData()
     return (
         <div id="containerGame">
             {player && MainHeaderMemoized()}
-            <Game />
+            {!gameType && <ModalPreGame/>}
+            {gameType==="game" && <Game />}
         </div>
     );
 }

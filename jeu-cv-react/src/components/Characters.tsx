@@ -2,6 +2,7 @@ import React, {useRef, useState, useEffect} from "react";
 import {useInterval, useSpriteException} from "../helpers/hooks";
 import {useGameData} from "../store/GameProvider";
 import HeroSprite from "./SpriteElement"
+import {spriteX} from "../data/player";
 
 interface PropsCharacter {
     width: number,
@@ -9,18 +10,26 @@ interface PropsCharacter {
     x: number,
     y: number,
     className: string,
-    spriteX: number[],
     avatar: string
     behavior: number
 }
 
-const Character = ({width, height, x, y, className, spriteX, behavior, avatar}: PropsCharacter) => {
+const Character = ({width, height, x, y, className, behavior, avatar}: PropsCharacter) => {
     const [{player: {position}, gameOver}, dispatch] = useGameData();
     const requestRef = useRef(spriteX[0]);
     const delayRef = useRef<number | null>(100);
     const [sprite, setSprite] = useState(spriteX[0]);
     const [frame, setFrame] = useState(0);
-    const value = useSpriteException()
+    const value = useSpriteException();
+    const delayStopHurting = useRef<number | null>(1000)
+
+    useInterval(() => {
+        if (position.isHurting) {
+            console.log('fdsfdsfdsf')
+            dispatch({type: 'STOP_HURTING'})
+        }
+    }, delayStopHurting.current)
+
     useInterval(() => {
         setFrame(frame + 1);
         if (frame >= value) {
@@ -28,7 +37,6 @@ const Character = ({width, height, x, y, className, spriteX, behavior, avatar}: 
                 if (gameOver) {
                     delayRef.current = null
                 }
-                dispatch({type: 'STOP_HURTING'})
             }
             setFrame(0);
         }
@@ -38,7 +46,7 @@ const Character = ({width, height, x, y, className, spriteX, behavior, avatar}: 
 
     useEffect(() => {
         setFrame(0)
-    }, [position, behavior])
+    }, [position, behavior, position.isHurting])
     useEffect(() => {
         delayRef.current = null
         setFrame(0)
@@ -53,7 +61,7 @@ const Character = ({width, height, x, y, className, spriteX, behavior, avatar}: 
         }
     }, [position.isDynamiting])
     return <HeroSprite
-        className={className}
+        className={`${className} ${position.isHurting && 'blink_me'}`}
         src={avatar}
         behavior={behavior}
         x={x}
