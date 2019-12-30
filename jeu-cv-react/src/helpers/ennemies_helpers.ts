@@ -1,3 +1,4 @@
+import {useRef} from 'react';
 import {windowSize} from "../constants/contants";
 import {diploInit, EnemyInit, peaksInit, pteroInit, raptorInit, vinesInit} from "../data/ennemies";
 import raptorNoise from "../sound/raptor.mp3";
@@ -38,12 +39,13 @@ export const takeSoundChoice = (idSound: string, sound: boolean) => {
 }
 
 export const conditionToConflict =(className:string, positionHero:number, refPosition:any, width:number, player:typeof initHeroes, y:number , height:number)=>{
+    const playerHeight = player.exactSpriteObject.height;
     if(className ==='vine' && !player.position.isCrouching){
         return  positionHero >= refPosition.current
             && positionHero <= refPosition.current + width
     }
     return positionHero >= refPosition.current
         && positionHero <= refPosition.current + width
-        && player.y + player.height >= y
-        && player.y + player.height <= y + height
+        && player.y + playerHeight >= y
+        && player.y + playerHeight <= y + height
 }

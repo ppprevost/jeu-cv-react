@@ -1,28 +1,23 @@
-import React, {useMemo} from 'react';
+import React, {useMemo, lazy, Suspense} from 'react';
 import './App.css';
 import GameProvider, {useGameData} from "./store/GameProvider"
-import Game from './page/Game';
+import Intro from "./page/Intro"
 import MainHeader from "./components/MainHeader";
-
-import favorite from "./reducers/player_reducer";
-import {ModalPreGame} from "./components/Modal";
+const Game = lazy(()=>import('./page/Game'))
 
 const MainHeaderMemoized = () => {
     return useMemo(() => <MainHeader />, [])
 }
-
 const App = () => (
     <GameProvider><Play /></GameProvider>
-
 )
-
 const Play = () => {
-    const [{player, gameType}] = useGameData()
+    const [{player, gameType, intro}] = useGameData()
     return (
         <div id="containerGame">
-            {player && MainHeaderMemoized()}
-            {!gameType && <ModalPreGame/>}
-            {gameType==="game" && <Game />}
+            {player && <MainHeaderMemoized />}
+            {intro && <Intro />}
+            {gameType==="game" && <Suspense fallback={'is loading'}><Game /></Suspense>}
         </div>
     );
 }

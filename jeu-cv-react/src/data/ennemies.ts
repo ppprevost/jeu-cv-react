@@ -11,6 +11,7 @@ import diploLeft from "../img/Dino/diplo_left.png";
 export interface EnemyInit {
     x?: number,
     y: number,
+    exactSpriteObject?:any
     avatar: string | string[]
     spriteX?: number[]
     spriteXDead?: number[]
@@ -48,6 +49,11 @@ export const raptorInit = (): EnemyInit => {
         y: 410,
         className: 'raptor',
         health: 200,
+        exactSpriteObject: {
+            height:130,
+            width:100,
+            top:30
+        },
         avatar: [raptorChoice],
         spriteX: [0, -249, -498, -747, -996, -1245, -1494, -1743],
         spriteXDead: [0, -249, -498, -747, -996, -1245, -1494, -1743, -1992, -2241],
@@ -72,6 +78,11 @@ export const pteroInit: EnemyInit = {
 
 export const diploInit: EnemyInit = {
     y: 415,
+    exactSpriteObject: {
+        height:110,
+        width:100,
+        top:30
+    },
     spriteXDead: [0, -228, -456, -684, -912, -1140, -1368, -1596, -1824, -2052],
     health: 100,
     avatar: [diplo, diploLeft],

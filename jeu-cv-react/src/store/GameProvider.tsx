@@ -11,27 +11,27 @@ import {
     DELETE_DINO,
     COLLISION, STOP_HURTING, LAND_PLAYER, STOP_SHOOTING, JUMP, KILL_DINO
 } from "../constants";
-import {competencyArray, heightCompetency} from "../constants/contants";
+import {competencyArray, heightCompetency, widthCompetency, windowSize} from "../constants/contants";
 import watchOutSound from "../sound/OOT_Navi_WatchOut1.mp3";
 import shotSound from "../sound/fusil.mp3";
-import explode from "../sound/explode.mp3";
 import winner from "../sound/winner.mp3";
-import doubleKill from "../sound/double_kill.mp3";
-import ultrakill from "../sound/ultrakill.mp3";
 import {Competency} from "../components/Competency";
 import {IHero, initHeroes} from "../data/player";
 import {IPropsDino} from "../components/Dinosaurs";
 import {IBulletProps} from "../components/Bullet";
 import {bulletInit, dynamiteInit} from "../data/bullet";
-import {repercutPositionHero} from "../helpers/main_helpers";
+import {competencyFixed, playSoundRampage, repercutPositionHero} from "../helpers/main_helpers";
 
 type ActionType = {
     type: string
     [key: string]: any
 }
 
+type GameType = 'game' | 'tutorial'
+
 type State = {
-    gameType:string | null
+    intro:boolean,
+    gameType:GameType | null
     sound: boolean,
     player: IHero
     dino: IPropsDino[]
@@ -50,7 +50,8 @@ type State = {
 const UserContext = createContext<any>([]);
 
 const initialState = {
-    gameType:"game",
+    intro:true,
+    gameType:null,
     direction: 'right',
     sound: false,
     player: null,
@@ -68,9 +69,7 @@ const initialState = {
 const watchSound = new Audio(watchOutSound)
 const rifleSound = new Audio(shotSound)
 const winnerSound = new Audio(winner)
-const explodeSound = new Audio(explode)
-const doubleKillSound = new Audio(doubleKill)
-const ultraKillSound = new Audio(ultrakill)
+
 
 const allItemCatched = (competency: Competency[]) => {
     for (let competence of competency) {
@@ -79,26 +78,6 @@ const allItemCatched = (competency: Competency[]) => {
         }
     }
     return true
-}
-
-export const playSoundRampage = (dinoLength: number, sound: boolean) => {
-    if (sound) {
-        ultraKillSound.currentTime = 0
-        explodeSound.play()
-        explodeSound.volume = 0.8;
-        if (dinoLength >= 3) {
-            ultraKillSound.currentTime = 0
-            ultraKillSound.play()
-            ultraKillSound.volume = 0.4;
-        }
-        if (dinoLength < 3 && dinoLength > 1) {
-            doubleKillSound.play()
-            doubleKillSound.volume = 0.4
-            doubleKillSound.currentTime = 0
-        }
-
-    }
-
 }
 
 const findDino = (action: ActionType) => {
@@ -110,7 +89,8 @@ export const reducer = (state: State, action: ActionType) => {
         case 'START_GAME':
             initHeroes.email= action.payload.email;
             initHeroes.name=action.payload.name;
-            state.gameType="game"
+            state.gameType="game";
+            state.intro = false;
             return {...state}
 
         case SET_SOUND:
@@ -128,6 +108,7 @@ export const reducer = (state: State, action: ActionType) => {
                     pause: !state.pause
                 }
             }
+            return {...state}
         case ADD_PLAYER:
             return {
                 ...state,
@@ -216,7 +197,6 @@ export const reducer = (state: State, action: ActionType) => {
 
         case 'RAMPAGE':
             const existingDino = state.dino.filter(elem => elem.alive)
-            console.log(existingDino)
             playSoundRampage(existingDino.length, state.sound)
             const newDinoArray = state.dino.map(dinosaur => {
                 return ({...dinosaur, alive: false})
@@ -238,12 +218,13 @@ export const reducer = (state: State, action: ActionType) => {
                         } else {
                             watchSound.pause()
                         }
+
                         const newCompetency = {
                             avatar: competencyArray[state.competency.length].img,
                             type: competencyArray[state.competency.length].type,
                             website: competencyArray[state.competency.length].website,
                             catched: false,
-                            x: state.direction === 'right' ? actualDinoToKill.x : actualDinoToKill.x + actualDinoToKill.width,
+                            x: competencyFixed(actualDinoToKill.x, widthCompetency),
                             y: actualDinoToKill.y + heightCompetency
                         }
                         return {...state, competency: [...state.competency, newCompetency]}
@@ -253,7 +234,6 @@ export const reducer = (state: State, action: ActionType) => {
             return {...state}
         case COLLISION:
             if (!state.player.position.isHurting) {
-                console.log('Hurted man')
                 const hurtedPlayerState = repercutPositionHero(state, 'isHurting');
                 if (hurtedPlayerState.player && hurtedPlayerState.player.health > 0) {
                     hurtedPlayerState.player.health -= 10;
@@ -267,7 +247,6 @@ export const reducer = (state: State, action: ActionType) => {
         case 'ADD_COMPETENCY':
             const newCompetency = [...state.competency, action.payload.newCompetency]
             return {...state, competency: newCompetency}
-            break;
         case 'GET_COMPETENCY':
             const catchedCompetency = state.competency.map(comp => {
                 if (comp.type === action.payload.newComp) {
@@ -294,7 +273,7 @@ export const reducer = (state: State, action: ActionType) => {
             return {...state}
         case 'RESET_GAME':
             console.log('reset')
-            state = {...initialState, player: initHeroes}
+                //state = {...initialState, player: initHeroes}
             return {...state}
         default: {
             throw new Error(`Unhandled action type: ${action.type}`)

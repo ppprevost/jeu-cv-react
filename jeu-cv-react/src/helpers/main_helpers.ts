@@ -1,15 +1,20 @@
+import explode from "../sound/explode.mp3";
+import doubleKill from "../sound/double_kill.mp3";
+import ultrakill from "../sound/ultrakill.mp3";
+import {windowSize} from "../constants/contants";
+
 export const repercutPositionHero = (state: any, newPosition: string, stop?: boolean) => {
     let initObject: typeof state.player.position = {};
-    const reinitAndRefreshUniquePosition = ()=>Object.keys(state.player.position)
+    /*const reinitAndRefreshUniquePosition = ()=>Object.keys(state.player.position)
         .map((key) => {
             return (initObject as any)[key] = false
-        });
+        });*/
     if (state.player && !state.pause) {
         if (newPosition === "isJumping") {
             initObject = {...state.player.position}
             if (stop) {
                 if (!state.player.position.isRunning && !state.player.position.isRunningLeft && !state.player.position.isCrouching) {
-                    console.log('idle after jump')
+
                     initObject.isIdle = true;
                 }
                 initObject.isJumping = false;
@@ -148,4 +153,39 @@ export const repercutPositionHero = (state: any, newPosition: string, stop?: boo
 
     }
     return state
+}
+
+const explodeSound = new Audio(explode)
+const doubleKillSound = new Audio(doubleKill)
+const ultraKillSound = new Audio(ultrakill)
+
+export const playSoundRampage = (dinoLength: number, sound: boolean) => {
+    if (sound) {
+        ultraKillSound.currentTime = 0
+        explodeSound.play()
+        explodeSound.volume = 0.8;
+        if (dinoLength >= 3) {
+            ultraKillSound.currentTime = 0
+            ultraKillSound.play()
+            ultraKillSound.volume = 0.4;
+        }
+        if (dinoLength < 3 && dinoLength > 1) {
+            doubleKillSound.play()
+            doubleKillSound.volume = 0.4
+            doubleKillSound.currentTime = 0
+        }
+
+    }
+
+}
+
+export const competencyFixed = (competencyX:number, competencyWidth:number)=>{
+
+    if(competencyX < 0){
+        competencyX = 0
+    }
+    if(competencyX+ competencyWidth > windowSize){
+        competencyX = windowSize- competencyWidth
+    }
+    return competencyX
 }

@@ -4,6 +4,7 @@ import {ADD_PLAYER, ADD_DINO} from "../constants";
 import Hero from "../components/Hero";
 import Dinosaurs from "../components/Dinosaurs";
 import Competency from "../components/Competency";
+import Keyboard from "../components/Keyboard";
 import Background, {Field} from "../components/Background";
 import {useInterval} from "../helpers/hooks";
 import mainSound from '../sound/main.mp3';
@@ -40,16 +41,17 @@ const Game = () => {
 
     }, [sound, competency.length])
     useEffect(() => {
-        if (sound && !gameOver) {
+        if (sound && !gameOver && !win) {
             ambianceSound.play()
             ambianceSound.loop = true;
             ambianceSound.volume = 0.07;
         } else {
             ambianceSound.pause()
         }
-    }, [sound, gameOver])
+    }, [sound, gameOver, win])
     return (
         <>
+            {useMemo(()=><Keyboard />, [])}
             {useMemo(() => pause && <ModalPause />, [pause])}
             {useMemo(() => win && <ModalWin />, [win])}
             {useMemo(() => gameOver && <ModalGameOver />, [gameOver])}

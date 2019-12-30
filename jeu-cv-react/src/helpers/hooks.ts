@@ -3,7 +3,7 @@ import {useGameData} from "../store/GameProvider";
 import {MOVE_LEFT} from "../constants";
 import {RIGHT, LEFT, BOTTOM, DYNAMITE, UP, SPACE, PAUSE} from "../constants/contants";
 
-export function useFetch<T>(url: string, options = {}): { response: T | null, error: Error | null, isLoading: boolean } {
+export function useFetch<T>(url: string, options:any = {}): { response: T | null, error: Error | null, isLoading: boolean } {
     const [response, setResponse] = useState(null);
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -12,7 +12,8 @@ export function useFetch<T>(url: string, options = {}): { response: T | null, er
             setIsLoading(true);
             try {
                 const fetched = await fetch(url, options)
-                if (!fetched.ok) {
+                console.log(fetched)
+                if (fetched.status >=400) {
                     throw new Error(await fetched.text())
                 }
                 const responsed = await fetched.json()

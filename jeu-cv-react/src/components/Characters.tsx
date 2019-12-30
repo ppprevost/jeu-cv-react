@@ -9,12 +9,13 @@ interface PropsCharacter {
     height: number,
     x: number,
     y: number,
+    exactSpriteObject:{}
     className: string,
     avatar: string
     behavior: number
 }
 
-const Character = ({width, height, x, y, className, behavior, avatar}: PropsCharacter) => {
+const Character = ({width, height, x, y, className, behavior, avatar, exactSpriteObject}: PropsCharacter) => {
     const [{player: {position}, gameOver}, dispatch] = useGameData();
     const requestRef = useRef(spriteX[0]);
     const delayRef = useRef<number | null>(100);
@@ -25,7 +26,6 @@ const Character = ({width, height, x, y, className, behavior, avatar}: PropsChar
 
     useInterval(() => {
         if (position.isHurting) {
-            console.log('fdsfdsfdsf')
             dispatch({type: 'STOP_HURTING'})
         }
     }, delayStopHurting.current)
@@ -59,8 +59,11 @@ const Character = ({width, height, x, y, className, behavior, avatar}: PropsChar
         } else {
             delayRef.current = 100
         }
-    }, [position.isDynamiting])
+    }, [position.isDynamiting, position.isCrouching])
+
+
     return <HeroSprite
+        exactSpriteConflict={exactSpriteObject}
         className={`${className} ${position.isHurting && 'blink_me'}`}
         src={avatar}
         behavior={behavior}

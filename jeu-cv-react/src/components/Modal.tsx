@@ -1,82 +1,128 @@
-import React, {useState, useEffect, ReactEventHandler} from 'react';
-import styled from 'styled-components'
-import {useFetch} from "../helpers/hooks";
-import {useGameData} from "../store/GameProvider";
-import {placeholder} from "@babel/types";
+import React from "react";
+import styled from "styled-components";
+import { useFetch } from "../helpers/hooks";
+import { useGameData } from "../store/GameProvider";
 
-const ModalTemplate = styled.div`
+const ModalTemplate = styled.div<any>`
     background-color: black;
     color: white;
     letter-spacing: 0.2em;
-    font-family: Jurassik, sans-serif;
-    font-size: 40px;
+    font-family: ${({ fontFamily }) =>
+      fontFamily ? fontFamily : "Jurassik, sans-serif"} ;
+    font-size: ${({ fontSize }) => fontSize || "30px"};
     position: absolute;
     max-width: 100%;
     width: 600px;
+    border:1px solid #F7F936;
+    overflow:${({ overflow }) => overflow || "auto"}
     left: 50%;
+    max-height:291px;
     line-height: 40px;
     text-align: center;
-    padding: 50px;
+    padding: 2rem;
     margin-left: -300px;
-    top: 250px;
+    top: 246px;
     z-index: 2000;
-`
+`;
 
 export const ModalPause = () => {
-    return <ModalTemplate>
-        <div>Pause</div>
+  return (
+    <ModalTemplate>
+      <div>Pause</div>
     </ModalTemplate>
-}
-
-export const ModalPreGame = () => {
-    const [, dispatch] = useGameData();
-    const startParty = (e: any) => {
-        e.preventDefault()
-        console.log(e.target.value)
-        dispatch({type: 'START_GAME', payload: {name: e.target.value.name, email: e.target.value.email}})
-    }
-
-    return (<ModalTemplate>
-            <h2>Please answer to the question</h2>
-            <form onSubmit={startParty}>
-                <input type="text" name="name" placeholder="your name" />
-                <input type="email" name="email" placeholder="your email" />
-                <button type="submit">Send</button>
-            </form>
-        </ModalTemplate>
-    )
-}
+  );
+};
 
 export const ModalGameOver = () => {
-    const [, dispatch] = useGameData();
+  const [, dispatch] = useGameData();
 
-    const reset = () => {
-        return dispatch({type: 'RESET_GAME'})
-    }
+  const reset = () => {
+    return dispatch({ type: "RESET_GAME" });
+  };
 
-    return <ModalTemplate>
-        <div>You die !</div>
-        <button onClick={reset}>Try again</button>
+  return (
+    <ModalTemplate>
+      <div>You die !</div>
+      <button onClick={reset}>Try again</button>
     </ModalTemplate>
-}
+  );
+};
 
 export const ModalWin = () => {
-    const {response, error, isLoading} = useFetch<{ username: string, score: number, _id: string }[]>('/best-scores', {
-        request: {
-            username: 'tata',
-            score: 34
-        }
+  const [
+    {
+      player: {
+        score,
+        name = "undefined player",
+        email = "undefined email",
+        dynamite,
+        health
+      },
+      chrono
+    }
+  ] = useGameData();
+  const { response, error, isLoading } = useFetch<
+    {
+      name: string;
+      score: number;
+      chrono: { minute: number; second: number };
+      health: number;
+      dynamite: number;
+      _id: string;
+    }[]
+  >("/send-scores", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      name,
+      score,
+      email,
+      health,
+      dynamite,
+      chrono
     })
-    console.log(error)
-    return (<ModalTemplate>
-        {isLoading && <span>Waiting score ...</span>}
-        {error && <span>{error}</span>}
-        {response && response.map(({username, score, _id}) => <div
-            key={_id}
-        >{username} {score}</div>)}
+  });
+  return (
+    <ModalTemplate overflow={"scroll"} fontSize={"1rem"} fontFamily={"none"}>
+      {isLoading && <span>Waiting score ...</span>}
+      {error && <span>{error}</span>}
+      {response && (
+        <>
+          <h2>You survive ! See all survivor :</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>name</th>
+                <th>score</th>
+                <th>chrono</th>
+                <th>health</th>
+                <th>dynamite</th>
+              </tr>
+            </thead>
+            <tbody>
+              {response &&
+                response.map(
+                  ({ name, score, chrono, health, dynamite, _id }) => (
+                    <tr key={_id}>
+                      <td>{name}</td>
+                      <td> {score}</td>
+                      <td>
+                        {chrono.minute}:{chrono.second}
+                      </td>
+                      <td>{health}</td>
+                      <td>{dynamite}</td>
+                    </tr>
+                  )
+                )}
+            </tbody>
+          </table>
+        </>
+      )}
+    </ModalTemplate>
+  );
+};
 
-    </ModalTemplate>)
-
-}
-
-export default ModalTemplate
+export default ModalTemplate;

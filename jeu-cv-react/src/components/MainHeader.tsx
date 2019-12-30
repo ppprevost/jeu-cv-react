@@ -14,7 +14,7 @@ const MainHeader = () => {
                 return (
                     <div key={comp.type}>
                         {comp.catched ?
-                            <a target="_blank" href={comp.website}><img key={comp.type} style={{width: '50px', height: '50px'}} src={comp.avatar} alt={comp.type} /></a>
+                            <a title={comp.type} target="_blank" href={comp.website}><img key={comp.type} style={{width: '50px', height: '50px'}} src={comp.avatar} alt={comp.type} /></a>
                             : <div>Take {comp.type} !</div>
                         }
                     </div>

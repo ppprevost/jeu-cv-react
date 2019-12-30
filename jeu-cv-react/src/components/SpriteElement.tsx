@@ -1,10 +1,12 @@
 import React, {FunctionComponent} from "react";
+import {useGameData} from "../store/GameProvider";
 
 export interface IContainerSprite {
     className: string
     zIndex?: number,
     width: number,
     height: number,
+    exactSpriteConflict?:{}
     x: number,
     y: number,
     sprite: number,
@@ -17,7 +19,8 @@ const ImgSprite = ({src, sprite = 0, behavior = 0}: any) => {
 }
 
 
-const BuildContainerForSprite:FunctionComponent<IContainerSprite> = ({zIndex = 20, width, height, x, y, behavior = 0, sprite = 0, className, src}) => {
+const BuildContainerForSprite:FunctionComponent<IContainerSprite> = ({zIndex = 20, width, height, x, y, behavior = 0, sprite = 0, className, src, exactSpriteConflict}) => {
+    const [{direction}] = useGameData();
     return (
         <div
         className={className}
@@ -33,11 +36,17 @@ const BuildContainerForSprite:FunctionComponent<IContainerSprite> = ({zIndex = 2
             }
         }
       >
+
         <ImgSprite
             src={src}
+            alt={className}
             behavior={behavior}
             sprite={sprite}
         />
+            <div className={"exactSprite-" + className}
+                 style={{position:"absolute", ...exactSpriteConflict }}
+            >
+            </div>
     </div>)
 
 }

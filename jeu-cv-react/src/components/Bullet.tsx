@@ -54,7 +54,7 @@ const BulletComponent = ({type, id, width, height, spriteItemX, spriteItemY, cla
                     && y.current + height >= dino[i].y
                     && y.current + height <= dino[i].y + dino[i].height) {
                     if (type === 'bullet') {
-                        if (dino[i].className !== 'spike') {
+                        if (dino[i].className !== 'spike' && dino[i].className !== 'vine') {
                             dispatch({type: 'STOP_BULLET', payload:{type,id}});
                             refDelayBullet.current = null
                             dispatch({type: 'KILL_DINO', payload: {id: dino[i].id}});
@@ -75,7 +75,7 @@ const BulletComponent = ({type, id, width, height, spriteItemX, spriteItemY, cla
         width={width}
         height={height}
         y={y.current}
-        x={refDirection.current == 'right' ? x : x - player.width}
+        x={refDirection.current === 'right' ? x : x - player.width}
         src={avatar}
         behavior={spriteItemY}
         sprite={sprite}

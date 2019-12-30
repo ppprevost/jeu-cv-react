@@ -29,7 +29,7 @@ const Background = ({left}: {left:number}) => {
     const {top, width, height} = style;
     const objetRandom = Math.round(Math.random() * (backgroundImg.length-1));
     const avatar = backgroundImg[objetRandom];
-    return <img className='background' src={avatar} style={{top, width, height,left, position:'absolute'}} />
+    return <img alt={'background'} className='background' src={avatar} style={{top, width, height,left, position:'absolute'}} />
 }
 
 export default Background
