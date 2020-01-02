@@ -21,10 +21,11 @@
     "typescript": "3.4.5"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "npm run build & npm run server:node",
     "storybook": "start-storybook",
-    "dev": "cross-env react-scripts start & npm run server",
-    "server": "nodemon server",
+    "dev": "cross-env react-scripts start & npm run server:nodemon",
+    "server:nodemon": "nodemon server",
+    "server:node": "node server",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
