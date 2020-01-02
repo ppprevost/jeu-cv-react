@@ -189,3 +189,17 @@ export const competencyFixed = (competencyX:number, competencyWidth:number)=>{
     }
     return competencyX
 }
+
+
+export const bindWindowEvent = (hide:()=>any) => {
+    window.addEventListener('resize', hide);
+    window.addEventListener('contextmenu', hide);
+    window.addEventListener('click', hide);
+    window.addEventListener('scroll', hide);
+};
+export const unBindWindowEvent = (hide:()=>any) => {
+    window.removeEventListener('resize', hide);
+    window.removeEventListener('contextmenu', hide);
+    window.removeEventListener('click', hide);
+    window.removeEventListener('scroll', hide);
+};

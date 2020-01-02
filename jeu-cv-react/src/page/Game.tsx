@@ -6,7 +6,7 @@ import Dinosaurs from "../components/Dinosaurs";
 import Competency from "../components/Competency";
 import Keyboard from "../components/Keyboard";
 import Background, {Field} from "../components/Background";
-import {useInterval} from "../helpers/hooks";
+import {useInterval, useKeyPress} from "../helpers/hooks";
 import mainSound from '../sound/main.mp3';
 import {windowSize} from "../constants/contants";
 import {ModalGameOver, ModalPause, ModalWin} from "../components/Modal";
@@ -22,6 +22,7 @@ export const useCalculateIntervalDino = () => {
 const Game = () => {
     const xBackground = window.innerWidth / 4;
     const [{player, dino, gameOver, sound, competency, win, pause}, dispatch] = useGameData();
+    useKeyPress();
     const FixedBackground = (compute: number) => useMemo(() => <Background left={compute} />, [xBackground])
     const newRef = useRef(createDinosaur());
     const visibilityGame = useRef(true); // bug fixing

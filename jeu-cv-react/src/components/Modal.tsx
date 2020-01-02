@@ -1,14 +1,32 @@
-import React from "react";
+import React, { FunctionComponent, SetStateAction } from "react";
 import styled from "styled-components";
 import { useFetch } from "../helpers/hooks";
 import { useGameData } from "../store/GameProvider";
 
-const ModalTemplate = styled.div<any>`
+interface ModalProps {
+  onVisible: boolean;
+  setVisible: (el: false) => any;
+  closeModal: boolean;
+  fontSize: number | string;
+  fontFamily: string;
+  overflow: string;
+}
+
+type ModalOptional = Partial<ModalProps>;
+
+const ButtonClose = styled.button<any>`
+  position: absolute;
+  width: 37px;
+  margin-left: 44%;
+  top: 0;
+`;
+
+const ModalImg = styled.div<any>`
     background-color: black;
     color: white;
     letter-spacing: 0.2em;
     font-family: ${({ fontFamily }) =>
-      fontFamily ? fontFamily : "Jurassik, sans-serif"} ;
+      fontFamily ? fontFamily : "Jurassik, sans-serif"};
     font-size: ${({ fontSize }) => fontSize || "30px"};
     position: absolute;
     max-width: 100%;
@@ -24,6 +42,31 @@ const ModalTemplate = styled.div<any>`
     top: 246px;
     z-index: 2000;
 `;
+
+export const ModalTemplate: FunctionComponent<ModalOptional> = ({
+  children,
+  onVisible =true,
+  setVisible =()=>{},
+  closeModal = false,
+  ...otherProps
+}) => {
+  const close = () => {
+    if (setVisible) setVisible(false);
+  };
+
+  return (
+    <div>
+      {onVisible && (
+        <>
+          <ModalImg {...otherProps}>
+            {closeModal && <ButtonClose onClick={close}>X</ButtonClose>}
+            {children}
+          </ModalImg>
+        </>
+      )}
+    </div>
+  );
+};
 
 export const ModalPause = () => {
   return (

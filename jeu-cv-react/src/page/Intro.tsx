@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useLayoutEffect } from "react";
+import React, {useEffect, useState, useRef, useLayoutEffect} from "react";
 import hunter from "../img/intro/hunter.png";
 import raptor from "../img/intro/raptor.png";
 import raptor2 from "../img/intro/raptor2.png";
@@ -11,8 +11,8 @@ import ModalTemplate from "../components/Modal";
 
 import sonIntro from "../sound/trex_cri.mp3";
 import styled from "styled-components";
-import { windowSize } from "../constants/contants";
-import { useGameData } from "../store/GameProvider";
+import {windowSize} from "../constants/contants";
+import {useGameData} from "../store/GameProvider";
 
 const introSound = new Audio(sonIntro);
 
@@ -34,135 +34,139 @@ width:350px
 `;
 
 interface DinoPropsIntro {
-  name: string;
-  position: number;
-  zIndex: number;
-  top: number;
+    name: string;
+    position: number;
+    zIndex: number;
+    top: number;
 }
 
 const Dino = styled.img<DinoPropsIntro>`
 position:absolute;
-z-index:${({ zIndex }) => zIndex} ;
-left:${({ position }) => windowSize * position + "px"}
-top:${({ top }) => 200 + top + "px"};
+z-index:${({zIndex}) => zIndex} ;
+left:${({position}) => windowSize * position + "px"}
+top:${({top}) => 200 + top + "px"};
 `;
 
 const dinoTab = [
-  { name: "ptero", src: ptero, position: 0.75, zIndex: 12, top: -100 },
-  {
-    name: "raptor",
-    src: raptor,
-    top: 0,
-    position: 0.7,
-    zIndex: 12
-  },
-  {
-    name: "diplo",
-    src: diplo,
-    top: 100,
-    position: 0.65,
-    zIndex: 12
-  }
+    {name: "ptero", src: ptero, position: 0.75, zIndex: 12, top: -100},
+    {
+        name: "raptor",
+        src: raptor,
+        top: 0,
+        position: 0.7,
+        zIndex: 12
+    },
+    {
+        name: "diplo",
+        src: diplo,
+        top: 100,
+        position: 0.65,
+        zIndex: 12
+    }
 ];
 
-const Intro = () => {
-  const [seeVideo, setSeeVideo] = useState(false);
-  const [seeModalName, setSeeModalName] = useState(false);
-  const launchNameModal = () => {
-    setSeeModalName(true);
-  };
-  const seeVideoTuto = () => {
-    setSeeVideo(!seeVideo);
-  };
 
-  console.log("launch");
-  useLayoutEffect(() => {
-    //son T rex
-    introSound.currentTime = 0;
-    introSound.play();
-    introSound.volume = 0.7;
-  }, []);
-  return (
-    <div className="intro-game">
-      <LOGOComponent src={logo} />
-      {seeVideo && <ModalVideo />}
-      {seeModalName && <ModalPreGame />}
-      {!seeModalName && (
-        <>
-          <Hunter src={hunter} className="perso-hunter" />
-          {dinoTab.map(props => (
-            <Dino key={props.name} {...props} />
-          ))}
-          <div className="how-to-play" onClick={seeVideoTuto}>
-            How to play
-          </div>
-          <div className="explanations"></div>
-          <div className="launch" onClick={launchNameModal}>
-            Start the Game !
-          </div>
-        </>
-      )}
-    </div>
-  );
+export const BigButton = styled.button`
+width: 300px;
+    height: auto;
+text-align:center;
+`
+
+const Intro = () => {
+    const [seeVideo, setSeeVideo] = useState(false);
+    const [seeModalName, setSeeModalName] = useState(false);
+    const launchNameModal = () => {
+        setSeeModalName(true);
+    };
+    const seeVideoTuto = () => {
+        setSeeVideo(!seeVideo);
+    };
+
+    useLayoutEffect(() => {
+        //son T rex
+        introSound.currentTime = 0;
+        introSound.play();
+        introSound.volume = 0.7;
+    }, []);
+    return (
+        <div className="intro-game">
+            <LOGOComponent src={logo} />
+            {seeVideo && <ModalVideo closeModal onVisible={seeVideo} setVisible={setSeeVideo} />}
+            {seeModalName && <ModalPreGame />}
+            {!seeModalName && (
+                <>
+                    <Hunter src={hunter} className="perso-hunter" />
+                    {dinoTab.map(props => (
+                        <Dino key={props.name} {...props} />
+                    ))}
+                    <BigButton className="launch" onClick={launchNameModal}>
+                        Start the Game !
+                    </BigButton>
+                    <BigButton className="how-to-play" onClick={seeVideoTuto}>
+                        How to play
+                    </BigButton>
+                </>
+            )}
+        </div>
+    );
 };
 
-export const ModalVideo = () => {
-  return (
-    <ModalTemplate>
-      <p>Use 'up', 'down','left', 'right' key</p>
-      <p>D for Dynamite, Space for shooting, P for pause</p>
-      <iframe
-        width="420"
-        height="300"
-        src="https://www.youtube.com/embed/NNZ5XWnEgvA"
-        frameBorder="0"
-        allowFullScreen
-      ></iframe>
-    </ModalTemplate>
-  );
+export const ModalVideo = ({...props}) => {
+    return (
+        <ModalTemplate {...props}>
+            <p>Use 'up', 'down','left', 'right' key</p>
+            <p>D for Dynamite, Space for shooting, P for pause</p>
+            <iframe
+                width="420"
+                height="300"
+                src="https://www.youtube.com/embed/NNZ5XWnEgvA"
+                frameBorder="0"
+                allowFullScreen
+            ></iframe>
+        </ModalTemplate>
+    );
 };
 
 export const ModalPreGame = () => {
-  const [, dispatch] = useGameData();
-  const [form, setForm] = useState({});
-  const startParty = (e: any) => {
-    e.preventDefault();
-    dispatch({ type: "START_GAME", payload: form });
-    introSound.pause();
-  };
-  const handleChange = (e: any) => {
-    const name = e.target.name;
-    setForm({ ...form, [name]: e.target.value });
-  };
-
-  return (
-    <ModalTemplate fontFamily={"none"}>
-      <h2 style={{ letterSpacing: 0 }}>Who are you young adventurer ?</h2>
-      <form onSubmit={startParty}>
-        <div style={{ marginBottom: "10px" }}>
-          <input
-            type="text"
-            required
-            name="name"
-            onChange={handleChange}
-            placeholder="your name"
-          />
-        </div>
-        <div style={{ marginBottom: "10px" }}>
-          <input
-            type="email"
-            required
-            name="email"
-            onChange={handleChange}
-            placeholder="your email"
-          />
-        </div>
-        <div>
-          <button type="submit">Send</button>
-        </div>
-      </form>
-    </ModalTemplate>
-  );
+    const [, dispatch] = useGameData();
+    const [form, setForm] = useState({});
+    const startParty = (e: any) => {
+        e.preventDefault();
+        dispatch({type: "START_GAME", payload: form});
+        introSound.pause();
+    };
+    const handleChange = (e: any) => {
+        const name = e.target.name;
+        setForm({...form, [name]: e.target.value});
+    };
+    return (
+        <ModalTemplate fontFamily={"none"}>
+            <h2 style={{letterSpacing: 0}}>Who are you young adventurer ?</h2>
+            <form onSubmit={startParty}>
+                <div style={{marginBottom: "10px"}}>
+                    <input
+                        type="text"
+                        required
+                        name="name"
+                        onChange={handleChange}
+                        placeholder="your name"
+                    />
+                </div>
+                <div style={{marginBottom: "10px"}}>
+                    <input
+                        type="email"
+                        required
+                        name="email"
+                        onChange={handleChange}
+                        placeholder="your email"
+                    />
+                </div>
+                <div>
+                    <button type="submit">Send</button>
+                </div>
+            </form>
+        </ModalTemplate>
+    );
 };
 
 export default Intro;

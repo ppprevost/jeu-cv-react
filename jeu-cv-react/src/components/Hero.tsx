@@ -12,8 +12,8 @@ import { useInterval, useKeyPress } from "../helpers/hooks";
 import Character from "./Characters";
 import heroHurtSound from "../sound/cri.mp3";
 import Bullet from "./Bullet";
+
 import {
-  heightCompetency,
   intervalSpeedHero,
   jumpSpeed,
   speedPlayer,
@@ -38,12 +38,11 @@ const Hero: FunctionComponent<IHero> = ({
   stopJump,
   exactSpriteObject
 }) => {
-  const correctedWidth = exactSpriteObject.width;
+ // const correctedWidth = exactSpriteObject.width;
   const [
     { gameOver, direction, sound, bullets, competency },
     dispatch
   ] = useGameData();
-  useKeyPress();
   const refPosition = useRef(x);
   const refPositionY = useRef(y);
   const avatarRef = useRef(direction === "right" ? avatar : avatarLeft);
@@ -59,7 +58,6 @@ const Hero: FunctionComponent<IHero> = ({
   useEffect(() => {
     if (direction === "right") {
       avatarRef.current = avatar;
-      console.log(exactSpriteObject.left);
       exactSpriteObject.left = exactSpriteObject.leftRightSide;
     } else {
       exactSpriteObject.left = exactSpriteObject.leftLeftSide;

@@ -50,7 +50,7 @@ const Dinosaurs = ({
   alive,
   exactSpriteObject
 }: IPropsDino) => {
-  const [{ sound, player, direction }, dispatch] = useGameData();
+  const [{ sound, player, direction, gameOver, win}, dispatch] = useGameData();
   const [frame, setFrame] = useState(0);
   const requestRef = useRef(spriteX[0]);
   const [typeSprite, setTypeSprite] = useState(0);
@@ -101,8 +101,8 @@ const Dinosaurs = ({
     }
   }, delayDinosaur.current);
   useEffect(() => {
-    takeSoundChoice(idSound, sound);
-  }, [sound]);
+    if (!gameOver && !win) takeSoundChoice(idSound, sound);
+  }, [sound, gameOver]);
 
   const idS = useInterval(() => {
     setFrame(frame + 1);
