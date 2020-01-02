@@ -43,6 +43,7 @@ const Hero: FunctionComponent<IHero> = ({
     { gameOver, direction, sound, bullets, competency },
     dispatch
   ] = useGameData();
+  useKeyPress();
   const refPosition = useRef(x);
   const refPositionY = useRef(y);
   const avatarRef = useRef(direction === "right" ? avatar : avatarLeft);

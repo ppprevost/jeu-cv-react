@@ -22,7 +22,6 @@ export const useCalculateIntervalDino = () => {
 const Game = () => {
     const xBackground = window.innerWidth / 4;
     const [{player, dino, gameOver, sound, competency, win, pause}, dispatch] = useGameData();
-    useKeyPress();
     const FixedBackground = (compute: number) => useMemo(() => <Background left={compute} />, [xBackground])
     const newRef = useRef(createDinosaur());
     const visibilityGame = useRef(true); // bug fixing

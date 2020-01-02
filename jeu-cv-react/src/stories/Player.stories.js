@@ -4,7 +4,6 @@ import { withContexts } from "@storybook/addon-contexts/react";
 import Hero from "../../src/components/Hero";
 import { initHeroes } from "../../src/data/player";
 import { UserContext } from '../store/GameProvider';
-import context from '../../.storybook/config/context';
 import {
   withKnobs,
   color,
@@ -38,7 +37,4 @@ const GameProvider = ({ children }) => {
 };
 
 
-stories.addDecorator(withKnobs).add("idle", () => <GameProvider><Hero {...initHeroesMock}/></GameProvider>  , {
-  context
-
-});
+stories.addDecorator(withKnobs).add("idle", () => <GameProvider><Hero {...initHeroesMock}/></GameProvider>);
