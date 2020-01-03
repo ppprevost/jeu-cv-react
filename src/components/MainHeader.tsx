@@ -83,7 +83,7 @@ const MainHeader = () => {
 
       <div className="row sub-menu misc">
         <div className="cv col-xs-4">
-          <a href="document/cv_ppprevost_ifocop.pdf" target="_blank">
+          <a href="https://github.com/ppprevost" target="_blank">
             Download My CV
           </a>
         </div>
