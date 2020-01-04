@@ -84,7 +84,7 @@ const MainHeader = () => {
       <div className="row sub-menu misc">
         <div className="cv col-xs-4">
           <a href="https://github.com/ppprevost" target="_blank">
-            Download My CV
+            Github
           </a>
         </div>
         <div onClick={resetGame} className="startAgain col-xs-4">

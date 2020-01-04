@@ -25,16 +25,16 @@ export interface EnemyInit {
 }
 
 export const peaksInit = {
-    y: 504,
+    y: 30,
     avatar: [spike],
     className: "spike",
     width: 70,
-    height: 50,
+    height: 60,
 
 }
 
 export const vinesInit = {
-    y: 0,
+    y: 90,
     avatar: [vine],
     className: "vine",
     width: 41,
@@ -46,7 +46,7 @@ export const raptorInit = (): EnemyInit => {
     const randomIndex = Math.round(Math.random() * 2)
     const raptorChoice = raptorArray[randomIndex]
     return ({
-        y: 410,
+        y: 23,
         className: 'raptor',
         health: 200,
         exactSpriteObject: {
@@ -66,7 +66,7 @@ export const raptorInit = (): EnemyInit => {
 }
 
 export const pteroInit: EnemyInit = {
-    y: 282,
+    y: 200,
     avatar: [ptero, pteroLeft],
     className: 'ptero',
     spriteX: [0, -128, -256, -384, -512],
@@ -77,7 +77,7 @@ export const pteroInit: EnemyInit = {
 }
 
 export const diploInit: EnemyInit = {
-    y: 415,
+    y: 32,
     exactSpriteObject: {
         height:110,
         width:100,

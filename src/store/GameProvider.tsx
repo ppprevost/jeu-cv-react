@@ -190,7 +190,6 @@ export const reducer = (state: State, action: ActionType) => {
       }
       return { ...state };
     case "ANIMATE_PLAYER":
-      console.log(action.y);
       return {
         ...state,
         player: { ...state.player, x: action.x, y: action.y ? action.y : {} }
@@ -253,7 +252,6 @@ export const reducer = (state: State, action: ActionType) => {
             } else {
               watchSound.pause();
             }
-
             const newCompetency = {
               avatar: competencyArray[state.competency.length].img,
               type: competencyArray[state.competency.length].type,
@@ -320,6 +318,7 @@ export const reducer = (state: State, action: ActionType) => {
     case "RESET_GAME":
       console.log("reset");
       const init = { game: "game", player: initHeroes };
+      // @ts-ignore
       state = { ...initialState, ...init };
       return { ...state };
     default: {

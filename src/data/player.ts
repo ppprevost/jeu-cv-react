@@ -46,7 +46,7 @@ export const initHeroes: IHero = {
   width: 110,
   height: 100,
   x: 0,
-  y: 454
+  y: 28
 };
 initHeroes.x = windowSize / 2 - initHeroes.width / 2; // initial position of the player
 

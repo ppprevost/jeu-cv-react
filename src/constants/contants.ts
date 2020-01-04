@@ -20,13 +20,13 @@ export const PAUSE = 80;
 export const DYNAMITE = 68;
 
 export const windowSize = window.innerWidth;
-
+export const windowHeight = window.innerHeight;
 /**
  * speed And Interval between moving
  */
 export const speedPlayer = 10;
 export const correctHeroWidthForCollisionWithDino = 70;
-export const stopJumpingHeight = 300;
+export const stopJumpingHeight = 210;
 export const intervalSpeedHero = 50;
 export const jumpPlayerX = 2;
 export const jumpSpeed = 30;
@@ -64,3 +64,25 @@ export const competencyArray = [
     website: "https://www.typescriptlang.org/"
   }
 ];
+
+const size = {
+  mobileS: '320px',
+  mobileM: '375px',
+  mobileL: '425px',
+  tablet: '768px',
+  laptop: '1024px',
+  laptopL: '1440px',
+  desktop: '2560px'
+}
+
+
+export const device = {
+  mobileS: `(min-width: ${size.mobileS})`,
+  mobileM: `(min-width: ${size.mobileM})`,
+  mobileL: `(min-width: ${size.mobileL})`,
+  tablet: `(min-width: ${size.tablet})`,
+  laptop: `(min-width: ${size.laptop})`,
+  laptopL: `(min-width: ${size.laptopL})`,
+  desktop: `(min-width: ${size.desktop})`,
+  desktopL: `(min-width: ${size.desktop})`
+};

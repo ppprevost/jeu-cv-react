@@ -1,7 +1,7 @@
 import React, {
   FunctionComponent,
   useEffect,
-  useLayoutEffect,
+  useLayoutEffect, useMemo,
   useRef,
   useState
 } from "react";
@@ -25,6 +25,7 @@ import { Competency } from "./Competency";
 import getItem from "../sound/OOT_Get_SmallItem1.mp3";
 import { IHero, initHeroes } from "../data/player";
 import { getCorrectSprite } from "../helpers/player_helpers";
+import Keyboard from "./Keyboard";
 
 const hurtSound = new Audio(heroHurtSound);
 const getItemSound = new Audio(getItem);
@@ -88,15 +89,15 @@ const Hero: FunctionComponent<IHero> = ({
       if (position.isRunningLeft) {
         refPosition.current -= 15;
       }
-      if (refPositionY.current <= stopJumpingHeight) {
+      if (refPositionY.current >= stopJumpingHeight) {
         dispatch({ type: "LAND_PLAYER" });
       }
       if (stopJump) {
-        refPositionY.current += jumpSpeed;
-      } else {
         refPositionY.current -= jumpSpeed;
+      } else {
+        refPositionY.current += jumpSpeed;
       }
-      if (refPositionY.current >= initHeroes.y) {
+      if (refPositionY.current <= initHeroes.y) {
         refPositionY.current = initHeroes.y;
         dispatch({ type: "STOP_JUMPING" });
       }
@@ -135,6 +136,12 @@ const Hero: FunctionComponent<IHero> = ({
   }, [position.isShooting, dispatch]);
   return (
     <>
+      {useMemo(
+          () => (
+              <Keyboard />
+          ),
+          []
+      )}
       <Character
         width={width}
         height={height}

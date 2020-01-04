@@ -31,7 +31,7 @@ const BuildContainerForSprite:FunctionComponent<IContainerSprite> = ({zIndex = 2
                 position:"absolute",
                 overflow:"hidden",
                 left:x,
-                top:y,
+                bottom:y,
                 zIndex:zIndex
             }
         }

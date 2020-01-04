@@ -24,7 +24,8 @@
   "scripts": {
     "start": "npm run server:node",
     "storybook": "start-storybook",
-    "dev": "cross-env react-scripts start & npm run server:nodemon",
+    "dev:front": "react-scripts start",
+    "dev:server": "cross-env react-scripts start & npm run server:nodemon",
     "server:nodemon": "nodemon server",
     "server:node": "node server",
     "build": "react-scripts build",

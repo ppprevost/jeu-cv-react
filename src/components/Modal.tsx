@@ -31,22 +31,21 @@ const ModalImg = styled.div<any>`
     position: absolute;
     max-width: 100%;
     width: 600px;
+    margin:auto auto;
     border:1px solid #F7F936;
-    overflow:${({ overflow }) => overflow || "auto"}
-    left: 50%;
+    overflow:${({ overflow }) => overflow || "auto"};
     max-height:291px;
     line-height: 40px;
     text-align: center;
     padding: 2rem;
-    margin-left: -300px;
-    top: 246px;
+   top: 0; left: 0; bottom: 0; right: 0;
     z-index: 2000;
 `;
 
 export const ModalTemplate: FunctionComponent<ModalOptional> = ({
   children,
-  onVisible =true,
-  setVisible =()=>{},
+  onVisible = true,
+  setVisible = () => {},
   closeModal = false,
   ...otherProps
 }) => {

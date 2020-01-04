@@ -16,7 +16,7 @@ const ImgCompetency = styled.img<Competency>`
 animation: ${rotate} 2s linear infinite;
 z-index: 1000;
 position:absolute;
-top:${({y}) => y + 'px'};
+bottom:${({y}) => y + 'px'};
 width:${widthCompetency + 'px'};
 height:${heightCompetency + 'px'};
 left:${({x}) => x + 'px'}

@@ -33,25 +33,6 @@ export function useFetch<T>(url: string, options:any = {}): { response: T | null
     return {response, error, isLoading}
 }
 
-export const useTimeOut = (callback: () => void, delay: number | null) => {
-    const refCancel = useRef(0)
-    const savedCallback = useRef< any>(null);
-    // Remember the latest callback.
-    useEffect(() => {
-        savedCallback.current = callback;
-    }, [callback]);
-    useEffect(() => {
-        function tick() {
-            savedCallback.current()
-        }
-        if (delay !== null) {
-            refCancel.current = setTimeout(tick, delay)
-        }
-        return ()=> {clearTimeout(refCancel.current)}
-    }, [delay])
-
-}
-
 export function useInterval(callback: () => void, delay: number | null) {
     const [{win, pause}] = useGameData()
     const savedCallback: any = useRef(null);
@@ -67,7 +48,6 @@ export function useInterval(callback: () => void, delay: number | null) {
             savedCallback.current()
         }
         if (delay !== null && !win && !pause) {
-
             saveCancelRef.current = setInterval(tick, delay);
             setClearInterval(saveCancelRef.current)
             return () => clearInterval(saveCancelRef.current);
@@ -115,7 +95,7 @@ export function useKeyPress() {
     const downHandler = ({keyCode}: KeyboardEvent) => {
         switch (keyCode) {
             case UP :
-                if (!position.isJumping) {
+                if (!position.isJumping && !position.isHurting) {
                     dispatch({type: 'JUMP'})
                 }
                 break;

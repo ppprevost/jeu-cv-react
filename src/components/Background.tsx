@@ -11,7 +11,7 @@ import field from "../img/field.png";
 const backgroundImg = [background1, background2, background3, background4, background5, background6, background7]
 
 const style = {
-    top: 470,
+    bottom: 30,
     width: 90,
     height: 80
 }
@@ -20,16 +20,16 @@ export const Field = () => {
     const style: CSSProperties = {
         zIndex: 5,
         position: 'absolute',
-        top: 548,
+        bottom: 0,
     }
     return (<img src={field} style={style} alt="" />)
 }
 
 const Background = ({left}: {left:number}) => {
-    const {top, width, height} = style;
+    const {bottom, width, height} = style;
     const objetRandom = Math.round(Math.random() * (backgroundImg.length-1));
     const avatar = backgroundImg[objetRandom];
-    return <img alt={'background'} className='background' src={avatar} style={{top, width, height,left, position:'absolute'}} />
+    return <img alt={'background'} className='background' src={avatar} style={{bottom, width, height,left, position:'absolute'}} />
 }
 
 export default Background
