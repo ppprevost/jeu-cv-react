@@ -51,12 +51,12 @@ const Hero: FunctionComponent<IHero> = ({
   const [behavior, setBehavior] = useState(0);
   const delayRef = useRef<number | null>(null);
   useEffect(() => {
-    if (!position.isIdle) {
-      delayRef.current = intervalSpeedHero;
-    } else {
+    if (position.isIdle && !position.isHurting && !position.isDynamiting) {
       delayRef.current = null;
+    } else {
+      delayRef.current = intervalSpeedHero;
     }
-  }, [position]);
+  }, [position.isIdle, position.isHurting, position.isDynamiting]);
   useEffect(() => {
     if (direction === "right") {
       avatarRef.current = avatar;
@@ -83,6 +83,7 @@ const Hero: FunctionComponent<IHero> = ({
         dispatch({ type: "GET_COMPETENCY", payload: { newComp: comp.type } });
       }
     });
+    console.log('go go go', position)
     if (position.isJumping) {
       if (position.isRunning) {
         refPosition.current += 15;
@@ -104,6 +105,7 @@ const Hero: FunctionComponent<IHero> = ({
       }
     } else {
       // width/2 a little space for taking competency
+
       if (position.isRunning && refPosition.current + width / 2 < windowSize) {
         refPosition.current += speedPlayer;
       }
@@ -117,7 +119,6 @@ const Hero: FunctionComponent<IHero> = ({
       y: refPositionY.current
     });
   }, delayRef.current);
-
   useLayoutEffect(() => {
     getCorrectSprite(position, setBehavior);
   }, [position]);

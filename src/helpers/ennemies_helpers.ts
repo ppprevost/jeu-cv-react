@@ -38,11 +38,9 @@ export const takeSoundChoice = (idSound: string, sound: boolean) => {
 }
 
 export const conditionToConflict =(className:string, positionHero:number, refPosition:any, width:number, player:typeof initHeroes, y:number , height:number)=>{
-    const playerHeight = player.exactSpriteObject.height;
     if(className ==='vine' && player.position.isCrouching){
         return  false
     }
-    console.log(player.y+player.width , y , y+height , player.y  >= y, player.y  <= y + height)
     return positionHero >= refPosition.current
         && positionHero <= refPosition.current + width
         && player.y+player.height  >= y
