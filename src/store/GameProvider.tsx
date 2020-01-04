@@ -27,7 +27,6 @@ import {
   competencyArray,
   heightCompetency,
   widthCompetency,
-  windowSize
 } from "../constants/contants";
 import watchOutSound from "../sound/OOT_Navi_WatchOut1.mp3";
 import shotSound from "../sound/fusil.mp3";
@@ -317,7 +316,7 @@ export const reducer = (state: State, action: ActionType) => {
       return { ...state };
     case "RESET_GAME":
       console.log("reset");
-      const init = { game: "game", player: initHeroes };
+      const init = { game: "game", player: {...initHeroes} };
       // @ts-ignore
       state = { ...initialState, ...init };
       return { ...state };

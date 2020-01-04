@@ -34,7 +34,7 @@ export function useFetch<T>(url: string, options:any = {}): { response: T | null
 }
 
 export function useInterval(callback: () => void, delay: number | null) {
-    const [{win, pause}] = useGameData()
+    const [{win, pause, gameOver}] = useGameData()
     const savedCallback: any = useRef(null);
     const saveCancelRef: any = useRef(0)
     const [interval, setClearInterval] = useState(saveCancelRef);
@@ -47,12 +47,12 @@ export function useInterval(callback: () => void, delay: number | null) {
         function tick() {
             savedCallback.current()
         }
-        if (delay !== null && !win && !pause) {
+        if (delay !== null && !win && !pause && !gameOver) {
             saveCancelRef.current = setInterval(tick, delay);
             setClearInterval(saveCancelRef.current)
             return () => clearInterval(saveCancelRef.current);
         }
-    }, [delay, win, pause]);
+    }, [delay, win, pause, gameOver]);
     return interval
 }
 
@@ -95,7 +95,7 @@ export function useKeyPress() {
     const downHandler = ({keyCode}: KeyboardEvent) => {
         switch (keyCode) {
             case UP :
-                if (!position.isJumping && !position.isHurting) {
+                if (!position.isJumping && !position.isHurting && !position.isDynamiting) {
                     dispatch({type: 'JUMP'})
                 }
                 break;
@@ -123,8 +123,9 @@ export function useKeyPress() {
                 dispatch({type: 'SET_PAUSE'})
                 break;
             case DYNAMITE:
-                dispatch({type: 'IS_DYNAMITING'})
-
+                if (!position.isDynamiting && !position.isHurting) {
+                    dispatch({type: 'IS_DYNAMITING'})
+                }
         }
     }
     // If released key is our target key then set to false

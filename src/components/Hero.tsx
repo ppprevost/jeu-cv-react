@@ -66,9 +66,10 @@ const Hero: FunctionComponent<IHero> = ({
       avatarRef.current = avatarLeft;
     }
   }, [direction, exactSpriteObject]);
-  useInterval(() => {
+  const z = useInterval(() => {
     if (gameOver) {
       delayRef.current = null;
+      clearInterval(z)
     }
     competency.forEach((comp: Competency) => {
       if (

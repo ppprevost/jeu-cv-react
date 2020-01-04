@@ -20,7 +20,6 @@ export const getCorrectSprite = (position: typeof initHeroes.position, setBehavi
         if (position.isShooting) {
             return setBehavior(spriteValue.isChrouchShooting)
         }
-
     }
     if (position.isDynamiting) {
         if (position.isCrouching) {
