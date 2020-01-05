@@ -1,4 +1,4 @@
-import React, { CSSProperties, SyntheticEvent } from "react";
+import React, {CSSProperties, SyntheticEvent, useEffect, useRef} from "react";
 import keyboardArrow from "../img/arrow-key.png";
 import styled from "styled-components";
 import { useGameData } from "../store/GameProvider";
@@ -38,6 +38,8 @@ const keyboardTouch: CSSProperties = {
 };
 
 const Keyboard = () => {
+  const timeStamp = useRef(0)
+
   const [
     {
       player: { position }
@@ -62,6 +64,16 @@ const Keyboard = () => {
     e.preventDefault();
     dispatch({ type: MOVE_LEFT, stop });
   };
+
+useEffect(()=>{
+  window.addEventListener("touchstart", function(event_) {
+    if (event_.timeStamp - timeStamp.current < 300) { // A tap that occurs less than 300 ms from the last tap will trigger a double tap. This delay may be different between browsers.
+      event_.preventDefault();
+      return false;
+    }
+    timeStamp.current = event_.timeStamp;
+  })
+}, [])
 
   return (
     <>

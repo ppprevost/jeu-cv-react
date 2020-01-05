@@ -4,9 +4,8 @@ import { ADD_PLAYER, ADD_DINO } from "../constants";
 import Hero from "../components/Hero";
 import Dinosaurs from "../components/Dinosaurs";
 import Competency from "../components/Competency";
-import Keyboard from "../components/Keyboard";
 import Background, { Field } from "../components/Background";
-import { useInterval } from "../helpers/hooks";
+import { useInterval, useWindowSize } from "../helpers/hooks";
 import mainSound from "../sound/main.mp3";
 import { ModalGameOver, ModalPause, ModalWin } from "../components/Modal";
 import { createDinosaur } from "../helpers/ennemies_helpers";
@@ -15,10 +14,18 @@ const ambianceSound = new Audio(mainSound);
 
 export const useCalculateIntervalDino = () => {
   const [{ player }] = useGameData();
-  const delayRef = useRef(1500);
+  const { windowSize } = useWindowSize();
+  const delayRef = useRef(0);
+  let [size, interval] = [800, 1600];
+  const diff = size - windowSize;
+  interval += diff * 3;
+  console.log(interval);
+  useEffect(() => {
+    delayRef.current = interval;
+  }, [windowSize]);
   useEffect(() => {
     if (player) {
-        delayRef.current -= 10;
+      delayRef.current -= 10;
     }
   }, [player && player.score]);
   return delayRef.current;

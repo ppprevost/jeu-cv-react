@@ -11,7 +11,6 @@ import ModalTemplate from "../components/Modal";
 
 import sonIntro from "../sound/trex_cri.mp3";
 import styled from "styled-components";
-import {device, size} from "../constants/contants";
 import { useGameData } from "../store/GameProvider";
 import { useWindowSize } from "../helpers/hooks";
 
@@ -23,9 +22,7 @@ const LOGOComponent = styled.img`
   margin-left: auto;
   margin-right: auto;
   width: 300px;
-  @media ${device.laptop} {
-    width: auto;
-  }
+
 `;
 
 const Hunter = styled.img<any>`
@@ -115,7 +112,7 @@ const Intro = () => {
     <div className="intro-game">
       <ContainerIntro>
         <LOGOComponent src={logo} />
-        { windowSize< 640 && window.orientation ===0? <p style={{textAlign:"center"}}>Please return your device</p> :
+        { window.screen.orientation.type ==='portrait-primary'? <p style={{textAlign:"center"}}>Please return your device</p> :
            <>
             <BigButton className="launch" onClick={launchNameModal}>
           Start the Game !
