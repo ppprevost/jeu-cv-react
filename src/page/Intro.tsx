@@ -11,9 +11,9 @@ import ModalTemplate from "../components/Modal";
 
 import sonIntro from "../sound/trex_cri.mp3";
 import styled from "styled-components";
-import {device, windowHeight, windowSize} from "../constants/contants";
+import {device, size} from "../constants/contants";
 import { useGameData } from "../store/GameProvider";
-import {initHeroes} from "../data/player";
+import { useWindowSize } from "../helpers/hooks";
 
 const introSound = new Audio(sonIntro);
 
@@ -28,10 +28,11 @@ const LOGOComponent = styled.img`
   }
 `;
 
-const Hunter = styled.img`
+const Hunter = styled.img<any>`
 position:absolute;
-left:${windowSize * 0.01 + "px"}
-bottom: ${(windowHeight< 580? windowHeight / 2 - 150 : 150) +'px'};
+left:${({ windowSize }) => { return (windowSize<580? -150 +'px' : 0 + "px")}}
+top: ${({ windowHeight }) =>
+  (windowHeight < 580 ? windowHeight / 2 - 150 : 150) + "px"};
 width:350px
 
 `;
@@ -43,15 +44,14 @@ interface DinoPropsIntro {
   top: number;
 }
 
-const Dino = styled.img<DinoPropsIntro>`
+const Dino = styled.img<any>`
 position:absolute;
 z-index:${({ zIndex }) => zIndex} ;
-left:${({ position }) => windowSize * position + "px"}
+left:${({ position, windowSize }) => windowSize * position + "px"}
 top:${({ top }) => 200 + top + "px"};
 `;
 
 const dinoTab = [
-
   { name: "pachy", src: pachy, position: 0.75, zIndex: 12, top: -100 },
   { name: "ptero", src: ptero, position: 0.75, zIndex: 12, top: -200 },
   {
@@ -87,14 +87,15 @@ export const BigButton = styled.button`
 `;
 
 export const ContainerIntro = styled.div`
-margin:0 auto;
-width: 300px;
-& > *{
-  margin-bottom: 10px;
-}
-`
+  margin: 0 auto;
+  width: 300px;
+  & > * {
+    margin-bottom: 10px;
+  }
+`;
 
 const Intro = () => {
+  const { windowSize, windowHeight } = useWindowSize();
   const [seeVideo, setSeeVideo] = useState(false);
   const [seeModalName, setSeeModalName] = useState(false);
   const launchNameModal = () => {
@@ -114,12 +115,14 @@ const Intro = () => {
     <div className="intro-game">
       <ContainerIntro>
         <LOGOComponent src={logo} />
-        <BigButton className="launch" onClick={launchNameModal}>
+        { windowSize< 640 && window.orientation ===0? <p style={{textAlign:"center"}}>Please return your device</p> :
+           <>
+            <BigButton className="launch" onClick={launchNameModal}>
           Start the Game !
         </BigButton>
         <BigButton className="how-to-play" onClick={seeVideoTuto}>
           How to play
-        </BigButton>
+        </BigButton></>}
       </ContainerIntro>
       {seeVideo && (
         <ModalVideo closeModal onVisible={seeVideo} setVisible={setSeeVideo} />
@@ -127,9 +130,14 @@ const Intro = () => {
       {seeModalName && <ModalPreGame />}
       {!seeModalName && (
         <>
-          <Hunter src={hunter} className="perso-hunter" />
+          <Hunter
+            windowSize={windowSize}
+            windowHeight={windowHeight}
+            src={hunter}
+            className="perso-hunter"
+          />
           {dinoTab.map(props => (
-            <Dino key={props.name} {...props} />
+            <Dino windowSize={windowSize} key={props.name} {...props} />
           ))}
         </>
       )}

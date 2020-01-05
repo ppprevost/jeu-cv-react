@@ -1,8 +1,8 @@
 import React, {useEffect, useState, useRef} from "react";
 import bulletImg from "../img/item.png";
-import {useInterval} from "../helpers/hooks";
+import {useInterval, useWindowSize} from "../helpers/hooks";
 import {useGameData} from "../store/GameProvider";
-import {intervalBullet, speedBullet, windowSize} from "../constants/contants";
+import {intervalBullet, speedBullet} from "../constants/contants";
 import BulletSprite from "./SpriteElement"
 
 export interface IBulletProps {
@@ -17,6 +17,7 @@ export interface IBulletProps {
 
 const BulletComponent = ({type, id, width, height, spriteItemX, spriteItemY, className}: IBulletProps) => {
     const [{player, dino, direction}, dispatch] = useGameData();
+    const {windowSize} = useWindowSize();
     const ref = useRef(player.x + 100);
     const refDirection = useRef<string | null>(null)
     const y = useRef(player.position.isCrouching ? player.y + 25 : player.y + 45);

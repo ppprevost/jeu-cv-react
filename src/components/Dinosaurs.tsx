@@ -1,10 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  dinoSpeed,
-  intervalSpeedDino,
-  windowSize
-} from "../constants/contants";
-import { useInterval } from "../helpers/hooks";
+import { dinoSpeed, intervalSpeedDino } from "../constants/contants";
+import {useInterval, useWindowSize} from "../helpers/hooks";
 import { useGameData } from "../store/GameProvider";
 import { MOVE_DINO } from "../constants";
 import Explosion from "./Explosion";
@@ -35,7 +31,7 @@ export interface IPropsDino {
 
 const Dinosaurs = ({
   id,
-  x = windowSize,
+  x,
   y,
   width,
   widthDead = 0,
@@ -50,7 +46,8 @@ const Dinosaurs = ({
   alive,
   exactSpriteObject
 }: IPropsDino) => {
-  const [{ sound, player, direction, gameOver, win}, dispatch] = useGameData();
+  const { windowSize } = useWindowSize();
+  const [{ sound, player, direction, gameOver, win }, dispatch] = useGameData();
   const [frame, setFrame] = useState(0);
   const requestRef = useRef(spriteX[0]);
   const [typeSprite, setTypeSprite] = useState(0);

@@ -1,7 +1,6 @@
 import explode from "../sound/explode.mp3";
 import doubleKill from "../sound/double_kill.mp3";
 import ultrakill from "../sound/ultrakill.mp3";
-import {windowSize} from "../constants/contants";
 
 export const repercutPositionHero = (state: any, newPosition: string, stop?: boolean) => {
     let initObject: typeof state.player.position = {};
@@ -180,6 +179,7 @@ export const playSoundRampage = (dinoLength: number, sound: boolean) => {
 }
 
 export const competencyFixed = (competencyX:number, competencyWidth:number)=>{
+    const windowSize = window.innerWidth;
     if(competencyX < 0){
         competencyX = 0
     }

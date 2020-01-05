@@ -1,13 +1,17 @@
-import React, { useMemo, lazy, Suspense } from "react";
+import React, {
+  useMemo,
+  lazy,
+  Suspense,
+  CSSProperties,
+} from "react";
 import "./App.css";
 import GameProvider, { useGameData } from "./store/GameProvider";
 import Intro from "./page/Intro";
 import MainHeader from "./components/MainHeader";
-import styled from "styled-components";
-import { windowHeight } from "./constants/contants";
+import { useWindowSize } from "./helpers/hooks";
 const Game = lazy(() => import("./page/Game"));
 
-const MainHeaderMemoized = () => {
+export const MainHeaderMemoized = () => {
   return useMemo(() => <MainHeader />, []);
 };
 const App = () => (
@@ -16,30 +20,28 @@ const App = () => (
   </GameProvider>
 );
 
-const ContainerGame = styled.div`
-  background: url("https://res.cloudinary.com/hkszuuqf3/image/upload/v1578145649/fond_npi9t5.png")
-    repeat-x;
-  overflow: hidden;
-  width: 100%;
-  margin: 0 auto;
-  height: ${windowHeight + "px"};
-  max-height: 580px;
-  position: relative;
-  max-width: 1400px;
-`;
-
 const Play = () => {
-  const [{ player, gameType, intro }] = useGameData();
+  const { windowHeight } = useWindowSize();
+  const style: CSSProperties = {
+    background:
+      'url("https://res.cloudinary.com/hkszuuqf3/image/upload/v1578145649/fond_npi9t5.png")repeat-x',
+    overflow: "hidden",
+    width: 100 + "%",
+    margin: "0 auto",
+    maxHeight: 580 + "px",
+    position: "relative",
+    maxWidth: 1400 + "px"
+  };
+  const [{ gameType, intro }] = useGameData();
   return (
-    <ContainerGame>
-      {player && <MainHeaderMemoized />}
+    <div style={{ ...style, height: windowHeight + "px" }}>
       {intro && <Intro />}
       {gameType === "game" && (
         <Suspense fallback={"is loading"}>
           <Game />
         </Suspense>
       )}
-    </ContainerGame>
+    </div>
   );
 };
 

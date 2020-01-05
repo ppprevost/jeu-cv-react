@@ -1,4 +1,3 @@
-import { windowSize } from "../constants/contants";
 
 export interface IHero {
   name: string | null;
@@ -45,10 +44,9 @@ export const initHeroes: IHero = {
   health: 100,
   width: 110,
   height: 100,
-  x: 0,
+  x: window.innerWidth / 2 - 110/2,
   y: 28
 };
-initHeroes.x = windowSize / 2 - initHeroes.width / 2; // initial position of the player
 
 export const spriteX = [
   -10,

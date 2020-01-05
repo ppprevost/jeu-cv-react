@@ -71,7 +71,7 @@ const UserContext = createContext<any>([]);
 
 export const initialState = {
   intro: true,
-  gameType: null,
+  gameType: false,
   direction: "right",
   sound: false,
   player: null,
@@ -279,6 +279,7 @@ export const reducer = (state: State, action: ActionType) => {
           hurtedPlayerState.player.health <= 0
         ) {
           hurtedPlayerState.gameOver = true;
+          hurtedPlayerState.player = null;
         }
         return { ...hurtedPlayerState };
       }

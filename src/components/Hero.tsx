@@ -1,14 +1,15 @@
 import React, {
   FunctionComponent,
   useEffect,
-  useLayoutEffect, useMemo,
+  useLayoutEffect,
+  useMemo,
   useRef,
   useState
 } from "react";
 import { useGameData } from "../store/GameProvider";
 import avatar from "../img/hunter.png";
 import avatarLeft from "../img/hunter_left.png";
-import { useInterval, useKeyPress } from "../helpers/hooks";
+import { useInterval, useKeyPress, useWindowSize } from "../helpers/hooks";
 import Character from "./Characters";
 import heroHurtSound from "../sound/cri.mp3";
 import Bullet from "./Bullet";
@@ -18,14 +19,14 @@ import {
   jumpSpeed,
   speedPlayer,
   stopJumpingHeight,
-  widthCompetency,
-  windowSize
+  widthCompetency
 } from "../constants/contants";
 import { Competency } from "./Competency";
 import getItem from "../sound/OOT_Get_SmallItem1.mp3";
 import { IHero, initHeroes } from "../data/player";
 import { getCorrectSprite } from "../helpers/player_helpers";
 import Keyboard from "./Keyboard";
+import { MainHeaderMemoized } from "../App";
 
 const hurtSound = new Audio(heroHurtSound);
 const getItemSound = new Audio(getItem);
@@ -39,11 +40,12 @@ const Hero: FunctionComponent<IHero> = ({
   stopJump,
   exactSpriteObject
 }) => {
- // const correctedWidth = exactSpriteObject.width;
+  // const correctedWidth = exactSpriteObject.width;
   const [
     { gameOver, direction, sound, bullets, competency },
     dispatch
   ] = useGameData();
+  const { windowSize } = useWindowSize();
   useKeyPress();
   const refPosition = useRef(x);
   const refPositionY = useRef(y);
@@ -68,8 +70,10 @@ const Hero: FunctionComponent<IHero> = ({
   }, [direction, exactSpriteObject]);
   const z = useInterval(() => {
     if (gameOver) {
+      refPosition.current = initHeroes.x;
+      refPositionY.current = initHeroes.y;
       delayRef.current = null;
-      clearInterval(z)
+      clearInterval(z);
     }
     competency.forEach((comp: Competency) => {
       if (
@@ -83,7 +87,6 @@ const Hero: FunctionComponent<IHero> = ({
         dispatch({ type: "GET_COMPETENCY", payload: { newComp: comp.type } });
       }
     });
-    console.log('go go go', position)
     if (position.isJumping) {
       if (position.isRunning) {
         refPosition.current += 15;
@@ -138,11 +141,12 @@ const Hero: FunctionComponent<IHero> = ({
   }, [position.isShooting, dispatch]);
   return (
     <>
+      {<MainHeaderMemoized />}
       {useMemo(
-          () => (
-              <Keyboard />
-          ),
-          []
+        () => (
+          <Keyboard />
+        ),
+        []
       )}
       <Character
         width={width}

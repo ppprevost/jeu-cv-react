@@ -1,4 +1,3 @@
-import {windowSize} from "../constants/contants";
 import {diploInit, EnemyInit, peaksInit, pteroInit, raptorInit, vinesInit} from "../data/ennemies";
 import raptorNoise from "../sound/raptor.mp3";
 import pteroNoise from "../sound/pterodactyl.mp3";
@@ -6,12 +5,13 @@ import diploNoise from "../sound/diplo.mp3";
 import {initHeroes} from "../data/player";
 
 export const createDinosaur = (): EnemyInit => {
+    const windowSize = window.innerWidth
     const tableDinosaur = [pteroInit, raptorInit(), diploInit, peaksInit, vinesInit]
     const random = Math.round(Math.random() * (tableDinosaur.length-1))
     const chosenDinosaur = {...tableDinosaur[random]} as EnemyInit
     const randomPosition = [windowSize, -chosenDinosaur.width][Math.round(Math.random())];
     chosenDinosaur.x = chosenDinosaur.avatar.length > 1 || chosenDinosaur.className === 'spike' || chosenDinosaur.className === 'vine' ? randomPosition : windowSize;
-    chosenDinosaur.avatar = randomPosition === windowSize || chosenDinosaur.avatar.length < 2 ? chosenDinosaur.avatar[0] : chosenDinosaur.avatar[1]
+    chosenDinosaur.avatar = randomPosition === window.innerWidth || chosenDinosaur.avatar.length < 2 ? chosenDinosaur.avatar[0] : chosenDinosaur.avatar[1]
     return chosenDinosaur
 }
 
