@@ -19,7 +19,6 @@ const ContainerKeyboard = styled.div`
   right: 0%;
   bottom: 30px;
   margin: 0;
-  -webkit-user-select: none;
   z-index: 5000;
   width: 100px;
   font-size: 2rem;

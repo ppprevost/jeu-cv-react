@@ -1,110 +1,114 @@
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 @font-face {
-    font-family: 'Jurassik';
-    src: url('font/JurassicPark.ttf');
-    font-weight: normal;
-    font-style: normal;
+  font-family: "Jurassik";
+  src: url("font/JurassicPark.ttf");
+  font-weight: normal;
+  font-style: normal;
 }
 
 /*Css relatif au jeu*/
 
-.row{
-    display: flex;
-    flex-wrap: wrap;
-    margin-right: -15px;
-    justify-content: space-evenly;
-    margin-left: -15px;
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  justify-content: space-evenly;
+  margin-left: -15px;
 }
 
 .misc {
-    background-color: black;
-    padding: 0px 0;
-    height: auto;
-    border: 1px red solid;
-    color: white;
-    text-align: center;
-    z-index: -1;
+  background-color: black;
+  padding: 0px 0;
+  height: auto;
+  border: 1px red solid;
+  color: white;
+  text-align: center;
+  z-index: -1;
 }
 
 .misc span {
-    font-family: Jurassik, sans-serif;
-    font-size: 30px;
-    padding-left: 5px;
-    display: inline;
-
+  font-family: Jurassik, sans-serif;
+  font-size: 30px;
+  padding-left: 5px;
+  display: inline;
 }
 
 .glyphicon {
-    vertical-align: super;
+  vertical-align: super;
 }
 
-.endGame, .explanations {
-    display: none;
-    background-color: black;
-    color: white;
-    letter-spacing: 0.2em;
-    font-family: Jurassik, sans-serif;
-    font-size: 40px;
-    position: absolute;
-    width: 600px;
-    left: 50%;
-    line-height: 40px;
-    text-align: center;
-    padding: 50px;
-    margin-left: -300px;
-    top: 250px;
-    z-index: 2000;
+.endGame,
+.explanations {
+  display: none;
+  background-color: black;
+  color: white;
+  letter-spacing: 0.2em;
+  font-family: Jurassik, sans-serif;
+  font-size: 40px;
+  position: absolute;
+  width: 600px;
+  left: 50%;
+  line-height: 40px;
+  text-align: center;
+  padding: 50px;
+  margin-left: -300px;
+  top: 250px;
+  z-index: 2000;
 }
 
-#health, #timer, #score, #supply, #counter {
-    font-size: 20px;
-    font-weight: bolder;
+#health,
+#timer,
+#score,
+#supply,
+#counter {
+  font-size: 20px;
+  font-weight: bolder;
+}
+
+span,
+p {
+  -webkit-user-select: none;
 }
 
 .sub-menu {
-    padding-top: 10px;
-    /*border-top:1px solid red;*/
-    font-family: Jurassik, sans-serif;
-    letter-spacing: 0.08em;
-    font-size: 30px;
-    padding-left: 5px;
-    cursor: pointer;
+  padding-top: 10px;
+  /*border-top:1px solid red;*/
+  font-family: Jurassik, sans-serif;
+  letter-spacing: 0.08em;
+  font-size: 30px;
+  padding-left: 5px;
+  cursor: pointer;
 }
 
 thead th {
-    position: sticky;
-    position: -webkit-sticky;
-    top: 0;
-    z-index: 10;
+  position: sticky;
+  position: -webkit-sticky;
+  top: 0;
+  z-index: 10;
 }
 
 .sub-menu a {
-    text-decoration: none;
-    color: red;
+  text-decoration: none;
+  color: red;
 }
 
 .sub-menu .startAgain {
-    color: #FBCF00;
-
+  color: #fbcf00;
 }
 
-
-.no-margin{
-    margin:0
+.no-margin {
+  margin: 0;
 }
 
 .blink_me {
-    animation: blinker 0.3s linear 5;
+  animation: blinker 0.3s linear 5;
 }
-
-
 
 @keyframes blinker {
-    50% {
-        opacity: 0.2;
-    }
+  50% {
+    opacity: 0.2;
+  }
 }
-
