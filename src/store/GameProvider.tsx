@@ -26,7 +26,7 @@ import {
 import {
   competencyArray,
   heightCompetency,
-  widthCompetency,
+  widthCompetency
 } from "../constants/contants";
 import watchOutSound from "../sound/OOT_Navi_WatchOut1.mp3";
 import shotSound from "../sound/fusil.mp3";
@@ -36,6 +36,7 @@ import { IHero, initHeroes } from "../data/player";
 import { IPropsDino } from "../components/Dinosaurs";
 import { IBulletProps } from "../components/Bullet";
 import { bulletInit, dynamiteInit } from "../data/bullet";
+import hornSound from "../sound/the-price-is-right-losing-horn.mp3";
 import {
   competencyFixed,
   playSoundRampage,
@@ -73,7 +74,7 @@ export const initialState = {
   intro: true,
   gameType: false,
   direction: "right",
-  sound: false,
+  sound: true,
   player: null,
   dino: [],
   pause: false,
@@ -89,6 +90,7 @@ export const initialState = {
 const watchSound = new Audio(watchOutSound);
 const rifleSound = new Audio(shotSound);
 const winnerSound = new Audio(winner);
+const hornSoundMP3 = new Audio(hornSound);
 
 const allItemCatched = (competency: Competency[]) => {
   for (let competence of competency) {
@@ -278,6 +280,7 @@ export const reducer = (state: State, action: ActionType) => {
           hurtedPlayerState.player &&
           hurtedPlayerState.player.health <= 0
         ) {
+          hornSoundMP3.play();
           hurtedPlayerState.gameOver = true;
           hurtedPlayerState.player = null;
         }
@@ -317,7 +320,7 @@ export const reducer = (state: State, action: ActionType) => {
       return { ...state };
     case "RESET_GAME":
       console.log("reset");
-      const init = { game: "game", player: {...initHeroes} };
+      const init = { game: "game", player: { ...initHeroes } };
       // @ts-ignore
       state = { ...initialState, ...init };
       return { ...state };

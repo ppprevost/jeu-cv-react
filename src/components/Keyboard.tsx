@@ -1,7 +1,6 @@
-import React, { CSSProperties } from "react";
+import React, { CSSProperties, SyntheticEvent } from "react";
 import keyboardArrow from "../img/arrow-key.png";
 import styled from "styled-components";
-import keyboard from "../img/keyboard.png";
 import { useGameData } from "../store/GameProvider";
 import { IS_CROUCHING, JUMP, MOVE_LEFT, MOVE_RIGHT } from "../constants";
 
@@ -35,7 +34,7 @@ const keyboardTouch: CSSProperties = {
   position: "absolute",
   width: "42px",
   height: "45px",
-  zIndex:5000
+  zIndex: 5000
 };
 
 const Keyboard = () => {
@@ -45,34 +44,39 @@ const Keyboard = () => {
     },
     dispatch
   ] = useGameData();
-  const shoot = () => {
+  const shoot = (event: React.TouchEvent) => {
+    event.preventDefault();
     if (!position.isShooting) {
       dispatch({ type: "SHOOT" });
     }
   };
-  const setPause = () => {
+  const setPause = (event: React.TouchEvent) => {
+    event.preventDefault();
     dispatch({ type: "SET_PAUSE" });
   };
-  const launchDynamite = () => {
+  const launchDynamite = (e: React.TouchEvent):void => {
+    e.preventDefault();
     dispatch({ type: "IS_DYNAMITING" });
+  };
+  const moveLeft = (e: React.TouchEvent, stop?: boolean) => {
+    e.preventDefault();
+    dispatch({ type: MOVE_LEFT, stop });
   };
 
   return (
     <>
       <ContainerKeyboard>
-        <p className="no-margin" onClick={setPause}>
+        <p className="no-margin" onTouchStart={setPause}>
           P - Pause
         </p>
-        <p className="no-margin" onClick={launchDynamite}>
+        <p className="no-margin" onTouchStart={launchDynamite}>
           D - Dynamite
         </p>
-        <p className="no-margin" onClick={shoot}>
+        <p className="no-margin" onTouchStart={shoot}>
           Space - Shoot
         </p>
       </ContainerKeyboard>
-      <ContainerArrow
-        className="keyboard arrow"
-      >
+      <ContainerArrow className="keyboard arrow">
         <span>Use Arrow</span>
         <div
           onTouchStart={() => dispatch({ type: JUMP })}
@@ -80,8 +84,8 @@ const Keyboard = () => {
           style={{ ...keyboardTouch, left: "56px" }}
         ></div>
         <div
-          onTouchStart={() => dispatch({ type: MOVE_LEFT })}
-          onTouchEnd={() => dispatch({ type: MOVE_LEFT, stop: true })}
+          onTouchStart={moveLeft}
+          onTouchEnd={(event) => moveLeft(event, true)}
           style={{ ...keyboardTouch, left: "7px", bottom: "5px" }}
         ></div>
         <div
