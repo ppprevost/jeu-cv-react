@@ -16,19 +16,19 @@ export const useCalculateIntervalDino = () => {
   const [{ player }] = useGameData();
   const { windowSize } = useWindowSize();
   const delayRef = useRef(0);
-  let [size, interval] = [800, 1600];
+  let [size, interval] = [800, 1700];
   const diff = size - windowSize;
-  interval += diff * 3;
+  interval += diff * 1.7;
   console.log(interval);
   useEffect(() => {
     delayRef.current = interval;
-  }, [windowSize]);
+  }, [windowSize, interval]);
   useEffect(() => {
     if (player) {
       delayRef.current -= 10;
     }
   }, [player && player.score]);
-  return delayRef.current;
+  return Math.round(delayRef.current);
 };
 const xBackground = window.innerWidth / 4;
 const FixedBackground = (compute: number) =>
@@ -50,7 +50,6 @@ const Game = () => {
     if (gameOver) {
       clearInterval(id);
     }
-    console.log(intervalDino);
   }, intervalDino);
   useEffect(() => {
     dispatch({ type: ADD_PLAYER });

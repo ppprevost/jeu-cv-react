@@ -1,10 +1,6 @@
-import React, {
-  useMemo,
-  lazy,
-  Suspense,
-  CSSProperties,
-} from "react";
+import React, { useMemo, lazy, Suspense, CSSProperties } from "react";
 import "./App.css";
+import background from "./img/fond.png";
 import GameProvider, { useGameData } from "./store/GameProvider";
 import Intro from "./page/Intro";
 import MainHeader from "./components/MainHeader";
@@ -23,8 +19,7 @@ const App = () => (
 const Play = () => {
   const { windowHeight } = useWindowSize();
   const style: CSSProperties = {
-    background:
-      'url("https://res.cloudinary.com/hkszuuqf3/image/upload/v1578145649/fond_npi9t5.png")repeat-x',
+    background: `url("${background}")repeat-x`,
     overflow: "hidden",
     width: 100 + "%",
     margin: "0 auto",

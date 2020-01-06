@@ -27,14 +27,14 @@ const ContainerKeyboard = styled.div`
 `;
 
 const KeyboardArrow = styled.img`
-  width: 100%;
-  opacity: 0.3;
+  width: 120%;
+  opacity: 0.4;
 `;
 
 const keyboardTouch: CSSProperties = {
   position: "absolute",
-  width: "42px",
-  height: "45px",
+  width: "50px",
+  height: "50px",
   zIndex: 5000
 };
 
@@ -103,26 +103,25 @@ const Keyboard = () => {
           </p>
         </ContainerKeyboard>
         <ContainerArrow className="keyboard arrow">
-          <span>Use Arrow</span>
           <div
               onTouchStart={jump}
               onTouchEnd={e => jump(e, true)}
-              style={{ ...keyboardTouch, left: "56px" }}
+              style={{ ...keyboardTouch, left: "67px", top:"2px" }}
           ></div>
           <div
               onTouchStart={moveLeft}
               onTouchEnd={event => moveLeft(event, true)}
-              style={{ ...keyboardTouch, left: "7px", bottom: "5px" }}
+              style={{ ...keyboardTouch, left: "7px", bottom: "7px" }}
           ></div>
           <div
               onTouchStart={crouch}
               onTouchEnd={e => crouch(e, true)}
-              style={{ ...keyboardTouch, left: "55px", bottom: "5px" }}
+              style={{ ...keyboardTouch, left: "67px", bottom: "7px" }}
           ></div>
           <div
               onTouchStart={moveRight}
               onTouchEnd={e => moveRight(e, true)}
-              style={{ ...keyboardTouch, left: "103px", bottom: "5px" }}
+              style={{ ...keyboardTouch, left: "125px", bottom: "7px" }}
           ></div>
           <KeyboardArrow src={keyboardArrow} alt="keyboardArrow" />
         </ContainerArrow>

@@ -1,4 +1,4 @@
-import React, { FunctionComponent, SetStateAction } from "react";
+import React, { FunctionComponent } from "react";
 import styled from "styled-components";
 import { useFetch } from "../helpers/hooks";
 import { useGameData } from "../store/GameProvider";

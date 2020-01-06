@@ -104,15 +104,19 @@ export const useSpriteException = () => {
 export const useWindowSize = () => {
   const [windowWidth, setWidth] = useState(window.innerWidth);
   const [windowHeight, setHeight] = useState(window.innerHeight);
+  const [landscape, setLandscape] = useState(window.matchMedia("(orientation: landscape)"))
   useEffect(() => {
     window.addEventListener("resize", () => {
+      window.matchMedia("(orientation: landscape)")
       setWidth(window.innerWidth);
       setHeight(window.innerHeight);
+      setLandscape(window.matchMedia("(orientation: landscape)"))
     });
   }, []);
   return {
     windowSize: windowWidth,
-    windowHeight
+    windowHeight,
+    landscape
   };
 };
 

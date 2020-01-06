@@ -175,6 +175,7 @@ export const reducer = (state: State, action: ActionType) => {
         }
         return repercutPositionHero(state, "isShooting");
       }
+      break;
     case STOP_SHOOTING:
       return repercutPositionHero(state, "isShooting", true);
     case "STOP_JUMPING":
@@ -212,7 +213,7 @@ export const reducer = (state: State, action: ActionType) => {
       const newDino = { ...action.newDino };
       state.idDino += 1;
       newDino.alive = true;
-      newDino.speed = Math.round(Math.random() * 8);
+      newDino.speed = Math.round(Math.random() * 5);
       newDino.id = state.idDino;
       return { ...state, dino: [...state.dino, newDino] };
     case MOVE_DINO:

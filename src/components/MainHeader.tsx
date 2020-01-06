@@ -16,14 +16,13 @@ const MainHeader = () => {
   ] = useGameData();
   const setSound = () => dispatch({ type: "SET_SOUND" });
   useChrono();
-
   const getCompetency = () => {
     if (competency.length > 0) {
       return competency.map((comp: Competency) => {
         return (
           <div key={comp.type}>
             {comp.catched ? (
-              <a title={comp.type} target="_blank" href={comp.website}>
+              <a title={comp.type} target="_blank" rel="noopener noreferrer" href={comp.website}>
                 <img
                   key={comp.type}
                   style={{ width: "50px", height: "50px" }}
@@ -32,7 +31,7 @@ const MainHeader = () => {
                 />
               </a>
             ) : (
-              <div>Take {comp.type} !</div>
+              <div className={"blink_me"}>Take {comp.type} !</div>
             )}
           </div>
         );
@@ -42,7 +41,8 @@ const MainHeader = () => {
   };
 
   const [chronoHeader, setChronoHeader] = useState("00:00");
-  const resetGame = () => {
+  const resetGame = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (!win) dispatch({ type: "RESET_GAME" });
   };
   useEffect(() => {
@@ -83,7 +83,7 @@ const MainHeader = () => {
 
       <div className="row sub-menu misc">
         <div className="cv col-xs-4">
-          <a href="https://github.com/ppprevost" target="_blank">
+          <a href="https://github.com/ppprevost" target="_blank" rel="noopener noreferrer">
             Github
           </a>
         </div>

@@ -136,7 +136,7 @@ const Dinosaurs = ({
         sprite={requestRef.current}
       />
 
-      {!alive && player.position.isDynamiting && (
+      {!alive && player && player.position && player.position.isDynamiting && (
         <Explosion x={refPosition.current} y={y} />
       )}
     </>

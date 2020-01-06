@@ -22,12 +22,13 @@ const LOGOComponent = styled.img`
   margin-left: auto;
   margin-right: auto;
   width: 300px;
-
 `;
 
 const Hunter = styled.img<any>`
 position:absolute;
-left:${({ windowSize }) => { return (windowSize<580? -150 +'px' : 0 + "px")}}
+left:${({ windowSize }) => {
+  return windowSize < 580 ? -150 + "px" : 0 + "px";
+}}
 top: ${({ windowHeight }) =>
   (windowHeight < 580 ? windowHeight / 2 - 150 : 150) + "px"};
 width:350px
@@ -92,7 +93,7 @@ export const ContainerIntro = styled.div`
 `;
 
 const Intro = () => {
-  const { windowSize, windowHeight } = useWindowSize();
+  const { windowSize, windowHeight, landscape } = useWindowSize();
   const [seeVideo, setSeeVideo] = useState(false);
   const [seeModalName, setSeeModalName] = useState(false);
   const launchNameModal = () => {
@@ -112,14 +113,18 @@ const Intro = () => {
     <div className="intro-game">
       <ContainerIntro>
         <LOGOComponent src={logo} />
-        { window.screen.orientation.type ==='portrait-primary'? <p style={{textAlign:"center"}}>Please return your device</p> :
-           <>
+        {!landscape ? (
+          <p style={{ textAlign: "center" }}>Please return your device</p>
+        ) : (
+          <>
             <BigButton className="launch" onClick={launchNameModal}>
-          Start the Game !
-        </BigButton>
-        <BigButton className="how-to-play" onClick={seeVideoTuto}>
-          How to play
-        </BigButton></>}
+              Start the Game !
+            </BigButton>
+            <BigButton className="how-to-play" onClick={seeVideoTuto}>
+              How to play
+            </BigButton>
+          </>
+        )}
       </ContainerIntro>
       {seeVideo && (
         <ModalVideo closeModal onVisible={seeVideo} setVisible={setSeeVideo} />
