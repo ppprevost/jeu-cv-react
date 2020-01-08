@@ -31,10 +31,10 @@ const Game = () => {
     visibilityGame.current = document.visibilityState === "visible";
     newRef.current = createDinosaur();
     if (visibilityGame.current)
-      if (gameOver) {
-        dispatch({ type: ADD_DINO, newDino: newRef.current });
-        clearInterval(id);
-      }
+      dispatch({ type: ADD_DINO, newDino: newRef.current });
+    if (gameOver) {
+      clearInterval(id);
+    }
   }, intervalDino);
   useEffect(() => {
     dispatch({ type: ADD_PLAYER });
