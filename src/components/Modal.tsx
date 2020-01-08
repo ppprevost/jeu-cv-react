@@ -70,7 +70,9 @@ export const ModalTemplate: FunctionComponent<ModalOptional> = ({
   );
 };
 
-export const ModalPause = ({ setPauseOff }: { setPauseOff: SetStateAction<any> }) => {
+export const ModalPause: FunctionComponent<{
+  setPauseOff?: SetStateAction<any>;
+}> = ({ setPauseOff }) => {
   return (
     <ModalTemplate>
       <div>Pause</div>

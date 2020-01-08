@@ -73,6 +73,12 @@ p {
   -webkit-user-select: none;
 }
 
+.add-button {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+}
+
 .sub-menu {
   padding-top: 10px;
   /*border-top:1px solid red;*/

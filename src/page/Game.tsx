@@ -5,14 +5,12 @@ import Hero from "../components/Hero";
 import Dinosaurs from "../components/Dinosaurs";
 import Competency from "../components/Competency";
 import Background, { Field } from "../components/Background";
-import {useCalculateIntervalDino, useInterval, useWindowSize} from "../helpers/hooks";
+import { useCalculateIntervalDino, useInterval } from "../helpers/hooks";
 import mainSound from "../sound/main.mp3";
 import { ModalGameOver, ModalPause, ModalWin } from "../components/Modal";
 import { createDinosaur } from "../helpers/ennemies_helpers";
-import {PAUSE} from "../constants/contants";
 
 const ambianceSound = new Audio(mainSound);
-
 
 const xBackground = window.innerWidth / 4;
 const FixedBackground = (compute: number) =>
@@ -23,9 +21,9 @@ const Game = () => {
     { player, dino, gameOver, sound, competency, win, pause },
     dispatch
   ] = useGameData();
-  const setPauseOff=()=>{
-    dispatch({type:"SET_PAUSE", payload:false})
-  }
+  const setPauseOff = () => {
+    dispatch({ type: "SET_PAUSE", payload: false });
+  };
   const intervalDino = useCalculateIntervalDino();
   const newRef = useRef(createDinosaur());
   const visibilityGame = useRef(true); // bug fixing
@@ -33,10 +31,10 @@ const Game = () => {
     visibilityGame.current = document.visibilityState === "visible";
     newRef.current = createDinosaur();
     if (visibilityGame.current)
-      //dispatch({ type: ADD_DINO, newDino: newRef.current });
-    if (gameOver) {
-      clearInterval(id);
-    }
+      if (gameOver) {
+        //dispatch({ type: ADD_DINO, newDino: newRef.current });
+        clearInterval(id);
+      }
   }, intervalDino);
   useEffect(() => {
     dispatch({ type: ADD_PLAYER });
@@ -53,7 +51,9 @@ const Game = () => {
   }, [sound, gameOver, win]);
   return (
     <>
-      {useMemo(() => pause && <ModalPause setPauseOff={setPauseOff} />, [pause])}
+      {useMemo(() => pause && <ModalPause setPauseOff={setPauseOff} />, [
+        pause
+      ])}
       {useMemo(() => win && <ModalWin />, [win])}
       {useMemo(() => gameOver && <ModalGameOver />, [gameOver])}
       {useMemo(
