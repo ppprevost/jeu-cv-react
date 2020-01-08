@@ -32,7 +32,7 @@ const Game = () => {
     newRef.current = createDinosaur();
     if (visibilityGame.current)
       if (gameOver) {
-        //dispatch({ type: ADD_DINO, newDino: newRef.current });
+        dispatch({ type: ADD_DINO, newDino: newRef.current });
         clearInterval(id);
       }
   }, intervalDino);
