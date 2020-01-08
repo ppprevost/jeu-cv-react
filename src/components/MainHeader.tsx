@@ -45,6 +45,10 @@ const MainHeader = () => {
     e.preventDefault();
     if (!win) dispatch({ type: "RESET_GAME" });
   };
+  const setPause = (event: React.MouseEvent) => {
+    event.preventDefault();
+    dispatch({ type: "SET_PAUSE" });
+  };
   useEffect(() => {
     if (second < 10 && minute < 10) {
       setChronoHeader("0" + minute + ": 0" + second);
@@ -82,15 +86,20 @@ const MainHeader = () => {
       </div>
 
       <div className="row sub-menu misc">
-        <div className="cv col-xs-4">
+        <div className="cv col-xs-3">
           <a href="https://github.com/ppprevost" target="_blank" rel="noopener noreferrer">
             Github
           </a>
         </div>
-        <div onClick={resetGame} className="startAgain col-xs-4">
+        <div className="cv col-xs-3">
+          <div onClick={setPause}>
+            Pause
+          </div>
+        </div>
+        <div onClick={resetGame} className="startAgain col-xs-3">
           Start Again
         </div>
-        <div className="col-xs-4 sound" onClick={setSound}>
+        <div className="col-xs-3 sound" onClick={setSound}>
           Sound {sound ? "on" : "off"}
         </div>
       </div>

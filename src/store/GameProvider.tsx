@@ -119,6 +119,9 @@ export const reducer = (state: State, action: ActionType) => {
     case "SET_PAUSE":
       if (state.player) {
         // if pause you have to prevent shooting behavior
+        if(action.payload){
+          return {...state,pause:false}
+        }
         return {
           ...state,
           player: {

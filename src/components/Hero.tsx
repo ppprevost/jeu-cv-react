@@ -45,7 +45,7 @@ const Hero: FunctionComponent<IHero> = ({
     { gameOver, direction, sound, bullets, competency },
     dispatch
   ] = useGameData();
-  const { windowSize } = useWindowSize();
+  const { windowSize, isMobile } = useWindowSize();
   useKeyPress();
   const refPosition = useRef(x);
   const refPositionY = useRef(y);
@@ -142,12 +142,7 @@ const Hero: FunctionComponent<IHero> = ({
   return (
     <>
       {<MainHeaderMemoized />}
-      {useMemo(
-        () => (
-          <Keyboard />
-        ),
-        []
-      )}
+      {useMemo(() => isMobile && <Keyboard />, [])}
       <Character
         width={width}
         height={height}

@@ -101,22 +101,51 @@ export const useSpriteException = () => {
   return value;
 };
 
+function isMobile() {
+  try {
+    document.createEvent("TouchEvent");
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+export const useCalculateIntervalDino = () => {
+  const [{ player }] = useGameData();
+  const { windowSize } = useWindowSize();
+  const delayRef = useRef(0);
+  let [size, interval] = [800, 1700];
+  const diff = size - windowSize;
+  interval += diff * 1.7;
+  useEffect(() => {
+    delayRef.current = interval;
+  }, [windowSize, interval]);
+  useEffect(() => {
+    if (player) {
+      delayRef.current -= 10;
+    }
+  }, [player && player.score]);
+  return Math.round(delayRef.current);
+};
+
 export const useWindowSize = () => {
   const [windowWidth, setWidth] = useState(window.innerWidth);
   const [windowHeight, setHeight] = useState(window.innerHeight);
-  const [landscape, setLandscape] = useState(window.matchMedia("(orientation: landscape)"))
+  const [landscape, setLandscape] = useState(
+    window.matchMedia("(orientation: landscape)").matches
+  );
   useEffect(() => {
     window.addEventListener("resize", () => {
-      window.matchMedia("(orientation: landscape)")
       setWidth(window.innerWidth);
       setHeight(window.innerHeight);
-      setLandscape(window.matchMedia("(orientation: landscape)"))
+      setLandscape(window.matchMedia("(orientation: landscape)").matches);
     });
   }, []);
   return {
     windowSize: windowWidth,
     windowHeight,
-    landscape
+    landscape,
+    isMobile: isMobile()
   };
 };
 

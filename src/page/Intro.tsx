@@ -150,8 +150,10 @@ const Intro = () => {
 export const ModalVideo = ({ ...props }) => {
   return (
     <ModalTemplate {...props}>
+      <h3>Destkop version</h3>
       <p>Use 'up', 'down','left', 'right' key</p>
       <p>D for Dynamite, Space for shooting, P for pause</p>
+      <h3>Use tactile Touch Button for mobile</h3>
       <iframe
         width="420"
         height="300"

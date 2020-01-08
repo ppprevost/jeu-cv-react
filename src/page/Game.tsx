@@ -5,31 +5,15 @@ import Hero from "../components/Hero";
 import Dinosaurs from "../components/Dinosaurs";
 import Competency from "../components/Competency";
 import Background, { Field } from "../components/Background";
-import { useInterval, useWindowSize } from "../helpers/hooks";
+import {useCalculateIntervalDino, useInterval, useWindowSize} from "../helpers/hooks";
 import mainSound from "../sound/main.mp3";
 import { ModalGameOver, ModalPause, ModalWin } from "../components/Modal";
 import { createDinosaur } from "../helpers/ennemies_helpers";
+import {PAUSE} from "../constants/contants";
 
 const ambianceSound = new Audio(mainSound);
 
-export const useCalculateIntervalDino = () => {
-  const [{ player }] = useGameData();
-  const { windowSize } = useWindowSize();
-  const delayRef = useRef(0);
-  let [size, interval] = [800, 1700];
-  const diff = size - windowSize;
-  interval += diff * 1.7;
-  console.log(interval);
-  useEffect(() => {
-    delayRef.current = interval;
-  }, [windowSize, interval]);
-  useEffect(() => {
-    if (player) {
-      delayRef.current -= 10;
-    }
-  }, [player && player.score]);
-  return Math.round(delayRef.current);
-};
+
 const xBackground = window.innerWidth / 4;
 const FixedBackground = (compute: number) =>
   useMemo(() => <Background left={compute} />, [xBackground]);
@@ -39,6 +23,9 @@ const Game = () => {
     { player, dino, gameOver, sound, competency, win, pause },
     dispatch
   ] = useGameData();
+  const setPauseOff=()=>{
+    dispatch({type:"SET_PAUSE", payload:false})
+  }
   const intervalDino = useCalculateIntervalDino();
   const newRef = useRef(createDinosaur());
   const visibilityGame = useRef(true); // bug fixing
@@ -46,7 +33,7 @@ const Game = () => {
     visibilityGame.current = document.visibilityState === "visible";
     newRef.current = createDinosaur();
     if (visibilityGame.current)
-      dispatch({ type: ADD_DINO, newDino: newRef.current });
+      //dispatch({ type: ADD_DINO, newDino: newRef.current });
     if (gameOver) {
       clearInterval(id);
     }
@@ -66,7 +53,7 @@ const Game = () => {
   }, [sound, gameOver, win]);
   return (
     <>
-      {useMemo(() => pause && <ModalPause />, [pause])}
+      {useMemo(() => pause && <ModalPause setPauseOff={setPauseOff} />, [pause])}
       {useMemo(() => win && <ModalWin />, [win])}
       {useMemo(() => gameOver && <ModalGameOver />, [gameOver])}
       {useMemo(

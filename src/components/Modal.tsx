@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, SetStateAction } from "react";
 import styled from "styled-components";
 import { useFetch } from "../helpers/hooks";
 import { useGameData } from "../store/GameProvider";
@@ -22,24 +22,27 @@ const ButtonClose = styled.button<any>`
 `;
 
 const ModalImg = styled.div<any>`
-    background-color: black;
-    color: white;
-    letter-spacing: 0.2em;
-    font-family: ${({ fontFamily }) =>
-      fontFamily ? fontFamily : "Jurassik, sans-serif"};
-    font-size: ${({ fontSize }) => fontSize || "30px"};
-    position: absolute;
-    max-width: 100%;
-    width: 600px;
-    margin:auto auto;
-    border:1px solid #F7F936;
-    overflow:${({ overflow }) => overflow || "auto"};
-    max-height:291px;
-    line-height: 40px;
-    text-align: center;
-    padding: 2rem;
-   top: 0; left: 0; bottom: 0; right: 0;
-    z-index: 2000;
+  background-color: black;
+  color: white;
+  letter-spacing: 0.2em;
+  font-family: ${({ fontFamily }) =>
+    fontFamily ? fontFamily : "Jurassik, sans-serif"};
+  font-size: ${({ fontSize }) => fontSize || "30px"};
+  position: absolute;
+  max-width: 100%;
+  width: 600px;
+  margin: auto auto;
+  border: 1px solid #f7f936;
+  overflow: ${({ overflow }) => overflow || "auto"};
+  max-height: 291px;
+  line-height: 40px;
+  text-align: center;
+  padding: 2rem;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  z-index: 2000;
 `;
 
 export const ModalTemplate: FunctionComponent<ModalOptional> = ({
@@ -67,10 +70,11 @@ export const ModalTemplate: FunctionComponent<ModalOptional> = ({
   );
 };
 
-export const ModalPause = () => {
+export const ModalPause = ({ setPauseOff }: { setPauseOff: SetStateAction<any> }) => {
   return (
     <ModalTemplate>
       <div>Pause</div>
+      <button onClick={setPauseOff}>Return to Game</button>
     </ModalTemplate>
   );
 };

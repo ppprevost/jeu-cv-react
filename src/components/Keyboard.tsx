@@ -3,6 +3,8 @@ import keyboardArrow from "../img/arrow-key.png";
 import styled from "styled-components";
 import { useGameData } from "../store/GameProvider";
 import { IS_CROUCHING, JUMP, MOVE_LEFT, MOVE_RIGHT } from "../constants";
+import muzzle from "../img/muzzle-touch.png";
+import dynamite from "../img/dynamite-touch.png";
 
 const ContainerArrow = styled.div`
   position: absolute;
@@ -53,10 +55,7 @@ const Keyboard = () => {
       dispatch({ type: "SHOOT" });
     }
   };
-  const setPause = (event: React.TouchEvent) => {
-    event.preventDefault();
-    dispatch({ type: "SET_PAUSE" });
-  };
+
   const launchDynamite = (e: React.TouchEvent): void => {
     e.preventDefault();
     dispatch({ type: "IS_DYNAMITING" });
@@ -89,43 +88,49 @@ const Keyboard = () => {
     });
   }, []);
 
+  const bulletButtonStyle: CSSProperties = {
+    opacity: 0.5,
+    width: 4 + "rem"
+  };
+
   return (
-      <>
-        <ContainerKeyboard>
-          <p className="no-margin" onTouchStart={setPause}>
-            P - Pause
-          </p>
-          <p className="no-margin" onTouchStart={launchDynamite}>
-            D - Dynamite
-          </p>
-          <p className="no-margin" onTouchStart={shoot}>
-            Space - Shoot
-          </p>
-        </ContainerKeyboard>
-        <ContainerArrow className="keyboard arrow">
-          <div
-              onTouchStart={jump}
-              onTouchEnd={e => jump(e, true)}
-              style={{ ...keyboardTouch, left: "67px", top:"2px" }}
-          ></div>
-          <div
-              onTouchStart={moveLeft}
-              onTouchEnd={event => moveLeft(event, true)}
-              style={{ ...keyboardTouch, left: "7px", bottom: "7px" }}
-          ></div>
-          <div
-              onTouchStart={crouch}
-              onTouchEnd={e => crouch(e, true)}
-              style={{ ...keyboardTouch, left: "67px", bottom: "7px" }}
-          ></div>
-          <div
-              onTouchStart={moveRight}
-              onTouchEnd={e => moveRight(e, true)}
-              style={{ ...keyboardTouch, left: "125px", bottom: "7px" }}
-          ></div>
-          <KeyboardArrow src={keyboardArrow} alt="keyboardArrow" />
-        </ContainerArrow>
-      </>
+    <>
+      <ContainerKeyboard>
+        <img
+          style={bulletButtonStyle}
+          src={dynamite}
+          onTouchStart={launchDynamite}
+        />
+        <img
+          style={{ ...bulletButtonStyle, marginLeft: "2rem" }}
+          src={muzzle}
+          onTouchStart={shoot}
+        />
+      </ContainerKeyboard>
+      <ContainerArrow className="keyboard arrow">
+        <div
+          onTouchStart={jump}
+          onTouchEnd={e => jump(e, true)}
+          style={{ ...keyboardTouch, left: "67px", top: "2px" }}
+        ></div>
+        <div
+          onTouchStart={moveLeft}
+          onTouchEnd={event => moveLeft(event, true)}
+          style={{ ...keyboardTouch, left: "7px", bottom: "7px" }}
+        ></div>
+        <div
+          onTouchStart={crouch}
+          onTouchEnd={e => crouch(e, true)}
+          style={{ ...keyboardTouch, left: "67px", bottom: "7px" }}
+        ></div>
+        <div
+          onTouchStart={moveRight}
+          onTouchEnd={e => moveRight(e, true)}
+          style={{ ...keyboardTouch, left: "125px", bottom: "7px" }}
+        ></div>
+        <KeyboardArrow src={keyboardArrow} alt="keyboardArrow" />
+      </ContainerArrow>
+    </>
   );
 };
 
