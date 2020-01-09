@@ -116,7 +116,7 @@ export const useCalculateIntervalDino = () => {
   const delayRef = useRef(0);
   let [size, interval] = [800, 1700];
   const diff = size - windowSize;
-  interval += diff * 1.7;
+  interval += diff * 1.5;
   useEffect(() => {
     delayRef.current = interval;
   }, [windowSize, interval]);
