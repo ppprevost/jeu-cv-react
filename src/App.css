@@ -59,6 +59,12 @@
   z-index: 2000;
 }
 
+.add-button {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+}
+
 #health,
 #timer,
 #score,
@@ -73,11 +79,6 @@ p {
   -webkit-user-select: none;
 }
 
-.add-button {
-  position: absolute;
-  top: 1px;
-  left: 1px;
-}
 
 .sub-menu {
   padding-top: 10px;
