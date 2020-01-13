@@ -9,7 +9,7 @@ import React, {
 import { useGameData } from "../store/GameProvider";
 import avatar from "../img/hunter.png";
 import avatarLeft from "../img/hunter_left.png";
-import { useInterval, useKeyPress, useWindowSize } from "../helpers/hooks";
+import { useInterval, useKeyPress } from "../helpers/hooks";
 import Character from "./Characters";
 import heroHurtSound from "../sound/cri.mp3";
 import Bullet from "./Bullet";
@@ -42,10 +42,9 @@ const Hero: FunctionComponent<IHero> = ({
 }) => {
   // const correctedWidth = exactSpriteObject.width;
   const [
-    { gameOver, direction, sound, bullets, competency },
+    { gameOver, direction, sound, bullets, competency, windowInfo:{windowSize, isMobile} },
     dispatch
   ] = useGameData();
-  const { windowSize, isMobile } = useWindowSize();
   useKeyPress();
   const refPosition = useRef(x);
   const refPositionY = useRef(y);
@@ -142,7 +141,7 @@ const Hero: FunctionComponent<IHero> = ({
   return (
     <>
       {<MainHeaderMemoized />}
-      {useMemo(() => isMobile && <Keyboard />, [])}
+      {useMemo(() => isMobile && <Keyboard />, [isMobile])}
       <Character
         width={width}
         height={height}

@@ -129,16 +129,36 @@ export const useCalculateIntervalDino = () => {
 };
 
 export const useWindowSize = () => {
+  const [, dispatch] = useGameData();
   const [windowWidth, setWidth] = useState(window.innerWidth);
   const [windowHeight, setHeight] = useState(window.innerHeight);
   const [landscape, setLandscape] = useState(
     window.matchMedia("(orientation: landscape)").matches
   );
   useEffect(() => {
+    dispatch({
+      type: "SET_WINDOW",
+      ...{
+        windowSize: windowWidth,
+        windowHeight,
+        isMobile: isMobile(),
+        landscape
+      }
+    });
     window.addEventListener("resize", () => {
       setWidth(window.innerWidth);
       setHeight(window.innerHeight);
       setLandscape(window.matchMedia("(orientation: landscape)").matches);
+      console.log(isMobile())
+      dispatch({
+        type: "SET_WINDOW",
+        ...{
+          windowSize: windowWidth,
+          windowHeight,
+          isMobile: isMobile(),
+          landscape
+        }
+      });
     });
   }, []);
   return {

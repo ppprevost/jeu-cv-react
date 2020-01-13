@@ -62,6 +62,7 @@ type State = {
   idBullet: number;
   target: number;
   gameOver: boolean;
+  windowInfo: any;
   pause: boolean;
   competency: any[];
   bullets: IBulletProps[];
@@ -71,6 +72,7 @@ type State = {
 const UserContext = createContext<any>([]);
 
 export const initialState = {
+  windowInfo: {},
   intro: true,
   gameType: false,
   direction: "right",
@@ -107,6 +109,10 @@ const findDino = (action: ActionType) => {
 
 export const reducer = (state: State, action: ActionType) => {
   switch (action.type) {
+    case "SET_WINDOW":
+      delete action.type;
+      state.windowInfo = { ...action };
+      return { ...state };
     case "START_GAME":
       initHeroes.email = action.payload.email;
       initHeroes.name = action.payload.name;
@@ -119,8 +125,8 @@ export const reducer = (state: State, action: ActionType) => {
     case "SET_PAUSE":
       if (state.player) {
         // if pause you have to prevent shooting behavior
-        if(action.payload){
-          return {...state,pause:false}
+        if (action.payload) {
+          return { ...state, pause: false };
         }
         return {
           ...state,
