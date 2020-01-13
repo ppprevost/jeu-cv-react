@@ -330,7 +330,12 @@ export const reducer = (state: State, action: ActionType) => {
       return { ...state };
     case "RESET_GAME":
       console.log("reset");
-      const init = { game: "game", player: { ...initHeroes } };
+      const init = {
+        intro: false,
+        gameType:"game",
+        windowInfo: state.windowInfo,
+        player: { ...initHeroes }
+      };
       // @ts-ignore
       state = { ...initialState, ...init };
       return { ...state };
