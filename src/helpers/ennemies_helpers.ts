@@ -72,11 +72,14 @@ export const conditionToConflict = (
   height: number
 ) => {
   const playerHeight = player.exactSpriteObject.height;
-  if (className === "vine" && !player.position.isCrouching) {
-    return (
-      positionHero >= refPosition.current &&
-      positionHero <= refPosition.current + width
-    );
+  if (className === "vine") {
+    if (!player.position.isCrouching) {
+      return (
+        positionHero >= refPosition.current &&
+        positionHero <= refPosition.current + width
+      );
+    }
+    return false
   }
   return (
     positionHero >= refPosition.current &&

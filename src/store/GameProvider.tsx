@@ -73,8 +73,8 @@ const UserContext = createContext<any>([]);
 
 export const initialState = {
   windowInfo: {},
-  intro: true,
-  gameType: false,
+  intro: false,
+  gameType: "game",
   direction: "right",
   sound: true,
   player: null,

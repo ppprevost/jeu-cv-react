@@ -1,4 +1,4 @@
-import React, { FunctionComponent, SetStateAction } from "react";
+import React, { FunctionComponent, SetStateAction, useState } from "react";
 import styled from "styled-components";
 import { useFetch } from "../helpers/hooks";
 import { useGameData } from "../store/GameProvider";
@@ -70,6 +70,19 @@ export const ModalTemplate: FunctionComponent<ModalOptional> = ({
   );
 };
 
+export const SkarahbModal = () => {
+  return (
+    <iframe
+      scrolling="no"
+      frameBorder="0"
+      allowTransparency={true}
+      src="https://www.deezer.com/plugins/player?format=square&autoplay=false&playlist=false&width=300&height=300&color=ff0000&layout=dark&size=medium&type=album&id=126086342&app_id=1"
+      width="300"
+      height="300"
+    ></iframe>
+  );
+};
+
 export const ModalPause: FunctionComponent<{
   setPauseOff?: SetStateAction<any>;
 }> = ({ setPauseOff }) => {
@@ -133,12 +146,36 @@ export const ModalWin = () => {
       chrono
     })
   });
+  const [typeModal, setTypeModal] = useState("");
   return (
     <ModalTemplate overflow={"scroll"} fontSize={"1rem"} fontFamily={"none"}>
+      {typeModal === "" && (
+        <>
+          <p>You win, see your score, and listen SKARAH-B new ska Album :) :) :)</p>
+          <button onClick={() => setTypeModal("score")}>See Best Scores</button>
+          <button onClick={() => setTypeModal("music")}>
+            Listen to Skarahb Music
+          </button>
+        </>
+      )}
+      {typeModal === "music" && (
+        <>
+          <button onClick={() => setTypeModal("")}>back</button>
+          <iframe
+            scrolling="no"
+            frameBorder="0"
+            allowTransparency={true}
+            src="https://www.deezer.com/plugins/player?format=square&autoplay=false&playlist=false&width=300&height=300&color=ff0000&layout=dark&size=medium&type=album&id=126086342&app_id=1"
+            width="300"
+            height="300"
+          ></iframe>
+        </>
+      )}
       {isLoading && <span>Waiting score ...</span>}
       {error && <span>{error}</span>}
-      {response && (
+      {response && typeModal === "score" && (
         <>
+          <button onClick={() => setTypeModal("")}>back</button>
           <h2>You survive ! See all survivor :</h2>
           <table>
             <thead>
