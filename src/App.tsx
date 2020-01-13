@@ -7,6 +7,8 @@ import MainHeader from "./components/MainHeader";
 import { useWindowSize } from "./helpers/hooks";
 const Game = lazy(() => import("./page/Game"));
 
+const skarahb = "https://e-cdns-images.dzcdn.net/images/cover/758113bb674a43d1a87a93eb89c16b5e/298x298-000000-100-1-1.jpg";
+
 export const MainHeaderMemoized = () => {
   return useMemo(() => <MainHeader />, []);
 };
@@ -18,8 +20,9 @@ const App = () => (
 
 const Play = () => {
   const { windowHeight } = useWindowSize();
+  const [{win}] = useGameData()
   const style: CSSProperties = {
-    background: `url("${background}")repeat-x`,
+    background: `url("${win? skarahb : background}")repeat`,
     overflow: "hidden",
     width: 100 + "%",
     margin: "0 auto",

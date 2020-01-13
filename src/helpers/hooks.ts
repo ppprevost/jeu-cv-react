@@ -114,7 +114,7 @@ export const useCalculateIntervalDino = () => {
   const [{ player }] = useGameData();
   const { windowSize } = useWindowSize();
   const delayRef = useRef(0);
-  let [size, interval] = [800, 1700];
+  let [size, interval] = [800, 1900];
   const diff = size - windowSize;
   interval += diff * 1.5;
   useEffect(() => {
