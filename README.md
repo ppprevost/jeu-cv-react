@@ -1,4 +1,4 @@
-![Alt text](react.png.png?raw=true "Intro")
+![Alt text](react.png?raw=true "Intro")
 
 
 [Website](https://react-dinosaur-game.herokuapp.com)
