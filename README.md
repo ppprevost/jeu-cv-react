@@ -1,7 +1,18 @@
+![Alt text](react.png.png?raw=true "Intro")
+
+
+[Website](https://react-dinosaur-game.herokuapp.com)
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts
-Welcome to dinosaur island ! 
+Welcome to Dinosaur Island ! 
+
+Used:
+* create-react-app;
+* styled-components;
+* react-spring;
+* functional components and react-hooks only.
 
 In the project directory, you can run:
 
