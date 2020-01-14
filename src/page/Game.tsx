@@ -18,19 +18,19 @@ const FixedBackground = (compute: number) =>
 
 const Game = () => {
   const [
-    { player, dino, gameOver, sound, competency, win, pause },
+    { player, dino, gameOver, sound, competency, win, pause, windowInfo:{windowSize, landscape} },
     dispatch
   ] = useGameData();
   const setPauseOff = () => {
     dispatch({ type: "SET_PAUSE", payload: false });
   };
   const intervalDino = useCalculateIntervalDino();
-  const newRef = useRef(createDinosaur());
+  const newRef = useRef(createDinosaur(windowSize));
   const visibilityGame = useRef(true); // bug fixing
   const id = useInterval(() => {
     visibilityGame.current = document.visibilityState === "visible";
-    newRef.current = createDinosaur();
-    if (visibilityGame.current)
+    newRef.current = createDinosaur(windowSize);
+    if (visibilityGame.current && landscape)
       dispatch({ type: ADD_DINO, newDino: newRef.current });
     if (gameOver) {
       clearInterval(id);

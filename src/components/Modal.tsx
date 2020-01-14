@@ -119,9 +119,27 @@ export const ModalWin = () => {
         dynamite,
         health
       },
-      chrono
+      chrono,
+      competency
     }
   ] = useGameData();
+
+  const sendComments = (e: any, _id: string) => {
+    e.preventDefault();
+  };
+  const { response: resComment, error: errorComment } = useFetch<{
+    comments: string;
+    likes: boolean;
+    _id: string;
+  }>("/send-comments", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({})
+  });
+
   const { response, error, isLoading } = useFetch<
     {
       name: string;
@@ -151,8 +169,14 @@ export const ModalWin = () => {
     <ModalTemplate overflow={"scroll"} fontSize={"1rem"} fontFamily={"none"}>
       {typeModal === "" && (
         <>
-          <p>You win, see your score, and listen SKARAH-B new ska Album :) :) :)</p>
+          <p>
+            You win, see your score, and listen SKARAH-B new ska Album :) :) :)
+          </p>
           <button onClick={() => setTypeModal("score")}>See Best Scores</button>
+          <button onClick={() => setTypeModal("comments")}>Comments</button>
+          <button onClick={() => setTypeModal("competency")}>
+            See All Competency
+          </button>
           <button onClick={() => setTypeModal("music")}>
             Listen to Skarahb Music
           </button>
@@ -169,6 +193,28 @@ export const ModalWin = () => {
             width="300"
             height="300"
           ></iframe>
+        </>
+      )}
+      {typeModal === "competency" && (
+        <>
+          <button onClick={() => setTypeModal("")}>back</button>
+          {competency.map(comp => {
+            return (
+              <a
+                key={comp.type}
+                title={comp.type}
+                target="_blank"
+                rel="noopener noreferrer"
+                href={comp.website}
+              >
+                <img
+                  style={{ width: "50px", height: "50px" }}
+                  src={comp.avatar}
+                  alt={comp.type}
+                />
+              </a>
+            );
+          })}
         </>
       )}
       {isLoading && <span>Waiting score ...</span>}

@@ -1,5 +1,3 @@
-import { useRef } from "react";
-import { windowSize } from "../constants/contants";
 import {
   diploInit,
   EnemyInit,
@@ -13,7 +11,7 @@ import pteroNoise from "../sound/pterodactyl.mp3";
 import diploNoise from "../sound/diplo.mp3";
 import { initHeroes } from "../data/player";
 
-export const createDinosaur = (): EnemyInit => {
+export const createDinosaur = (windowSize:number): EnemyInit => {
   const tableDinosaur = [
     pteroInit,
     pteroInit,
@@ -85,6 +83,6 @@ export const conditionToConflict = (
     positionHero >= refPosition.current &&
     positionHero <= refPosition.current + width &&
     player.y + playerHeight >= y &&
-    player.y + playerHeight <= y + height
+    player.y  <= y + height
   );
 };

@@ -149,7 +149,6 @@ export const useWindowSize = () => {
       setWidth(window.innerWidth);
       setHeight(window.innerHeight);
       setLandscape(window.matchMedia("(orientation: landscape)").matches);
-      console.log(isMobile())
       dispatch({
         type: "SET_WINDOW",
         ...{
