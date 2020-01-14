@@ -173,7 +173,6 @@ export const ModalWin = () => {
             You win, see your score, and listen SKARAH-B new ska Album :) :) :)
           </p>
           <button onClick={() => setTypeModal("score")}>See Best Scores</button>
-          <button onClick={() => setTypeModal("comments")}>Comments</button>
           <button onClick={() => setTypeModal("competency")}>
             See All Competency
           </button>
