@@ -87,7 +87,7 @@ const MainHeader = () => {
 
       <div className="row sub-menu misc">
         <div className="cv col-xs-3">
-          <a href="https://github.com/ppprevost" target="_blank" rel="noopener noreferrer">
+          <a href="https://github.com/ppprevost/jeu-cv-react" target="_blank" rel="noopener noreferrer">
             Github
           </a>
         </div>
