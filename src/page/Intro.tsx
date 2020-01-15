@@ -25,14 +25,13 @@ const LOGOComponent = styled.img`
 `;
 
 const Hunter = styled.img<any>`
-position:absolute;
-left:${({ windowSize }) => {
-  return windowSize < 580 ? -150 + "px" : 0 + "px";
-}}
-top: ${({ windowHeight }) =>
-  (windowHeight < 580 ? windowHeight / 2 - 150 : 150) + "px"};
-width:350px
-
+  position: absolute;
+  left: ${({ windowSize }) => {
+    return windowSize < 580 ? -150 + "px" : 0 + "px";
+  }};
+  top: ${({ windowHeight }) =>
+    (windowHeight < 580 ? windowHeight / 2 - 150 : 150) + "px"};
+  width: 350px;
 `;
 
 interface DinoPropsIntro {
@@ -45,7 +44,7 @@ interface DinoPropsIntro {
 const Dino = styled.img<any>`
 position:absolute;
 z-index:${({ zIndex }) => zIndex} ;
-left:${({ position, windowSize }) => windowSize * position + "px"}
+left:${({ position, windowSize }) => windowSize * position + "px"};
 top:${({ top }) => 200 + top + "px"};
 `;
 

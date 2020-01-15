@@ -1,8 +1,4 @@
-import React, {
-  FunctionComponent,
-  SetStateAction,
-  useState
-} from "react";
+import React, { FunctionComponent, SetStateAction, useState } from "react";
 import styled from "styled-components";
 import { useGameData } from "../store/GameProvider";
 import { TemplateComments, TemplateScore } from "./Win";
@@ -117,29 +113,49 @@ export const ModalWin = () => {
           <p>
             You win, see your score, and listen SKARAH-B new ska Album :) :) :)
           </p>
-          <button onClick={() => setTypeModal("score")}>See Best Scores</button>
-          <button onClick={() => setTypeModal("comments")}>
-            Add a comments
-          </button>
-          <button onClick={() => setTypeModal("competency")}>
-            See All Competency
-          </button>
-          <button onClick={() => setTypeModal("music")}>
-            Listen to Skarahb Music
-          </button>
+          <div className="row">
+            <button
+              className={"col-sm-6"}
+              onClick={() => setTypeModal("score")}
+            >
+              See Best Scores
+            </button>
+            <button
+              className={"col-sm-6"}
+              onClick={() => setTypeModal("comments")}
+            >
+              Add a comments
+            </button>
+          </div>
+          <div className="row">
+            <button
+              className={"col-sm-6"}
+              onClick={() => setTypeModal("competency")}
+            >
+              See All Competency
+            </button>
+            <button
+              className={"col-sm-6"}
+              onClick={() => setTypeModal("music")}
+            >
+              Listen to Skarahb Music
+            </button>
+          </div>
         </>
       )}
       {typeModal === "music" && (
         <>
           <button onClick={() => setTypeModal("")}>back</button>
-          <iframe
-            scrolling="no"
-            frameBorder="0"
-            allowTransparency={true}
-            src="https://www.deezer.com/plugins/player?format=square&autoplay=false&playlist=false&width=300&height=300&color=ff0000&layout=dark&size=medium&type=album&id=126086342&app_id=1"
-            width="300"
-            height="300"
-          ></iframe>
+          <div className="mx-auto">
+            <iframe
+              scrolling="no"
+              frameBorder="0"
+              allowTransparency={true}
+              src="https://www.deezer.com/plugins/player?format=square&autoplay=false&playlist=false&width=300&height=300&color=ff0000&layout=dark&size=medium&type=album&id=126086342&app_id=1"
+              width="300"
+              height="300"
+            ></iframe>
+          </div>
         </>
       )}
       {typeModal === "comments" && (

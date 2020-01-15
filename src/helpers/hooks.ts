@@ -175,7 +175,8 @@ export function useKeyPress() {
   const [
     {
       player: { position },
-      gameOver
+      gameOver,
+      win
     },
     dispatch
   ] = useGameData();
@@ -252,7 +253,7 @@ export function useKeyPress() {
   useEffect(() => {
     window.addEventListener("keydown", downHandler);
     window.addEventListener("keyup", upHandler);
-    if (gameOver) {
+    if (gameOver || win) {
       window.removeEventListener("keydown", downHandler);
       window.removeEventListener("keyup", upHandler);
     }

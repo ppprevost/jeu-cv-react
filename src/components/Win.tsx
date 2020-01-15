@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useFetch } from "../helpers/hooks";
 import { useGameData } from "../store/GameProvider";
 
@@ -9,10 +9,10 @@ export const TemplateComments = ({
   email: string | null;
   setTypeModal: (e: string) => any;
 }) => {
-  const sendCommented = useRef(false);
+  const [sendCommented, setSendCommented] = useState(false);
+  const [data, setData] = useState({});
   // @ts-ignore
-  const cursor: HTMLFormElement = document.querySelector("#form-comments");
-  const data = Object.fromEntries(new FormData(cursor));
+
   const { response: responseCom, error: errorCom, isLoading } = useFetch(
     "/send-comments",
     {
@@ -21,19 +21,28 @@ export const TemplateComments = ({
         Accept: "application/json",
         "Content-Type": "application/json"
       },
-      body: { ...data, email }
+      body: JSON.stringify({ ...data, email })
     },
-    sendCommented.current
+    sendCommented && !!Object.keys(data).length
   );
+
+  useEffect(() => {
+    if (sendCommented) {
+      console.log(sendCommented);
+      const cursor: any = document.getElementById("form-comments");
+      setData(Object.fromEntries(new FormData(cursor)));
+    }
+  }, [sendCommented]);
+
   const sendComments = (event: any) => {
     event.preventDefault();
-    sendCommented.current = true;
+    setSendCommented(true);
   };
   return (
     <>
       <button onClick={() => setTypeModal("")}>back</button>
-      {errorCom && "an error for the comment occured"}
-      {responseCom && "Thank you for your comments !"}
+      {errorCom && <p>"an error for the comment occured"</p>}
+      {responseCom && <p>"Thank you for your comments !"</p>}
       {isLoading && "wait, for sending"}
       {!errorCom && !responseCom && !isLoading && (
         <form onSubmit={sendComments} id="form-comments">
@@ -41,13 +50,18 @@ export const TemplateComments = ({
             <span>How was the game ?</span>
             <div className="radio">
               <label>
-                <input name="radio" type="radio" value="Good" defaultChecked />
+                <input
+                  name="appreciation"
+                  type="radio"
+                  value="good"
+                  defaultChecked
+                />
                 Good
               </label>
             </div>
             <div className="radio">
               <label>
-                <input name="radio" type="radio" value="Bad" />
+                <input name="appreciation" type="radio" value="bad" />
                 Bad
               </label>
             </div>
