@@ -58,7 +58,7 @@ const MainHeader = () => {
     }
   }, [second, minute]);
   return (
-    <div className="container">
+    <div className="container" id={"main-header"}>
       <div className="row tableau misc">
         <div className="col-xs-3 text-center">
           <div className="glyphicon glyphicon-time" aria-hidden="true"></div>

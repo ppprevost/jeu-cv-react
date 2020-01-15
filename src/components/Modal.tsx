@@ -1,7 +1,11 @@
-import React, { FunctionComponent, SetStateAction, useState } from "react";
+import React, {
+  FunctionComponent,
+  SetStateAction,
+  useState
+} from "react";
 import styled from "styled-components";
-import { useFetch } from "../helpers/hooks";
 import { useGameData } from "../store/GameProvider";
+import { TemplateComments, TemplateScore } from "./Win";
 
 interface ModalProps {
   onVisible: boolean;
@@ -70,19 +74,6 @@ export const ModalTemplate: FunctionComponent<ModalOptional> = ({
   );
 };
 
-export const SkarahbModal = () => {
-  return (
-    <iframe
-      scrolling="no"
-      frameBorder="0"
-      allowTransparency={true}
-      src="https://www.deezer.com/plugins/player?format=square&autoplay=false&playlist=false&width=300&height=300&color=ff0000&layout=dark&size=medium&type=album&id=126086342&app_id=1"
-      width="300"
-      height="300"
-    ></iframe>
-  );
-};
-
 export const ModalPause: FunctionComponent<{
   setPauseOff?: SetStateAction<any>;
 }> = ({ setPauseOff }) => {
@@ -112,59 +103,13 @@ export const ModalGameOver = () => {
 export const ModalWin = () => {
   const [
     {
-      player: {
-        score,
-        name = "undefined player",
-        email = "undefined email",
-        dynamite,
-        health
-      },
-      chrono,
+      player: { email = "undefined email" },
       competency
     }
   ] = useGameData();
 
-  const sendComments = (e: any, _id: string) => {
-    e.preventDefault();
-  };
-  const { response: resComment, error: errorComment } = useFetch<{
-    comments: string;
-    likes: boolean;
-    _id: string;
-  }>("/send-comments", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({})
-  });
-
-  const { response, error, isLoading } = useFetch<
-    {
-      name: string;
-      score: number;
-      chrono: { minute: number; second: number };
-      health: number;
-      dynamite: number;
-      _id: string;
-    }[]
-  >("/send-scores", {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      name,
-      score,
-      email,
-      health,
-      dynamite,
-      chrono
-    })
-  });
   const [typeModal, setTypeModal] = useState("");
+
   return (
     <ModalTemplate overflow={"scroll"} fontSize={"1rem"} fontFamily={"none"}>
       {typeModal === "" && (
@@ -173,6 +118,9 @@ export const ModalWin = () => {
             You win, see your score, and listen SKARAH-B new ska Album :) :) :)
           </p>
           <button onClick={() => setTypeModal("score")}>See Best Scores</button>
+          <button onClick={() => setTypeModal("comments")}>
+            Add a comments
+          </button>
           <button onClick={() => setTypeModal("competency")}>
             See All Competency
           </button>
@@ -193,6 +141,9 @@ export const ModalWin = () => {
             height="300"
           ></iframe>
         </>
+      )}
+      {typeModal === "comments" && (
+        <TemplateComments setTypeModal={setTypeModal} email={email} />
       )}
       {typeModal === "competency" && (
         <>
@@ -216,41 +167,7 @@ export const ModalWin = () => {
           })}
         </>
       )}
-      {isLoading && <span>Waiting score ...</span>}
-      {error && <span>{error}</span>}
-      {response && typeModal === "score" && (
-        <>
-          <button onClick={() => setTypeModal("")}>back</button>
-          <h2>You survive ! See all survivor :</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>name</th>
-                <th>score</th>
-                <th>chrono</th>
-                <th>health</th>
-                <th>dynamite</th>
-              </tr>
-            </thead>
-            <tbody>
-              {response &&
-                response.map(
-                  ({ name, score, chrono, health, dynamite, _id }) => (
-                    <tr key={_id}>
-                      <td>{name}</td>
-                      <td> {score}</td>
-                      <td>
-                        {chrono.minute}:{chrono.second}
-                      </td>
-                      <td>{health}</td>
-                      <td>{dynamite}</td>
-                    </tr>
-                  )
-                )}
-            </tbody>
-          </table>
-        </>
-      )}
+      {typeModal === "score" && <TemplateScore setTypeModal={setTypeModal} />}
     </ModalTemplate>
   );
 };

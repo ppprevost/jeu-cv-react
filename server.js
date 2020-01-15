@@ -14,5 +14,9 @@ app.listen(process.env.PORT || 8080, () => {
 });
 
 app.post("/send-scores", function(req, res) {
-  res.json([{_id:0,...req.body}]);
+  res.json([{ _id: 0, ...req.body }]);
+});
+
+app.post("/send-comments", function(req, res) {
+  res.json(req.body);
 });

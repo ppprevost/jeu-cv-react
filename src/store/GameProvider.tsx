@@ -301,6 +301,7 @@ export const reducer = (state: State, action: ActionType) => {
       const newCompetency = [...state.competency, action.payload.newCompetency];
       return { ...state, competency: newCompetency };
     case "GET_COMPETENCY":
+      state.win = true
       const catchedCompetency = state.competency.map(comp => {
         if (comp.type === action.payload.newComp) {
           comp.catched = true;

@@ -13,7 +13,8 @@ import {
 
 export function useFetch<T>(
   url: string,
-  options: any = {}
+  options: any = {},
+  start = true
 ): { response: T | null; error: Error | null; isLoading: boolean } {
   const [response, setResponse] = useState(null);
   const [error, setError] = useState(null);
@@ -38,7 +39,9 @@ export function useFetch<T>(
         return setError(e);
       }
     };
-    asyncFetch();
+    if (start) {
+      asyncFetch();
+    }
   }, []);
   console.log(response, error);
   return { response, error, isLoading };
@@ -262,84 +265,3 @@ export function useKeyPress() {
 
   return keyPressed;
 }
-
-// from https://www.jayfreestone.com/writing/react-portals-with-hooks/
-/**
- * Creates DOM element to be used as React root.
- * @returns {HTMLElement}
- */
-function createRootElement(id: string) {
-  const rootContainer = document.createElement("div");
-  rootContainer.setAttribute("id", id);
-  return rootContainer;
-}
-
-/**
- * Appends element as last child of body.
- * @param {HTMLElement} rootElem
- */
-function addRootElement(rootElem: Node) {
-  document.body.insertBefore(
-    rootElem,
-    document.body &&
-      document.body.lastElementChild &&
-      document.body.lastElementChild.nextElementSibling
-  );
-}
-
-/**
- * Hook to create a React Portal.
- * Automatically handles creating and tearing-down the root elements (no SRR
- * makes this trivial), so there is no need to ensure the parent target already
- * exists.
- * @example
- * const target = usePortal(id, [id]);
- * return createPortal(children, target);
- * @param {String} id The id of the target container, e.g 'modal' or 'spotlight'
- * @returns {HTMLElement} The DOM node to use as the Portal target.
- */
-export function usePortal(id: string) {
-  const rootElemRef = useRef<any>(null);
-  useEffect(function() {
-    // Look for existing target dom element to append to
-    const existingParent = document.querySelector(`#${id}`);
-    // Parent is either a new root or the existing dom element
-    const parentElem = existingParent || createRootElement(id);
-    // If there is no existing DOM element, add a new one.
-    if (!existingParent) {
-      addRootElement(parentElem);
-    }
-    // Add the detached element to the parent
-    while (parentElem.firstChild) {
-      parentElem.firstChild.remove();
-    }
-    parentElem.appendChild(rootElemRef.current);
-    return () => {
-      rootElemRef.current.remove();
-      if (parentElem.childNodes.length === -1) {
-        parentElem.remove();
-      }
-    };
-  }, []);
-
-  /**
-   * It's important we evaluate this lazily:
-   * - We need first render to contain the DOM element, so it shouldn't happen
-   *   in useEffect. We would normally put this in the constructor().
-   * - We can't do 'const rootElemRef = useRef(document.createElement('div))',
-   *   since this will run every single render (that's a lot).
-   * - We want the ref to consistently point to the same DOM element and only
-   *   ever run once.
-   * @link https://reactjs.org/docs/hooks-faq.html#how-to-create-expensive-objects-lazily
-   */
-  function getRootElem() {
-    if (!rootElemRef.current) {
-      rootElemRef.current = document.createElement("div");
-    }
-    return rootElemRef.current;
-  }
-
-  return getRootElem();
-}
-
-export default usePortal;
