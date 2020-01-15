@@ -1,7 +1,6 @@
 import React, { useState, useLayoutEffect } from "react";
 import hunter from "../img/intro/hunter.png";
 import raptor from "../img/intro/raptor.png";
-import raptor2 from "../img/intro/raptor2.png";
 import pachy from "../img/intro/pachy.png";
 import diplo from "../img/intro/diplo.png";
 import ptero from "../img/intro/ptero.png";
@@ -24,7 +23,12 @@ const LOGOComponent = styled.img`
   width: 300px;
 `;
 
-const Hunter = styled.img<any>`
+interface WindowSizeProps {
+  windowSize: number;
+  windowHeight: number;
+}
+
+const Hunter = styled.img<WindowSizeProps>`
   position: absolute;
   left: ${({ windowSize }) => {
     return windowSize < 580 ? -150 + "px" : 0 + "px";
@@ -39,13 +43,14 @@ interface DinoPropsIntro {
   position: number;
   zIndex: number;
   top: number;
+  windowSize: number;
 }
 
-const Dino = styled.img<any>`
-position:absolute;
-z-index:${({ zIndex }) => zIndex} ;
-left:${({ position, windowSize }) => windowSize * position + "px"};
-top:${({ top }) => 200 + top + "px"};
+const Dino = styled.img<DinoPropsIntro>`
+  position: absolute;
+  z-index: ${({ zIndex }) => zIndex};
+  left: ${({ position, windowSize }) => windowSize * position + "px"};
+  top: ${({ top }) => 200 + top + "px"};
 `;
 
 const dinoTab = [
@@ -154,6 +159,7 @@ export const ModalVideo = ({ ...props }) => {
       <p>D for Dynamite, Space for shooting, P for pause</p>
       <h3>Use tactile Touch Button for mobile</h3>
       <iframe
+        title="skarahb"
         width="420"
         height="300"
         src="https://www.youtube.com/embed/NNZ5XWnEgvA"
@@ -167,12 +173,12 @@ export const ModalVideo = ({ ...props }) => {
 export const ModalPreGame = () => {
   const [, dispatch] = useGameData();
   const [form, setForm] = useState({});
-  const startParty = (e: any) => {
+  const startParty = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch({ type: "START_GAME", payload: form });
     introSound.pause();
   };
-  const handleChange = (e: any) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name;
     setForm({ ...form, [name]: e.target.value });
   };

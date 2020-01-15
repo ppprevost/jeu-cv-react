@@ -5,7 +5,7 @@ import { TemplateComments, TemplateScore } from "./Win";
 
 interface ModalProps {
   onVisible: boolean;
-  setVisible: (el: false) => any;
+  setVisible: (el: boolean) => any;
   closeModal: boolean;
   fontSize: number | string;
   fontFamily: string;
@@ -14,7 +14,7 @@ interface ModalProps {
 
 type ModalOptional = Partial<ModalProps>;
 
-const ButtonClose = styled.button<any>`
+const ButtonClose = styled.button`
   position: absolute;
   width: 37px;
   margin-left: 44%;
@@ -148,6 +148,7 @@ export const ModalWin = () => {
           <button onClick={() => setTypeModal("")}>back</button>
           <div className="mx-auto">
             <iframe
+                title={"skarahb"}
               scrolling="no"
               frameBorder="0"
               allowTransparency={true}

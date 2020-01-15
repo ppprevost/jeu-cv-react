@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { SetStateAction, useEffect, useState } from "react";
 import { useFetch } from "../helpers/hooks";
 import { useGameData } from "../store/GameProvider";
 
@@ -29,12 +29,14 @@ export const TemplateComments = ({
   useEffect(() => {
     if (sendCommented) {
       console.log(sendCommented);
-      const cursor: any = document.getElementById("form-comments");
+      const cursor = document.getElementById(
+        "form-comments"
+      ) as HTMLFormElement;
       setData(Object.fromEntries(new FormData(cursor)));
     }
   }, [sendCommented]);
 
-  const sendComments = (event: any) => {
+  const sendComments = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setSendCommented(true);
   };
@@ -80,7 +82,11 @@ export const TemplateComments = ({
   );
 };
 
-export const TemplateScore = ({ setTypeModal }: { setTypeModal: any }) => {
+export const TemplateScore = ({
+  setTypeModal
+}: {
+  setTypeModal: SetStateAction<any>;
+}) => {
   const [
     {
       player: {

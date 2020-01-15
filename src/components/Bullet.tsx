@@ -40,7 +40,7 @@ const BulletComponent = ({
   const [sprite, setSprite] = useState(spriteItemX[0]);
   const [frame, setFrame] = useState(0);
   const avatar = bulletImg;
-  const refDelayBullet: any = useRef(intervalBullet);
+  const refDelayBullet = useRef<number | null>(intervalBullet);
 
   useEffect(() => {
     refDirection.current = direction;

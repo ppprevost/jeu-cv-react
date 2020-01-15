@@ -11,9 +11,15 @@ import {
   PAUSE
 } from "../constants/contants";
 
+interface Options {
+  method: string;
+  body: string;
+  headers: any;
+}
+
 export function useFetch<T>(
   url: string,
-  options: any = {},
+  options = {} as Options,
   start = true
 ): { response: T | null; error: Error | null; isLoading: boolean } {
   const [response, setResponse] = useState(null);

@@ -1,4 +1,4 @@
-import React, { CSSProperties, SyntheticEvent, useEffect, useRef } from "react";
+import React, { CSSProperties, useEffect, useRef } from "react";
 import keyboardArrow from "../img/arrow-key.png";
 import styled from "styled-components";
 import { useGameData } from "../store/GameProvider";
@@ -97,11 +97,13 @@ const Keyboard = () => {
     <>
       <ContainerKeyboard>
         <img
+            alt={"dynamite"}
           style={bulletButtonStyle}
           src={dynamite}
           onTouchStart={launchDynamite}
         />
         <img
+            alt={"muzzle"}
           style={{ ...bulletButtonStyle, marginLeft: "2rem" }}
           src={muzzle}
           onTouchStart={shoot}

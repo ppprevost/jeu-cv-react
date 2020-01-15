@@ -18,7 +18,16 @@ const FixedBackground = (compute: number) =>
 
 const Game = () => {
   const [
-    { player, dino, gameOver, sound, competency, win, pause, windowInfo:{windowSize, landscape} },
+    {
+      player,
+      dino,
+      gameOver,
+      sound,
+      competency,
+      win,
+      pause,
+      windowInfo: { windowSize, landscape }
+    },
     dispatch
   ] = useGameData();
   const setPauseOff = () => {
@@ -59,8 +68,8 @@ const Game = () => {
       {useMemo(
         () =>
           competency
-            .filter((elem: any) => !elem.catched)
-            .map((elem: any) => <Competency key={elem.type} {...elem} />),
+            .filter(elem => !elem.catched)
+            .map(elem => <Competency key={elem.type} {...elem} />),
         [competency]
       )}
       {FixedBackground(xBackground)}
