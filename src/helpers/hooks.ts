@@ -42,7 +42,7 @@ export function useFetch<T>(
     if (start) {
       asyncFetch();
     }
-  }, []);
+  }, [start]);
   console.log(response, error);
   return { response, error, isLoading };
 }
