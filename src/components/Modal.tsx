@@ -35,7 +35,7 @@ const ModalImg = styled.div<any>`
   border: 1px solid #f7f936;
   overflow: ${({ overflow }) => overflow || "auto"};
   max-height: 291px;
-  line-height: 40px;
+  line-height: 30px;
   text-align: center;
   padding: 2rem;
   top: 0;
@@ -107,7 +107,7 @@ export const ModalWin = () => {
   const [typeModal, setTypeModal] = useState("");
 
   return (
-    <ModalTemplate overflow={"scroll"} fontSize={"1rem"} fontFamily={"none"}>
+    <ModalTemplate overflow={"scroll"} fontSize={"1rem"} fontFamily={"inherit"}>
       {typeModal === "" && (
         <>
           <p>

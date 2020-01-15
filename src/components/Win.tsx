@@ -66,11 +66,13 @@ export const TemplateComments = ({
               </label>
             </div>
           </div>
-          <textarea
-            className="form-control"
-            placeholder={"Put your commment"}
-            name={"comments"}
-          />
+          <div className="form-group">
+            <textarea
+              className="form-control"
+              placeholder={"Put your commment"}
+              name={"comments"}
+            />
+          </div>
           <button type={"submit"}>Send Comments</button>
         </form>
       )}

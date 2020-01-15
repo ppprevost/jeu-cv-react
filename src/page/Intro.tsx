@@ -75,7 +75,7 @@ export const BigButton = styled.button`
   width: 300px;
   height: auto;
   text-align: center;
-  font-size: 50px;
+  font-size: 45px;
   cursor: pointer;
   margin: 0 auto;
   color: white;
@@ -177,7 +177,7 @@ export const ModalPreGame = () => {
     setForm({ ...form, [name]: e.target.value });
   };
   return (
-    <ModalTemplate fontFamily={"none"}>
+    <ModalTemplate fontFamily={"inherit"}>
       <h2 style={{ letterSpacing: 0 }}>Who are you young adventurer ?</h2>
       <form onSubmit={startParty}>
         <div style={{ marginBottom: "10px" }}>
