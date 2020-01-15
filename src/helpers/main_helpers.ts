@@ -80,13 +80,11 @@ export const repercutPositionHero = (state: any, newPosition: string, stop?: boo
         if (newPosition === "isRunning") {
             initObject = {...state.player.position}
             if (stop ) {
-                console.log('gamePor run',initObject.isRunning)
                 initObject.isRunning = false;
                 if (!initObject.isJumping) {
                     initObject.isIdle = true;
                 }
             } else {
-                console.log('running')
                 initObject.isRunning = true;
                 initObject.isRunningLeft = false;
                 initObject.isIdle = false;

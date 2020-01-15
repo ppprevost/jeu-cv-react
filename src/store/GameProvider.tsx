@@ -21,7 +21,12 @@ import {
   LAND_PLAYER,
   STOP_SHOOTING,
   JUMP,
-  KILL_DINO
+  KILL_DINO,
+  RAMPAGE,
+  ADD_COMPETENCY,
+  GET_COMPETENCY,
+  RESET_GAME,
+  ADD_TIME
 } from "../constants";
 import {
   competencyArray,
@@ -162,7 +167,6 @@ export const reducer = (state: State, action: ActionType) => {
       if (state.player && state.player.dynamite > 0) {
         state.idBullet++;
         state.player.dynamite -= 1;
-        console.log(dynamiteInit);
         state.bullets = [
           ...state.bullets,
           { ...dynamiteInit, id: state.idBullet }
@@ -211,7 +215,6 @@ export const reducer = (state: State, action: ActionType) => {
       }
       return { ...state };
     case STOP_HURTING:
-      console.log("stop hurt");
       if (state.player && state.player.health > 0) {
         return repercutPositionHero(state, "isHurting", true);
       }
@@ -236,7 +239,7 @@ export const reducer = (state: State, action: ActionType) => {
       state.dino.splice(actualDinoToDelete, 1);
       return { ...state };
 
-    case "RAMPAGE":
+    case RAMPAGE:
       const existingDino = state.dino.filter(elem => elem.alive);
       playSoundRampage(existingDino.length, state.sound);
       const newDinoArray = state.dino.map(dinosaur => {
@@ -297,11 +300,11 @@ export const reducer = (state: State, action: ActionType) => {
         return { ...hurtedPlayerState };
       }
       return { ...state };
-    case "ADD_COMPETENCY":
+    case ADD_COMPETENCY:
       const newCompetency = [...state.competency, action.payload.newCompetency];
       return { ...state, competency: newCompetency };
-    case "GET_COMPETENCY":
-      state.win = true
+    case GET_COMPETENCY:
+      state.win = true;
       const catchedCompetency = state.competency.map(comp => {
         if (comp.type === action.payload.newComp) {
           comp.catched = true;
@@ -320,7 +323,7 @@ export const reducer = (state: State, action: ActionType) => {
         return comp;
       });
       return { ...state, competency: catchedCompetency };
-    case "ADD_TIME":
+    case ADD_TIME:
       if (state.chrono.second < 60) {
         state.chrono.second += 1;
       }
@@ -329,11 +332,11 @@ export const reducer = (state: State, action: ActionType) => {
         state.chrono.minute += 1;
       }
       return { ...state };
-    case "RESET_GAME":
+    case RESET_GAME:
       console.log("reset");
       const init = {
         intro: false,
-        gameType:"game",
+        gameType: "game",
         windowInfo: state.windowInfo,
         player: { ...initHeroes }
       };
