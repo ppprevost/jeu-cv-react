@@ -1,11 +1,21 @@
 {
-  "short_name": "React Dinosaur Game",
+  "short_name": "PP React Dinosaur Game",
   "name": "Pierre-Philippe PREVOST React Dinosaur Game",
   "icons": [
     {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
+      "src": "icon48.png",
+      "type": "image/png",
+      "sizes": "48x48"
+    },
+    {
+      "src": "icon96.png",
+      "type": "image/png",
+      "sizes": "96x96"
+    },
+    {
+      "src": "icon192.png",
+      "type": "image/png",
+      "sizes": "192x192"
     }
   ],
   "display": "fullscreen",
