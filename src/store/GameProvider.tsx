@@ -55,11 +55,11 @@ type ActionType = {
 
 type GameType = "game" | "tutorial";
 
-type State = {
+export type State = {
   intro: boolean;
   gameType: GameType | null;
   sound: boolean;
-  player: IHero;
+  player: IHero | null;
   dino: IPropsDino[];
   idDino: number;
   direction: string;
@@ -74,9 +74,13 @@ type State = {
   chrono: { minute: number; second: number };
 };
 
+interface typeExistingHeroState extends State {
+  player:IHero
+}
+
 const UserContext = createContext<any>([]);
 
-export const initialState = {
+export const initialState:State = {
   windowInfo: {},
   intro: true,
   gameType: null,
@@ -112,17 +116,18 @@ const findDino = (action: ActionType) => {
   return ({ id }: IPropsDino) => action.payload.id === id;
 };
 
-export const reducer = (state: State, action: ActionType) => {
+export const reducer = (state: typeExistingHeroState, action: ActionType) => {
   switch (action.type) {
     case "SET_WINDOW":
       delete action.type;
       state.windowInfo = { ...action };
       return { ...state };
     case "START_GAME":
-      initHeroes.email = action.payload.email;
-      initHeroes.name = action.payload.name;
+      state.player.email = action.payload.email;
+      state.player.name = action.payload.name;
       state.gameType = "game";
       state.intro = false;
+      console.log(state)
       return { ...state };
 
     case SET_SOUND:
@@ -362,7 +367,7 @@ const GameProvider: FunctionComponent = ({ children }) => {
   );
 };
 
-export const useGameData = (): [State, any] => useContext(UserContext);
+export const useGameData = (): [typeExistingHeroState, any] => useContext(UserContext);
 
 export { UserContext, GameProvider };
 
