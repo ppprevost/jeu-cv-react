@@ -75,12 +75,12 @@ export type State = {
 };
 
 interface typeExistingHeroState extends State {
-  player:IHero
+  player: IHero;
 }
 
 const UserContext = createContext<any>([]);
 
-export const initialState:State = {
+export const initialState: State = {
   windowInfo: {},
   intro: true,
   gameType: null,
@@ -123,11 +123,10 @@ export const reducer = (state: typeExistingHeroState, action: ActionType) => {
       state.windowInfo = { ...action };
       return { ...state };
     case "START_GAME":
-      state.player.email = action.payload.email;
-      state.player.name = action.payload.name;
+      initHeroes.email = action.payload.email;
+      initHeroes.name = action.payload.name;
       state.gameType = "game";
       state.intro = false;
-      console.log(state)
       return { ...state };
 
     case SET_SOUND:
@@ -367,7 +366,8 @@ const GameProvider: FunctionComponent = ({ children }) => {
   );
 };
 
-export const useGameData = (): [typeExistingHeroState, any] => useContext(UserContext);
+export const useGameData = (): [typeExistingHeroState, any] =>
+  useContext(UserContext);
 
 export { UserContext, GameProvider };
 

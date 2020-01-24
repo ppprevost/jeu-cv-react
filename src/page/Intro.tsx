@@ -198,7 +198,6 @@ export const ModalPreGame = () => {
         <div style={{ marginBottom: "10px" }}>
           <input
             type="email"
-            required
             name="email"
             onChange={handleChange}
             placeholder="your email"
