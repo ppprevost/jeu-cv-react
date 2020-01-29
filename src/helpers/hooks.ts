@@ -121,11 +121,15 @@ function isMobile() {
 
 export const useCalculateIntervalDino = () => {
   const [{ player }] = useGameData();
-  const { windowSize } = useWindowSize();
+  const { windowSize, isMobile } = useWindowSize();
   const delayRef = useRef(0);
   let [size, interval] = [800, 1900];
   const diff = size - windowSize;
+  if(isMobile && size < windowSize){
+    interval += diff * 1.2
+  } else {
   interval += diff * 1.5;
+  }
   useEffect(() => {
     delayRef.current = interval;
   }, [windowSize, interval]);
