@@ -123,7 +123,7 @@ export const useCalculateIntervalDino = () => {
   const [{ player }] = useGameData();
   const { windowSize, isMobile } = useWindowSize();
   const delayRef = useRef(0);
-  let [size, interval] = [800, 1900];
+  let [size, interval] = [800, 2300];
   const diff = size - windowSize;
   if(isMobile && size < windowSize){
     interval += diff * 1.2
