@@ -165,7 +165,7 @@ export const ModalVideo = ({ ...props }) => {
         src="https://www.youtube.com/embed/NNZ5XWnEgvA"
         frameBorder="0"
         allowFullScreen
-      ></iframe>
+      />
     </ModalTemplate>
   );
 };

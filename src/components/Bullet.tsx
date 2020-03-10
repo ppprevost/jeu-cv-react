@@ -4,6 +4,7 @@ import { useInterval } from "../helpers/hooks";
 import { useGameData } from "../store/GameProvider";
 import { intervalBullet, speedBullet } from "../constants/contants";
 import BulletSprite from "./SpriteElement";
+import {useBulletActions} from "../actions/bullet-actions";
 
 export interface IBulletProps {
   id: number;
@@ -30,9 +31,9 @@ const BulletComponent = ({
       dino,
       direction,
       windowInfo: { windowSize }
-    },
-    dispatch
+    }
   ] = useGameData();
+  const {stopBullet, killDino, rampage} = useBulletActions()
   const ref = useRef(player.x + 100);
   const refDirection = useRef<string | null>(null);
   const y = useRef(player.position.isCrouching ? player.y + 25 : player.y + 45);
@@ -59,7 +60,7 @@ const BulletComponent = ({
     setX(ref.current);
     if (x >= windowSize * 1.5 || x < -windowSize / 2) {
       refDelayBullet.current = null;
-      dispatch({ type: "STOP_BULLET", payload: { type, id } });
+      stopBullet(type, id)
     }
     const directionBullet = direction === "left" ? x : x + width;
     for (var i = 0; i < dino.length; i++) {
@@ -72,14 +73,14 @@ const BulletComponent = ({
         ) {
           if (type === "bullet") {
             if (dino[i].className !== "spike" && dino[i].className !== "vine") {
-              dispatch({ type: "STOP_BULLET", payload: { type, id } });
+              stopBullet(type,id)
               refDelayBullet.current = null;
-              dispatch({ type: "KILL_DINO", payload: { id: dino[i].id } });
+              killDino(dino[i])
             } else {
               continue;
             }
           } else {
-            dispatch({ type: "RAMPAGE" });
+            rampage()
           }
         }
       }

@@ -27,6 +27,7 @@ import { IHero, initHeroes } from "../data/player";
 import { getCorrectSprite } from "../helpers/player_helpers";
 import Keyboard from "./Keyboard";
 import { MainHeaderMemoized } from "../App";
+import { usePlayerActions } from "../actions/player-actions";
 
 const hurtSound = new Audio(heroHurtSound);
 const getItemSound = new Audio(getItem);
@@ -42,9 +43,22 @@ const Hero: FunctionComponent<IHero> = ({
 }) => {
   // const correctedWidth = exactSpriteObject.width;
   const [
-    { gameOver, direction, sound, bullets, competency, windowInfo:{windowSize, isMobile} },
-    dispatch
+    {
+      gameOver,
+      direction,
+      sound,
+      bullets,
+      competency,
+      windowInfo: { windowSize, isMobile }
+    }
   ] = useGameData();
+  const {
+    getCompetency,
+    animatePlayer,
+    playerIsLanding,
+    stopJumping,
+    stopShooting
+  } = usePlayerActions();
   useKeyPress();
   const refPosition = useRef(x);
   const refPositionY = useRef(y);
@@ -83,7 +97,7 @@ const Hero: FunctionComponent<IHero> = ({
         comp.y < refPositionY.current + height
       ) {
         if (sound) getItemSound.play();
-        dispatch({ type: "GET_COMPETENCY", payload: { newComp: comp.type } });
+        getCompetency(comp);
       }
     });
     if (position.isJumping) {
@@ -94,7 +108,7 @@ const Hero: FunctionComponent<IHero> = ({
         refPosition.current -= 15;
       }
       if (refPositionY.current >= stopJumpingHeight) {
-        dispatch({ type: "LAND_PLAYER" });
+        playerIsLanding();
       }
       if (stopJump) {
         refPositionY.current -= jumpSpeed;
@@ -103,11 +117,10 @@ const Hero: FunctionComponent<IHero> = ({
       }
       if (refPositionY.current <= initHeroes.y) {
         refPositionY.current = initHeroes.y;
-        dispatch({ type: "STOP_JUMPING" });
+        stopJumping();
       }
     } else {
       // width/2 a little space for taking competency
-
       if (position.isRunning && refPosition.current + width / 2 < windowSize) {
         refPosition.current += speedPlayer;
       }
@@ -115,11 +128,7 @@ const Hero: FunctionComponent<IHero> = ({
         refPosition.current -= speedPlayer;
       }
     }
-    dispatch({
-      type: "ANIMATE_PLAYER",
-      x: refPosition.current,
-      y: refPositionY.current
-    });
+    animatePlayer(refPosition, refPositionY);
   }, delayRef.current);
   useLayoutEffect(() => {
     getCorrectSprite(position, setBehavior);
@@ -135,9 +144,9 @@ const Hero: FunctionComponent<IHero> = ({
   }, [sound, position.isHurting, gameOver]);
   useEffect(() => {
     setTimeout(() => {
-      if (position.isShooting) dispatch({ type: "STOP_SHOOTING" });
+      if (position.isShooting) stopShooting()
     }, 700);
-  }, [position.isShooting, dispatch]);
+  }, [position.isShooting]);
   return (
     <>
       {<MainHeaderMemoized />}

@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { dinoSpeed, intervalSpeedDino } from "../constants/contants";
-import {useInterval} from "../helpers/hooks";
+import { useInterval } from "../helpers/hooks";
 import { useGameData } from "../store/GameProvider";
 import { MOVE_DINO } from "../constants";
 import Explosion from "./Explosion";
@@ -9,6 +9,8 @@ import {
   conditionToConflict,
   takeSoundChoice
 } from "../helpers/ennemies_helpers";
+
+import { useActionDinosaurs } from "../actions/dinosaurs-actions";
 
 export interface IPropsDino {
   id: number;
@@ -46,13 +48,23 @@ const Dinosaurs = ({
   alive,
   exactSpriteObject
 }: IPropsDino) => {
-  const [{ sound, player, direction, gameOver, win, windowInfo:{windowSize} }, dispatch] = useGameData();
+  const [
+    {
+      sound,
+      player,
+      direction,
+      gameOver,
+      win,
+      windowInfo: { windowSize }
+    }
+  ] = useGameData();
   const [frame, setFrame] = useState(0);
   const requestRef = useRef(spriteX[0]);
   const [typeSprite, setTypeSprite] = useState(0);
   const refPosition = useRef(x);
   const positionInitial = useRef(0);
   const delayDinosaur = useRef<number | null>(intervalSpeedDino);
+  const { deleteDinosaurs, collision, moveDinosaurs } = useActionDinosaurs();
   useEffect(() => {
     positionInitial.current = x;
   }, []);
@@ -74,25 +86,25 @@ const Dinosaurs = ({
         height
       )
     ) {
-      dispatch({ type: "COLLISION" });
+      collision();
     }
     if (positionInitial.current === -width) {
       if (refPosition.current > windowSize + width) {
-        dispatch({ type: "DELETE_DINO", payload: { id } });
+        deleteDinosaurs(id);
         delayDinosaur.current = null;
         return;
       } else {
         refPosition.current += dinoSpeed + speed;
-        dispatch({ type: MOVE_DINO, payload: { x: refPosition.current, id } });
+        moveDinosaurs(refPosition, id);
       }
     } else {
       if (refPosition.current < -width) {
-        dispatch({ type: "DELETE_DINO", payload: { id } });
+        deleteDinosaurs(id);
         delayDinosaur.current = null;
         return;
       } else {
         refPosition.current -= dinoSpeed + speed;
-        dispatch({ type: MOVE_DINO, payload: { x: refPosition.current, id } });
+        moveDinosaurs(refPosition, id);
       }
     }
   }, delayDinosaur.current);
@@ -106,7 +118,7 @@ const Dinosaurs = ({
       requestRef.current = spriteXDead[frame];
       setTypeSprite(spriteY[1]);
       if (frame === spriteXDead.length) {
-        dispatch({ type: "DELETE_DINO", payload: { id } });
+        deleteDinosaurs(id);
         clearInterval(idS);
         return;
       }
