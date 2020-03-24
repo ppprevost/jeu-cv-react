@@ -3,7 +3,31 @@ import { useGameData } from "../store/GameProvider";
 import { useChrono } from "../helpers/hooks";
 import { Competency } from "./Competency";
 
-const MainHeader = () => {
+const getCompetency = (competency:Competency[]) => {
+  if (competency.length > 0) {
+    return competency.map((comp: Competency) => {
+      return (
+          <div key={comp.type}>
+            {comp.catched ? (
+                <a title={comp.type} target="_blank" rel="noopener noreferrer" href={comp.website}>
+                  <img
+                      key={comp.type}
+                      style={{ width: "50px", height: "50px" }}
+                      src={comp.avatar}
+                      alt={comp.type}
+                  />
+                </a>
+            ) : (
+                <div className={"blink_me"}>Take {comp.type} !</div>
+            )}
+          </div>
+      );
+    });
+  }
+  return <span>no competency</span>;
+};
+
+const MainHeader = React.memo(() => {
   const [
     {
       sound,
@@ -16,30 +40,6 @@ const MainHeader = () => {
   ] = useGameData();
   const setSound = () => dispatch({ type: "SET_SOUND" });
   useChrono();
-  const getCompetency = () => {
-    if (competency.length > 0) {
-      return competency.map((comp: Competency) => {
-        return (
-          <div key={comp.type}>
-            {comp.catched ? (
-              <a title={comp.type} target="_blank" rel="noopener noreferrer" href={comp.website}>
-                <img
-                  key={comp.type}
-                  style={{ width: "50px", height: "50px" }}
-                  src={comp.avatar}
-                  alt={comp.type}
-                />
-              </a>
-            ) : (
-              <div className={"blink_me"}>Take {comp.type} !</div>
-            )}
-          </div>
-        );
-      });
-    }
-    return <span>no competency</span>;
-  };
-
   const [chronoHeader, setChronoHeader] = useState("00:00");
   const resetGame = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -103,9 +103,9 @@ const MainHeader = () => {
           Sound {sound ? "on" : "off"}
         </div>
       </div>
-      <div className="row sub-menu misc">{getCompetency()}</div>
+      <div className="row sub-menu misc">{getCompetency(competency)}</div>
     </div>
   );
-};
+});
 
 export default MainHeader;

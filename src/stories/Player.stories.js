@@ -1,7 +1,7 @@
-import React, { createContext, FunctionComponent, useContext, useEffect, useReducer, useState } from "react";
+import React, { createContext, useEffect, useReducer, useState } from "react";
 import { storiesOf } from "@storybook/react";
 import { withContexts } from "@storybook/addon-contexts/react";
-import Hero from "../../src/components/Hero";
+import {Hero} from "../../src/components/Hero";
 import { initHeroes } from "../../src/data/player";
 import { UserContext } from '../store/GameProvider';
 import {
@@ -12,20 +12,20 @@ import {
   number,
   select
 } from "@storybook/addon-knobs";
-import { initialState, reducer } from "../store/GameProvider";
+import { initialState } from "../store/GameProvider";
+import playerReducers from "../reducers/player_reducer";
 
 const stories = storiesOf("Player", module);
 
 const initState = {...initialState}
 const initHeroesMock = {...initHeroes};
-initHeroesMock.x = 20;
-initHeroesMock.y = 10;
+initHeroesMock.x = window.innerWidth/2;
+initHeroesMock.y = window.innerHeight/2;
 initState.player=initHeroesMock;
 
-const GameProvider = ({ children }) => {
+const GameProviderStories = ({ children }) => {
   const [state, setState] = useState({ isLoaded: false });
-  // @ts-ignore
-  const contextValue = useReducer(reducer, initState);
+  const contextValue = useReducer(playerReducers, initState);
   useEffect(() => {
     setState({ isLoaded: true });
   }, []);
@@ -36,5 +36,4 @@ const GameProvider = ({ children }) => {
   );
 };
 
-
-stories.addDecorator(withKnobs).add("idle", () => <GameProvider><Hero {...initHeroesMock}/></GameProvider>);
+stories.addDecorator(withKnobs).add("idle", () => <GameProviderStories><Hero {...initHeroesMock}/></GameProviderStories>);

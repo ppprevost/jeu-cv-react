@@ -22,13 +22,13 @@ height:${heightCompetency + 'px'};
 left:${({x}) => x + 'px'}
 `
 
-const CompetencyGenerator: FunctionComponent<Competency> = (props) => {
+const CompetencyGenerator: FunctionComponent<Competency> = React.memo((props) => {
     return <ImgCompetency src={props.avatar}
                           alt="competency-image"
                           {...props}
 
     />
-}
+})
 
 
 export default CompetencyGenerator

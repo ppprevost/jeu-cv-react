@@ -9,13 +9,14 @@ interface PropsCharacter {
   height: number;
   x: number;
   y: number;
+  position:any;
   exactSpriteObject: {};
   className: string;
   avatar: string;
   behavior: number;
 }
 
-const Character = ({
+const Character = React.memo(({
   width,
   height,
   x,
@@ -38,7 +39,6 @@ const Character = ({
   const [frame, setFrame] = useState(0);
   const value = useSpriteException();
   const delayStopHurting = useRef<number | null>(1000);
-
   useInterval(() => {
     if (position.isHurting) {
       dispatch({ type: "STOP_HURTING" });
@@ -89,6 +89,6 @@ const Character = ({
       sprite={sprite}
     />
   );
-};
+});
 
 export default Character;

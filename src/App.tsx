@@ -1,23 +1,14 @@
-import React, {
-  useMemo,
-  lazy,
-  Suspense,
-  CSSProperties,
-} from "react";
+import React, { useMemo, lazy, Suspense, CSSProperties } from "react";
 import "./App.css";
 import background from "./img/fond.png";
 import GameProvider, { useGameData } from "./store/GameProvider";
 import Intro from "./page/Intro";
-import MainHeader from "./components/MainHeader";
 import { useWindowSize } from "./helpers/hooks";
 const Game = lazy(() => import("./page/Game"));
 
 const skarahb =
   "https://e-cdns-images.dzcdn.net/images/cover/758113bb674a43d1a87a93eb89c16b5e/298x298-000000-100-1-1.jpg";
 
-export const MainHeaderMemoized = () => {
-  return useMemo(() => <MainHeader />, []);
-};
 const App = () => (
   <GameProvider>
     <Play />
@@ -34,7 +25,6 @@ const Play = () => {
     margin: "0 auto",
     maxHeight: 580 + "px",
     position: "relative",
-    maxWidth: 1400 + "px"
   };
 
   const [{ gameType, intro }] = useGameData();

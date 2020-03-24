@@ -16,20 +16,20 @@ const style = {
     height: 80
 }
 
-export const Field = () => {
+export const Field = React.memo(() => {
     const style: CSSProperties = {
         zIndex: 5,
         position: 'absolute',
         bottom: 0,
     }
     return (<img src={field} style={style} alt="" />)
-}
+})
 
-const Background = ({left}: {left:number}) => {
+const Background = React.memo(({left}: {left:number}) => {
     const {bottom, width, height} = style;
     const objetRandom = Math.round(Math.random() * (backgroundImg.length-1));
     const avatar = backgroundImg[objetRandom];
     return <img alt={'background'} className='background' src={avatar} style={{bottom, width, height,left, position:'absolute'}} />
-}
+})
 
 export default Background

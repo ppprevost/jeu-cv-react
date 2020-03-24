@@ -192,7 +192,7 @@ export const ModalPreGame = () => {
             required
             name="name"
             onChange={handleChange}
-            placeholder="your name"
+            placeholder="your name*"
           />
         </div>
         <div style={{ marginBottom: "10px" }}>
@@ -202,6 +202,10 @@ export const ModalPreGame = () => {
             onChange={handleChange}
             placeholder="your email"
           />
+        </div>
+        <div style={{ marginBottom: "10px" }}>
+          tutorial
+          <input name="tutorial" onChange={handleChange} disabled type="checkbox" />
         </div>
         <div>
           <button type="submit">Send</button>

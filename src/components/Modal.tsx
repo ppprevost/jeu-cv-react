@@ -72,18 +72,18 @@ export const ModalTemplate: FunctionComponent<ModalOptional> = ({
 
 export const ModalPause: FunctionComponent<{
   setPauseOff?: SetStateAction<any>;
-}> = ({ setPauseOff }) => {
+}> = React.memo(({ setPauseOff }) => {
   return (
     <ModalTemplate>
       <div>Pause</div>
       <button onClick={setPauseOff}>Return to Game</button>
     </ModalTemplate>
   );
-};
+});
 
-export const ModalGameOver = () => {
+export const ModalGameOver = (() => {
   const [, dispatch] = useGameData();
-
+console.log('you die')
   const reset = () => {
     return dispatch({ type: "RESET_GAME" });
   };
@@ -94,7 +94,7 @@ export const ModalGameOver = () => {
       <button onClick={reset}>Try again</button>
     </ModalTemplate>
   );
-};
+});
 
 export const ModalWin = () => {
   const [

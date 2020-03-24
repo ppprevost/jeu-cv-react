@@ -22,3 +22,6 @@ export const ADD_COMPETENCY = "ADD_COMPETENCY";
 export const GET_COMPETENCY = "GET_COMPETENCY";
 export const RESET_GAME = "RESET_GAME";
 export const ADD_TIME = "ADD_TIME";
+
+export const SHOOT = "SHOOT";
+export const IS_DYNAMITING = "IS_DYNAMITING";

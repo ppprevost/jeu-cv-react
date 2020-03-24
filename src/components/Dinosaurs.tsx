@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { dinoSpeed, intervalSpeedDino } from "../constants/contants";
 import { useInterval } from "../helpers/hooks";
 import { useGameData } from "../store/GameProvider";
-import { MOVE_DINO } from "../constants";
 import Explosion from "./Explosion";
 import DinosaurSprite from "./SpriteElement";
 import {
@@ -10,7 +9,7 @@ import {
   takeSoundChoice
 } from "../helpers/ennemies_helpers";
 
-import { useActionDinosaurs } from "../actions/dinosaurs-actions";
+import useActionDinosaurs from "../actions/dinosaurs-actions";
 
 export interface IPropsDino {
   id: number;
@@ -31,7 +30,7 @@ export interface IPropsDino {
   alive: boolean;
 }
 
-const Dinosaurs = ({
+const Dinosaurs = React.memo(({
   id,
   x,
   y,
@@ -152,6 +151,6 @@ const Dinosaurs = ({
       )}
     </>
   );
-};
+});
 
 export default Dinosaurs;

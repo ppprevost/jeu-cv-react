@@ -55,7 +55,6 @@ const Keyboard = () => {
       dispatch({ type: "SHOOT" });
     }
   };
-
   const launchDynamite = (e: React.TouchEvent): void => {
     e.preventDefault();
     dispatch({ type: "IS_DYNAMITING" });
@@ -74,7 +73,7 @@ const Keyboard = () => {
   };
   const crouch = (e: React.TouchEvent, stop?: boolean) => {
     e.preventDefault();
-    dispatch({ type: IS_CROUCHING }, stop);
+    dispatch({ type: IS_CROUCHING, stop } );
   };
 
   useEffect(() => {

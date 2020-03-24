@@ -1,13 +1,32 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import { useGameData } from "../store/GameProvider";
 import {
+  ANIMATE_PLAYER,
   GET_COMPETENCY,
   JUMP,
   LAND_PLAYER,
   MOVE_LEFT,
-  MOVE_RIGHT
+  MOVE_RIGHT, STOP_JUMPING, STOP_SHOOTING
 } from "../constants";
 import { Competency } from "../components/Competency";
+
+const useBindActionCreator = (
+    type: string,
+    payload?: any,
+    name = "payload"
+) => {
+  const [, dispatch] = useGameData();
+  const [action, setAction] = useState(false);
+  const actionCreator = { type, ...(payload ? { [name]: payload } : {}) };
+
+  useEffect(() => {
+    if (action) {
+      dispatch(actionCreator);
+    }
+  }, [dispatch, action, setAction]);
+  return setAction;
+
+};
 
 export const usePlayerActions = () => {
   const [, dispatch] = useGameData();
@@ -18,15 +37,16 @@ export const usePlayerActions = () => {
     dispatch({ type: "IS_DYNAMITING" });
   };
 
-  const moveLeftKeyAction = (stop: boolean) => {
+  const moveLeftKeyAction = (stop:boolean)=> {
     dispatch({ type: MOVE_LEFT, stop });
-  };
-  const moveRightKeyAction = (stop: boolean) => {
+  }
+  const moveRightKeyAction = (stop:boolean)=> {
     dispatch({ type: MOVE_RIGHT, stop });
-  };
-  const jumpKeyAction = (stop: boolean) => {
+  }
+  const jumpKeyAction = (stop:boolean)=> {
     dispatch({ type: JUMP, stop });
-  };
+  }
+
 
   const getCompetency = (comp: Competency) => {
     dispatch({ type: GET_COMPETENCY, payload: { newComp: comp.type } });
@@ -38,8 +58,8 @@ export const usePlayerActions = () => {
     dispatch({ type: "STOP_JUMPING" });
   };
   const animatePlayer = (
-    refPosition: React.RefObject<number>,
-    refPositionY: React.RefObject<number>
+      refPosition: React.RefObject<number>,
+      refPositionY: React.RefObject<number>
   ) => {
     dispatch({
       type: "ANIMATE_PLAYER",

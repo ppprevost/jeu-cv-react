@@ -13,7 +13,7 @@ export interface IContainerSprite {
   behavior?: number;
 }
 
-const ImgSprite = ({ src, sprite = 0, behavior = 0 }: any) => {
+const ImgSprite = React.memo(({ src, sprite = 0, behavior = 0 }: any) => {
   return (
     <img
       alt={src}
@@ -25,9 +25,9 @@ const ImgSprite = ({ src, sprite = 0, behavior = 0 }: any) => {
       }}
     />
   );
-};
+});
 
-const BuildContainerForSprite: FunctionComponent<IContainerSprite> = ({
+const BuildContainerForSprite: FunctionComponent<IContainerSprite> = React.memo(({
   zIndex = 20,
   width,
   height,
@@ -64,6 +64,6 @@ const BuildContainerForSprite: FunctionComponent<IContainerSprite> = ({
       ></div>
     </div>
   );
-};
+});
 
 export default BuildContainerForSprite;

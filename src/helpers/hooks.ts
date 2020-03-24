@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import { useGameData } from "../store/GameProvider";
 import { MOVE_LEFT, MOVE_RIGHT } from "../constants";
 import {
@@ -143,7 +143,6 @@ export const useCalculateIntervalDino = () => {
 
 export const useWindowSize = () => {
   const [, dispatch] = useGameData();
-  const [windowWidth, setWidth] = useState(window.innerWidth);
   const [windowHeight, setHeight] = useState(window.innerHeight);
   const [landscape, setLandscape] = useState(
     window.matchMedia("(orientation: landscape)").matches
@@ -152,20 +151,19 @@ export const useWindowSize = () => {
     dispatch({
       type: "SET_WINDOW",
       ...{
-        windowSize: windowWidth,
+        windowSize: window.innerWidth,
         windowHeight,
         isMobile: isMobile(),
         landscape
       }
     });
     window.addEventListener("resize", () => {
-      setWidth(window.innerWidth);
       setHeight(window.innerHeight);
       setLandscape(window.matchMedia("(orientation: landscape)").matches);
       dispatch({
         type: "SET_WINDOW",
         ...{
-          windowSize: windowWidth,
+          windowSize: window.innerWidth,
           windowHeight,
           isMobile: isMobile(),
           landscape
@@ -174,12 +172,13 @@ export const useWindowSize = () => {
     });
   }, []);
   return {
-    windowSize: windowWidth,
+    windowSize: window.innerWidth,
     windowHeight,
     landscape,
     isMobile: isMobile()
   };
 };
+
 
 export function useKeyPress() {
   const [
@@ -191,88 +190,94 @@ export function useKeyPress() {
     dispatch
   ] = useGameData();
   // State for keeping track of whether key is pressed
-  const [keyPressed] = useState(false);
-  // If pressed key is our target key then set to true
-  const downHandler = ({ keyCode }: KeyboardEvent) => {
-    switch (keyCode) {
-      case UP:
-        if (
-          !position.isJumping &&
-          !position.isHurting &&
-          !position.isDynamiting
-        ) {
-          dispatch({ type: "JUMP" });
-        }
-        break;
-      case RIGHT:
-        if (!position.isRunning) {
-          dispatch({ type: MOVE_RIGHT });
-        }
-        break;
-      case BOTTOM:
-        if (!position.isCrouching) {
-          dispatch({ type: "IS_CROUCHING" });
-        }
-        break;
-      case LEFT:
-        if (!position.isRunningLeft) {
-          dispatch({ type: MOVE_LEFT });
-        }
-        break;
-      case SPACE:
-        if (!position.isShooting && !position.isHurting) {
-          dispatch({ type: "SHOOT" });
-        }
-        break;
-      case PAUSE:
-        dispatch({ type: "SET_PAUSE" });
-        break;
-      case DYNAMITE:
-        if (!position.isDynamiting && !position.isHurting) {
-          dispatch({ type: "IS_DYNAMITING" });
-        }
-    }
-  };
-  // If released key is our target key then set to false
-  const upHandler = ({ keyCode }: KeyboardEvent) => {
-    switch (keyCode) {
-      case UP:
-        if (position.isJumping) {
-          dispatch({ type: "LAND_PLAYER" });
-        }
-        break;
-      case RIGHT:
-        if (position.isRunning) {
-          dispatch({ type: "MOVE_RIGHT", stop: true });
-        }
-        break;
-      case LEFT:
-        if (position.isRunningLeft) {
-          dispatch({ type: MOVE_LEFT, stop: true });
-        }
-        break;
-      case BOTTOM:
-        if (position.isCrouching) {
-          dispatch({ type: "IS_CROUCHING", stop: true });
-        }
-        break;
-    }
-  };
 
-  // Add event listeners
-  useEffect(() => {
-    window.addEventListener("keydown", downHandler);
-    window.addEventListener("keyup", upHandler);
-    if (gameOver || win) {
-      window.removeEventListener("keydown", downHandler);
-      window.removeEventListener("keyup", upHandler);
-    }
-    // Remove event listeners on cleanup
-    return () => {
-      window.removeEventListener("keydown", downHandler);
-      window.removeEventListener("keyup", upHandler);
+
+    const [keyPressed] = useState(false);
+    // If pressed key is our target key then set to true
+    const downHandler = ({ keyCode }: KeyboardEvent) => {
+      switch (keyCode) {
+        case UP:
+          if (
+              !position.isJumping &&
+              !position.isHurting &&
+              !position.isDynamiting
+          ) {
+            dispatch({ type: "JUMP" });
+          }
+          break;
+        case RIGHT:
+          if (!position.isRunning) {
+            dispatch({ type: MOVE_RIGHT });
+          }
+          break;
+        case BOTTOM:
+          if (!position.isCrouching) {
+            dispatch({ type: "IS_CROUCHING" });
+          }
+          break;
+        case LEFT:
+          if (!position.isRunningLeft) {
+            dispatch({ type: MOVE_LEFT });
+          }
+          break;
+        case SPACE:
+          if (!position.isShooting && !position.isHurting) {
+            dispatch({ type: "SHOOT" });
+          }
+          break;
+        case PAUSE:
+          dispatch({ type: "SET_PAUSE" });
+          break;
+        case DYNAMITE:
+          if (!position.isDynamiting && !position.isHurting) {
+            dispatch({ type: "IS_DYNAMITING" });
+          }
+      }
     };
-  }, [position, gameOver, downHandler, upHandler]); // Empty array ensures that effect is only run on mount and unmount
+    // If released key is our target key then set to false
+    const upHandler = ({ keyCode }: KeyboardEvent) => {
+      switch (keyCode) {
+        case UP:
+          if (position.isJumping) {
+            dispatch({ type: "LAND_PLAYER" });
+          }
+          break;
+        case RIGHT:
+          if (position.isRunning) {
+            dispatch({ type: "MOVE_RIGHT", stop: true });
+          }
+          break;
+        case LEFT:
+          if (position.isRunningLeft) {
+            dispatch({ type: MOVE_LEFT, stop: true });
+          }
+          break;
+        case BOTTOM:
+          if (position.isCrouching) {
+            dispatch({ type: "IS_CROUCHING", stop: true });
+          }
+          break;
+      }
+    };
 
-  return keyPressed;
+    // Add event listeners
+    useEffect(() => {
+      window.addEventListener("keydown", downHandler);
+      window.addEventListener("keyup", upHandler);
+      if (gameOver || win) {
+        window.removeEventListener("keydown", downHandler);
+        window.removeEventListener("keyup", upHandler);
+      }
+      // Remove event listeners on cleanup
+      return () => {
+        window.removeEventListener("keydown", downHandler);
+        window.removeEventListener("keyup", upHandler);
+      };
+    }, [position, gameOver, downHandler, upHandler]); // Empty array ensures that effect is only run on mount and unmount
+
+    return keyPressed;
+
+
+
 }
+
