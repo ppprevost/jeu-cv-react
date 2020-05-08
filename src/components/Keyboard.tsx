@@ -13,7 +13,7 @@ const ContainerArrow = styled.div`
   width: 150px;
   font-size: 2rem;
   text-align: center;
-  font-family: Jurassik, sans-serif;
+  font-family: Mario, sans-serif;
 `;
 
 const ContainerKeyboard = styled.div`
@@ -25,7 +25,7 @@ const ContainerKeyboard = styled.div`
   width: 100px;
   font-size: 2rem;
   text-align: center;
-  font-family: Jurassik, sans-serif;
+  font-family: Mario, sans-serif;
 `;
 
 const KeyboardArrow = styled.img`

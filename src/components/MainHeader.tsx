@@ -1,38 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useGameData } from "../store/GameProvider";
 import { useChrono } from "../helpers/hooks";
-import { Competency } from "./Competency";
-
-const getCompetency = (competency:Competency[]) => {
-  if (competency.length > 0) {
-    return competency.map((comp: Competency) => {
-      return (
-          <div key={comp.type}>
-            {comp.catched ? (
-                <a title={comp.type} target="_blank" rel="noopener noreferrer" href={comp.website}>
-                  <img
-                      key={comp.type}
-                      style={{ width: "50px", height: "50px" }}
-                      src={comp.avatar}
-                      alt={comp.type}
-                  />
-                </a>
-            ) : (
-                <div className={"blink_me"}>Take {comp.type} !</div>
-            )}
-          </div>
-      );
-    });
-  }
-  return <span>no competency</span>;
-};
 
 const MainHeader = React.memo(() => {
   const [
     {
       sound,
-      player: { health, dynamite, score },
-      competency,
+      player: { health, maskEfficient, score },
+        friend,
       win,
       chrono: { second, minute }
     },
@@ -40,7 +15,7 @@ const MainHeader = React.memo(() => {
   ] = useGameData();
   const setSound = () => dispatch({ type: "SET_SOUND" });
   useChrono();
-  const [chronoHeader, setChronoHeader] = useState("00:00");
+  const [chronoHeader, setChronoHeader] = useState("01:00");
   const resetGame = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!win) dispatch({ type: "RESET_GAME" });
@@ -74,8 +49,8 @@ const MainHeader = React.memo(() => {
         </div>
         <div className="col-xs-3 text-center">
           <div className="glyphicon glyphicon-flash"></div>
-          <span>Dynamite</span>
-          <div id="supply">{dynamite}</div>
+          <span>Mask</span>
+          <div id="supply">{maskEfficient}</div>
         </div>
 
         <div className="col-xs-3 text-center">
@@ -103,7 +78,7 @@ const MainHeader = React.memo(() => {
           Sound {sound ? "on" : "off"}
         </div>
       </div>
-      <div className="row sub-menu misc">{getCompetency(competency)}</div>
+      <div className={`${friend && friend.isSick && 'blind'} row sub-menu misc`}>{friend && !friend.isSick? 'take care of the princess': 'Princess is sick !'}</div>
     </div>
   );
 });

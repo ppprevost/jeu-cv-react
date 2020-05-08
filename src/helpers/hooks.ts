@@ -53,7 +53,7 @@ export function useFetch<T>(
   return { response, error, isLoading };
 }
 
-export function useInterval(callback: () => void, delay: number | null) {
+export function useInterval(callback: () => void, delay: number | null,condition = true) {
   const [{ win, pause, gameOver }] = useGameData();
   const savedCallback: any = useRef(null);
   const saveCancelRef: any = useRef(0);
@@ -67,10 +67,10 @@ export function useInterval(callback: () => void, delay: number | null) {
     function tick() {
       savedCallback.current();
     }
-    if (delay !== null && !win && !pause && !gameOver) {
+    if (delay !== null && !win && !pause && !gameOver && condition) {
       saveCancelRef.current = setInterval(tick, delay);
       setClearInterval(saveCancelRef.current);
-      return () => clearInterval(saveCancelRef.current);
+      return () => {console.log('clearInterval'); return clearInterval(saveCancelRef.current)};
     }
   }, [delay, win, pause, gameOver]);
   return interval;
@@ -95,8 +95,11 @@ export const useSpriteException = () => {
   const [value, setValue] = useState(10);
   useEffect(() => {
     if (position.isRunning || position.isRunningLeft) {
-      setValue(7);
-    } else if (position.isCrouching && position.isShooting) {
+      setValue(6);
+
+    }
+    else if(position.isJumping){setValue(2)}
+    else if (position.isCrouching && position.isShooting) {
       console.log(position.isCrouching, position.isShooting);
       setValue(4);
     } else if (position.isDynamiting) {
@@ -190,8 +193,6 @@ export function useKeyPress() {
     dispatch
   ] = useGameData();
   // State for keeping track of whether key is pressed
-
-
     const [keyPressed] = useState(false);
     // If pressed key is our target key then set to true
     const downHandler = ({ keyCode }: KeyboardEvent) => {
@@ -210,11 +211,6 @@ export function useKeyPress() {
             dispatch({ type: MOVE_RIGHT });
           }
           break;
-        case BOTTOM:
-          if (!position.isCrouching) {
-            dispatch({ type: "IS_CROUCHING" });
-          }
-          break;
         case LEFT:
           if (!position.isRunningLeft) {
             dispatch({ type: MOVE_LEFT });
@@ -228,20 +224,12 @@ export function useKeyPress() {
         case PAUSE:
           dispatch({ type: "SET_PAUSE" });
           break;
-        case DYNAMITE:
-          if (!position.isDynamiting && !position.isHurting) {
-            dispatch({ type: "IS_DYNAMITING" });
-          }
       }
     };
     // If released key is our target key then set to false
     const upHandler = ({ keyCode }: KeyboardEvent) => {
       switch (keyCode) {
-        case UP:
-          if (position.isJumping) {
-            dispatch({ type: "LAND_PLAYER" });
-          }
-          break;
+
         case RIGHT:
           if (position.isRunning) {
             dispatch({ type: "MOVE_RIGHT", stop: true });
@@ -250,11 +238,6 @@ export function useKeyPress() {
         case LEFT:
           if (position.isRunningLeft) {
             dispatch({ type: MOVE_LEFT, stop: true });
-          }
-          break;
-        case BOTTOM:
-          if (position.isCrouching) {
-            dispatch({ type: "IS_CROUCHING", stop: true });
           }
           break;
       }
@@ -279,5 +262,24 @@ export function useKeyPress() {
 
 
 
+}
+
+export const useRadiansMovement = (delay:any)=> {
+  function radians(deg:number) {return deg*Math.PI/180;};
+  const [rad, setRad] = useState(0);
+  const mathConst = 2 * Math.PI;
+  const [degree, setDegree] = useState(45)
+  useInterval(()=> {
+    setDegree(degree+1)
+    if (rad >= mathConst) {
+      console.log(':come back');
+      setRad(0);
+      setDegree(0);
+    }
+    if (rad < mathConst) {
+      setRad(radians(degree));
+    }
+  }, delay)
+  return rad
 }
 

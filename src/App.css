@@ -3,8 +3,8 @@
 }
 
 @font-face {
-  font-family: "Jurassik";
-  src: url("font/JurassicPark.ttf");
+  font-family: "Mario";
+  src: url("font/SuperMario256.ttf");
   font-weight: normal;
   font-style: normal;
 }
@@ -30,7 +30,7 @@
 }
 
 .misc span {
-  font-family: Jurassik, sans-serif;
+  font-family: Mario, sans-serif;
   font-size: 30px;
   padding-left: 5px;
   display: inline;
@@ -46,7 +46,7 @@
   background-color: black;
   color: white;
   letter-spacing: 0.2em;
-  font-family: Jurassik, sans-serif;
+  font-family: Mario, sans-serif;
   font-size: 40px;
   position: absolute;
   width: 600px;
@@ -83,7 +83,7 @@ p {
 .sub-menu {
   padding-top: 10px;
   /*border-top:1px solid red;*/
-  font-family: Jurassik, sans-serif;
+  font-family: Mario, sans-serif;
   letter-spacing: 0.08em;
   font-size: 30px;
   padding-left: 5px;
@@ -112,6 +112,9 @@ thead th {
 
 .blink_me {
   animation: blinker 0.3s linear 5;
+}
+.blink_me_infinite {
+  animation: blinker 0.3s linear infinite;
 }
 
 #main-header{

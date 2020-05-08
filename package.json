@@ -7,19 +7,20 @@
     "@types/node": "10.12.18",
     "@types/react": "16.7.20",
     "@types/react-dom": "16.0.11",
-    "@types/styled-components": "^4.4.2",
+    "@types/styled-components": "^4.4.3",
     "animate-css-styled-components": "^1.0.2",
     "bootstrap": "^4.4.1",
     "express": "^4.17.1",
     "jsonwebtoken": "^8.5.1",
-    "mongodb": "^3.5.0",
-    "react": "next",
-    "react-combine-reducers": "^1.0.2",
-    "react-dom": "next",
-    "react-scripts": "3.3.0",
+    "mongodb": "^3.5.5",
+    "react": "16.13.1",
+    "react-combine-reducers": "^1.0.3",
+    "react-dom": "16.13.1",
+    "react-scripts": "3.4.1",
+    "react-spring": "^8.0.27",
     "react-transition-group": "^4.3.0",
-    "styled-components": "^5.0.0",
-    "typescript": "^3.7.4"
+    "styled-components": "^5.1.0",
+    "typescript": "^3.8.3"
   },
   "scripts": {
     "start": "npm run server:node",
@@ -43,14 +44,14 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "@babel/core": "^7.8.3",
-    "@storybook/addon-contexts": "^5.3.3",
-    "@storybook/addon-knobs": "^5.3.3",
-    "@storybook/react": "^5.3.3",
-    "babel-loader": "^8.0.6",
+    "@babel/core": "^7.9.0",
+    "@storybook/addon-contexts": "^5.3.18",
+    "@storybook/addon-knobs": "^5.3.18",
+    "@storybook/react": "^5.3.18",
+    "babel-loader": "^8.1.0",
     "cross-env": "^6.0.3",
     "dotenv": "^8.2.0",
-    "nodemon": "^2.0.2",
+    "nodemon": "^2.0.3",
     "prettier": "^1.19.1"
   }
 }

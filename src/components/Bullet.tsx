@@ -73,7 +73,7 @@ const BulletComponent = ({
         ) {
           if (type === "bullet") {
             if (dino[i].className !== "spike" && dino[i].className !== "vine") {
-              console.log('stop buu')
+
               stopBullet(type,id)
               refDelayBullet.current = null;
               killDino(dino[i])

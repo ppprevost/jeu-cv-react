@@ -1,88 +1,48 @@
-import {
-  diploInit,
-  EnemyInit,
-  peaksInit,
-  pteroInit,
-  raptorInit,
-  vinesInit
-} from "../data/ennemies";
-import raptorNoise from "../sound/raptor.mp3";
-import pteroNoise from "../sound/pterodactyl.mp3";
-import diploNoise from "../sound/diplo.mp3";
-import { initHeroes } from "../data/player";
+import { EnemyInit, virusInit, pangInit } from "../data/ennemies";
 
-export const createDinosaur = (windowSize:number): EnemyInit => {
-  const tableDinosaur = [
-    pteroInit,
-    pteroInit,
-    raptorInit(),
-    raptorInit(),
-    diploInit,
-    diploInit,
-    peaksInit,
-    vinesInit
-  ];
-  const random = Math.round(Math.random() * (tableDinosaur.length - 1));
-  const chosenDinosaur = { ...tableDinosaur[random] } as EnemyInit;
-  const randomPosition = [windowSize, -chosenDinosaur.width][
+export const createEnemy = (
+  windowSize: number,
+  type: string,
+  configurePosition?: { direction: 'left'| 'right'; x: number }
+): EnemyInit => {
+  const chosenEnnemy =
+    type === "virus"
+      ? ({ ...virusInit } as EnemyInit)
+      : ({ ...pangInit } as EnemyInit);
+  if (configurePosition) {
+    chosenEnnemy.x = configurePosition.x;
+    chosenEnnemy.direction = configurePosition.direction;
+    chosenEnnemy.avatar =
+      configurePosition.direction === "left"
+        ? chosenEnnemy.avatar[0]
+        : chosenEnnemy.avatar[1];
+    return chosenEnnemy;
+  }
+
+  const randomPosition = [windowSize, -chosenEnnemy.width][
     Math.round(Math.random())
   ];
-  chosenDinosaur.x =
-    chosenDinosaur.avatar.length > 1 ||
-    chosenDinosaur.className === "spike" ||
-    chosenDinosaur.className === "vine"
-      ? randomPosition
-      : windowSize;
-  chosenDinosaur.avatar =
-    randomPosition === windowSize || chosenDinosaur.avatar.length < 2
-      ? chosenDinosaur.avatar[0]
-      : chosenDinosaur.avatar[1];
-  return chosenDinosaur;
-};
-
-export const takeSoundChoice = (idSound: string, sound: boolean) => {
-  const soundChoice = {
-    raptor: raptorNoise,
-    ptero: pteroNoise,
-    diplo: diploNoise
-  };
-  for (let [s, val] of Object.entries(soundChoice)) {
-    if (idSound === s) {
-      const soundAudio = new Audio(val);
-      if (sound) {
-        soundAudio.currentTime = 0;
-        soundAudio.volume = 0.3;
-        soundAudio.play();
-      } else {
-        soundAudio.pause();
-      }
-    }
-  }
+  chosenEnnemy.x = chosenEnnemy.avatar.length > 1 ? randomPosition : windowSize;
+  chosenEnnemy.avatar =
+    randomPosition === windowSize || chosenEnnemy.avatar.length < 2
+      ? chosenEnnemy.avatar[0]
+      : chosenEnnemy.avatar[1];
+  chosenEnnemy.direction = randomPosition === windowSize ? "left" : "right";
+  return chosenEnnemy;
 };
 
 export const conditionToConflict = (
-  className: string,
   positionHero: number,
   refPosition: any,
   width: number,
-  player: typeof initHeroes,
+  playerHeight: number,
   y: number,
   height: number
 ) => {
-  const playerHeight = player.exactSpriteObject.height;
-  if (className === "vine") {
-    if (!player.position.isCrouching) {
-      return (
-        positionHero >= refPosition.current &&
-        positionHero <= refPosition.current + width
-      );
-    }
-    return false
-  }
   return (
     positionHero >= refPosition.current &&
     positionHero <= refPosition.current + width &&
-    player.y + playerHeight >= y &&
-    player.y  <= y + height
+    y + playerHeight >= y &&
+    y <= y + height
   );
 };

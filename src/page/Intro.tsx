@@ -1,10 +1,10 @@
-import React, { useState, useLayoutEffect } from "react";
-import hunter from "../img/intro/hunter.png";
-import raptor from "../img/intro/raptor.png";
-import pachy from "../img/intro/pachy.png";
-import diplo from "../img/intro/diplo.png";
-import ptero from "../img/intro/ptero.png";
-import logo from "../img/intro/logo.png";
+import React, { useState } from "react";
+import mario from "../img/intro/M1.png";
+import bowser from "../img/intro/bowser.png";
+import pangolin from "../img/intro/pangolin-afraid.png";
+import virus from "../img/virus.png";
+import logo from "../img/intro/logo-drmario.png";
+import princess from "../img/intro/princess-intro.png";
 
 import ModalTemplate from "../components/Modal";
 
@@ -30,12 +30,25 @@ interface WindowSizeProps {
 
 const Hunter = styled.img<WindowSizeProps>`
   position: absolute;
+    z-index:1;
+  width:${({ width }) => width + 'px'};
   left: ${({ windowSize }) => {
-    return windowSize < 580 ? -150 + "px" : 0 + "px";
-  }};
+  return windowSize < 580 ? -150 + "px" : 0 + "px";
+}};
   top: ${({ windowHeight }) =>
     (windowHeight < 580 ? windowHeight / 2 - 150 : 150) + "px"};
-  width: 350px;
+  width: 150px;
+`;
+
+const Princess = styled.img<WindowSizeProps>`
+  position: absolute;
+  z-index:0;
+  left: ${({ windowSize }) => {
+  return windowSize < 580 ? -150 + "px" : 30 + "px";
+}};
+  top: ${({ windowHeight }) =>
+    (windowHeight < 580 ? windowHeight / 2 - 150 : 150-80) + "px"};
+  width: 200px;
 `;
 
 interface DinoPropsIntro {
@@ -54,29 +67,22 @@ const Dino = styled.img<DinoPropsIntro>`
 `;
 
 const dinoTab = [
-  { name: "pachy", src: pachy, position: 0.75, zIndex: 12, top: -100 },
-  { name: "ptero", src: ptero, position: 0.75, zIndex: 12, top: -200 },
+  { name: "bowser", src: bowser, position: 0.65, zIndex: 11, top: -100,width:300 },
+  { name: "pangolin", src: pangolin, position: 0.80, zIndex: 13, top: 100, width:200 },
   {
-    name: "raptor",
-    src: raptor,
-    top: 0,
-    position: 0.7,
-    zIndex: 11
+    name: "virus",
+    src: virus,
+    top: 30,
+    position: 0.80,
+    zIndex: 12
   },
-  {
-    name: "diplo",
-    src: diplo,
-    top: 100,
-    position: 0.65,
-    zIndex: 10
-  }
 ];
 
 export const BigButton = styled.button`
   width: 300px;
   height: auto;
   text-align: center;
-  font-family: Jurassik, sans-serif;
+  font-family: Mario, sans-serif;
   width: 300px;
   height: auto;
   text-align: center;
@@ -90,10 +96,8 @@ export const BigButton = styled.button`
 
 export const ContainerIntro = styled.div`
   margin: 0 auto;
+  
   width: 300px;
-  & > * {
-    margin-bottom: 10px;
-  }
 `;
 
 const Intro = () => {
@@ -103,16 +107,7 @@ const Intro = () => {
   const launchNameModal = () => {
     setSeeModalName(true);
   };
-  const seeVideoTuto = () => {
-    setSeeVideo(!seeVideo);
-  };
 
-  useLayoutEffect(() => {
-    //son T rex
-    introSound.currentTime = 0;
-    introSound.play();
-    introSound.volume = 0.7;
-  }, []);
   return (
     <div className="intro-game">
       <ContainerIntro>
@@ -124,9 +119,7 @@ const Intro = () => {
             <BigButton className="launch" onClick={launchNameModal}>
               Start the Game !
             </BigButton>
-            <BigButton className="how-to-play" onClick={seeVideoTuto}>
-              How to play
-            </BigButton>
+
           </>
         )}
       </ContainerIntro>
@@ -139,8 +132,13 @@ const Intro = () => {
           <Hunter
             windowSize={windowSize}
             windowHeight={windowHeight}
-            src={hunter}
+            src={mario}
             className="perso-hunter"
+          />
+          <Princess
+              windowSize={windowSize}
+              windowHeight={windowHeight}
+            src={princess}
           />
           {dinoTab.map(props => (
             <Dino windowSize={windowSize} key={props.name} {...props} />

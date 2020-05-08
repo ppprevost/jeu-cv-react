@@ -6,12 +6,15 @@ import React, {
   useState
 } from "react";
 import { useGameData } from "../store/GameProvider";
-import avatar from "../img/hunter.png";
-import avatarLeft from "../img/hunter_left.png";
+import avatar from "../img/mario_right.png";
+import avatarLeft from "../img/mario.png";
 import { useInterval, useKeyPress } from "../helpers/hooks";
 import Character from "./Characters";
 import heroHurtSound from "../sound/cri.mp3";
+import marioIsJumping from "../sound/super-mario-bros_jump.mp3";
+
 import {
+  casesConstant,
   intervalSpeedHero,
   jumpSpeed,
   speedPlayer,
@@ -32,9 +35,12 @@ const Hero: FunctionComponent<IHero & Partial<State>> = React.memo(
   ({
     width,
     height,
+    bonus,
+    misc,
     x,
     y,
     position,
+      pangolin,
     stopJump,
     exactSpriteObject,
     gameOver,
@@ -43,38 +49,65 @@ const Hero: FunctionComponent<IHero & Partial<State>> = React.memo(
     competency,
     windowInfo
   }) => {
+    const [, dispatch] = useGameData();
     const avatarRef = useRef(direction === "right" ? avatar : avatarLeft);
-    const {getCompetency, playerIsLanding, stopJumping, animatePlayer, stopShooting, } = usePlayerActions()
+    const { playerIsLanding, stopJumping, animatePlayer } = usePlayerActions();
     const [behavior, setBehavior] = useState(0);
-    const delayRef = useRef<number | null>(null);
+    const delayRef = useRef<number | null>(intervalSpeedHero);
     const refPosition = useRef(x);
     const refPositionY = useRef(y);
-    const z = useInterval(() => {
+    useInterval(() => {
+      Object.values(bonus).forEach((comp: any) => {
+        if (
+          comp.left >= x &&
+          comp.left <= x + exactSpriteObject.width + exactSpriteObject.left &&
+          comp.bottom >= refPositionY.current &&
+          comp.bottom <=
+            refPositionY.current +
+              (exactSpriteObject.height + exactSpriteObject.bottom)
+        ) {
+          playerIsLanding();
+          if (!comp.hit) dispatch({ type: "HIT", payload: comp });
+
+        }
+      });
+      misc &&
+        Object.values(misc).forEach((mis: any) => {
+          if (
+            mis.x >= x &&
+            mis.x + mis.width <= x + width &&
+            mis.y >= refPositionY.current &&
+            mis.y <= refPositionY.current + height / 2 && mis.type=== 'mask'
+          ) {
+            dispatch({ type: "IS_DOCTOR" });
+            if (sound) getItemSound.play();
+          }
+        });
+      pangolin && Object.values(pangolin).forEach(pang=>{
+        if (
+            pang.x >= x &&
+            pang.x + pang.width <= x + width &&
+            pang.y >= refPositionY.current &&
+            pang.y <= refPositionY.current + height / 2
+        ) {
+          console.log(': ', );
+          dispatch({ type: "CHASE_PANGOLIN", payload:pang });
+        }
+      })
+    }, 30);
+
+    useInterval(() => {
       if (gameOver) {
         refPosition.current = initHeroes.x;
         refPositionY.current = initHeroes.y;
         delayRef.current = null;
-        clearInterval(z);
       }
-      competency &&
-        competency.forEach((comp: Competency) => {
-          if (
-            !comp.catched &&
-            comp.x >= x &&
-            comp.x <= x + widthCompetency &&
-            comp.y > refPositionY.current &&
-            comp.y < refPositionY.current + height
-          ) {
-            if (sound) getItemSound.play();
-            getCompetency(comp);
-          }
-        });
       if (position.isJumping) {
         if (position.isRunning) {
-          refPosition.current += 15;
+          refPosition.current += speedPlayer;
         }
         if (position.isRunningLeft) {
-          refPosition.current -= 15;
+          refPosition.current -= speedPlayer;
         }
         if (refPositionY.current >= stopJumpingHeight) {
           playerIsLanding();
@@ -89,8 +122,6 @@ const Hero: FunctionComponent<IHero & Partial<State>> = React.memo(
           stopJumping();
         }
       } else {
-        // width/2 a little space for taking competency
-
         if (
           position.isRunning &&
           refPosition.current + width / 2 < windowInfo.windowSize
@@ -113,9 +144,7 @@ const Hero: FunctionComponent<IHero & Partial<State>> = React.memo(
     useEffect(() => {
       if (direction === "right") {
         avatarRef.current = avatar;
-        exactSpriteObject.left = exactSpriteObject.leftRightSide;
       } else {
-        exactSpriteObject.left = exactSpriteObject.leftLeftSide;
         avatarRef.current = avatarLeft;
       }
     }, [direction, exactSpriteObject]);
@@ -131,19 +160,16 @@ const Hero: FunctionComponent<IHero & Partial<State>> = React.memo(
         hurtSound.pause();
       }
     }, [sound, position.isHurting, gameOver]);
-    useEffect(() => {
-      setTimeout(() => {
-        if (position.isShooting) stopShooting();
-      }, 700);
-    }, [position.isShooting]);
+
     return (
       <>
         <Character
+          direction={direction}
           width={width}
           height={height}
           position={position}
           x={x}
-          y={y}
+          y={refPositionY.current}
           exactSpriteObject={exactSpriteObject}
           avatar={avatarRef.current}
           className="containerHero"
@@ -156,13 +182,16 @@ const Hero: FunctionComponent<IHero & Partial<State>> = React.memo(
 
 const MemoizedHero = (player: IHero) => {
   const [
-    { gameOver, direction, sound, competency, windowInfo }
+    { gameOver, direction, sound, competency, windowInfo, bonus, misc, pangolin }
   ] = useGameData();
   useKeyPress();
   return (
     <Hero
       {...player}
       gameOver={gameOver}
+      pangolin={pangolin}
+      misc={misc}
+      bonus={bonus}
       direction={direction}
       sound={sound}
       competency={competency}
@@ -170,5 +199,5 @@ const MemoizedHero = (player: IHero) => {
     />
   );
 };
-export {Hero}
+export { Hero };
 export default MemoizedHero;

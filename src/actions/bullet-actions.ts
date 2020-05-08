@@ -1,5 +1,5 @@
 import { useGameData } from "../store/GameProvider";
-import { IPropsDino } from "../components/Dinosaurs";
+import { IPropsDino } from "../components/Virus";
 
 export const useBulletActions = () => {
   const [, dispatch] = useGameData();

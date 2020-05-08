@@ -27,14 +27,33 @@ export const windowHeight = window.innerHeight;
 export const speedPlayer = 10;
 export const correctHeroWidthForCollisionWithDino = 70;
 export const stopJumpingHeight = 210;
-export const intervalSpeedHero = 50;
+export const intervalSpeedHero = 30;
 export const jumpPlayerX = 2;
-export const jumpSpeed = 30;
-export const dinoSpeed = 3;
+export const jumpSpeed = 25;
+export const dinoSpeed = 8;
 export const intervalAddDino = 1700;
-export const intervalSpeedDino = 16;
+export const intervalSpeedDino = 100;
 export const intervalBullet = 40;
 export const speedBullet = 30;
+
+/**
+ * Cases
+ */
+export const casesConstant = {
+  height:60,
+  hit:false,
+  width:60,
+  bottom:300,
+  intervalWithScreen:80
+};
+
+/**
+ * Mask
+ */
+export const maskConstant = {
+  width:55,
+  height:30
+}
 
 /**
  * Competency

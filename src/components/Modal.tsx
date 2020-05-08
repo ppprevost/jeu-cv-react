@@ -26,7 +26,7 @@ const ModalImg = styled.div<any>`
   color: white;
   letter-spacing: 0.2em;
   font-family: ${({ fontFamily }) =>
-    fontFamily ? fontFamily : "Jurassik, sans-serif"};
+    fontFamily ? fontFamily : "Mario, sans-serif"};
   font-size: ${({ fontSize }) => fontSize || "30px"};
   position: absolute;
   max-width: 100%;
@@ -82,15 +82,16 @@ export const ModalPause: FunctionComponent<{
 });
 
 export const ModalGameOver = (() => {
-  const [, dispatch] = useGameData();
-console.log('you die')
+  const [{player, friend}, dispatch] = useGameData();
   const reset = () => {
     return dispatch({ type: "RESET_GAME" });
   };
 
   return (
     <ModalTemplate>
-      <div>You die !</div>
+      <div>You loose !</div>
+      {player && <div>Mario is very sick</div>}
+      {friend.isSick && <div>the princess cannot feel very well</div>}
       <button onClick={reset}>Try again</button>
     </ModalTemplate>
   );
@@ -116,27 +117,13 @@ export const ModalWin = () => {
           <div className="row">
             <button
               className={"col-sm-6"}
-              onClick={() => setTypeModal("score")}
-            >
-              See Best Scores
-            </button>
-            <button
-              className={"col-sm-6"}
               onClick={() => setTypeModal("comments")}
             >
               Add a comments
             </button>
-          </div>
-          <div className="row">
             <button
-              className={"col-sm-6"}
-              onClick={() => setTypeModal("competency")}
-            >
-              See All Competency
-            </button>
-            <button
-              className={"col-sm-6"}
-              onClick={() => setTypeModal("music")}
+                className={"col-sm-6"}
+                onClick={() => setTypeModal("music")}
             >
               Listen to Skarahb Music
             </button>

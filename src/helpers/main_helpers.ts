@@ -4,10 +4,6 @@ import ultrakill from "../sound/ultrakill.mp3";
 
 export const repercutPositionHero = (state: any, newPosition: string, stop?: boolean) => {
     let initObject: typeof state.player.position = {};
-    /*const reinitAndRefreshUniquePosition = ()=>Object.keys(state.player.position)
-        .map((key) => {
-            return (initObject as any)[key] = false
-        });*/
     if (state.player && !state.pause) {
         if (newPosition === "isJumping") {
             initObject = {...state.player.position}
@@ -27,6 +23,19 @@ export const repercutPositionHero = (state: any, newPosition: string, stop?: boo
                     {...state.player, position: {...initObject}}
             }
 
+        }
+        if(newPosition === "isDoctor"){
+            initObject = {...state.player.position}
+            if(stop){
+                initObject.isDoctor = false;
+            } else {
+                initObject.isDoctor = true;
+            }
+            return {
+                ...state,
+                player:
+                    {...state.player, position: {...initObject}}
+            }
         }
         if (newPosition === "isCrouching") {
             initObject = {...state.player.position}
@@ -113,25 +122,13 @@ export const repercutPositionHero = (state: any, newPosition: string, stop?: boo
                     {...state.player, position: {...initObject}}
             }
         }
-        if (newPosition === 'isDynamiting') {
-            initObject = {...state.player.position}
-            if (stop) {
-                initObject.isDynamiting = false;
-            } else {
-                initObject.isDynamiting = true;
-            }
-            return {
-                ...state,
-                player:
-                    {...state.player, position: {...initObject}}
-            }
 
-        }
         if (newPosition === "isIdle") {
             initObject = {...state.player.position}
             initObject.isRunning = false;
             initObject.isRunningLeft = false;
             initObject.isJumping = false;
+            initObject.isDoctor=false;
             initObject.isCrouching = false;
             initObject.isHurting = false;
             initObject.isIdle = true;
@@ -185,4 +182,57 @@ export const competencyFixed = (competencyX:number, competencyWidth:number)=>{
         competencyX = windowSize- competencyWidth
     }
     return competencyX
+}
+
+export const generateUniqueID = function () {
+    // Math.random should be unique because of its seeding algorithm.
+    // Convert it to base 36 (numbers + letters), and grab the first 9 characters
+    // after the decimal.
+    return '_' + Math.random().toString(36).substr(2, 9);
+};
+
+export type Procedure = (...args: any[]) => void;
+
+export type Options = {
+    isImmediate: boolean,
+}
+
+export function debounce<F extends Procedure>(
+    func: F,
+    waitMilliseconds = 50,
+    options: Options = {
+        isImmediate: false
+    }): (this: ThisParameterType<F>, ...args: Parameters<F>) => void {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    return function(this: ThisParameterType<F>, ...args: Parameters<F>) {
+        const context = this;
+
+        const doLater = function() {
+            timeoutId = undefined;
+            if (!options.isImmediate) {
+                func.apply(context, args);
+            }
+        }
+
+        const shouldCallNow = options.isImmediate && timeoutId === undefined;
+
+        if (timeoutId !== undefined) {
+            clearTimeout(timeoutId);
+        }
+
+        timeoutId = setTimeout(doLater, waitMilliseconds);
+
+        if (shouldCallNow) {
+            func.apply(context, args);
+        }
+    }
+}
+
+export function wait(ms: number) {
+    return new Promise(function(resolve) {
+        window.setTimeout(function() {
+            resolve();
+        }, ms);
+    });
 }
