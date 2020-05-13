@@ -18,6 +18,7 @@
     "react-dom": "next",
     "react-scripts": "3.4.1",
     "react-transition-group": "^4.3.0",
+    "reactstrap": "^8.4.1",
     "styled-components": "^5.0.0",
     "typescript": "^3.7.4"
   },
