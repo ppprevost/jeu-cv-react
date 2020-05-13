@@ -20,7 +20,7 @@ const again = "you've been hurted again";
 
 const okPic =
     "you are okay with the pic";
-const arriveOf Vine =
+const arriveOfVine =
     "push down to crouch ";
 
 const dynamite = "That's okay, you're ready. And don't forget to use the dynamite."
