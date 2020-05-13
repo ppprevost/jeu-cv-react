@@ -16,7 +16,7 @@
     "react": "next",
     "react-combine-reducers": "^1.0.2",
     "react-dom": "next",
-    "react-scripts": "3.3.0",
+    "react-scripts": "3.4.1",
     "react-transition-group": "^4.3.0",
     "styled-components": "^5.0.0",
     "typescript": "^3.7.4"
@@ -43,11 +43,9 @@
     "not op_mini all"
   ],
   "devDependencies": {
-    "@babel/core": "^7.8.3",
     "@storybook/addon-contexts": "^5.3.3",
     "@storybook/addon-knobs": "^5.3.3",
     "@storybook/react": "^5.3.3",
-    "babel-loader": "^8.0.6",
     "cross-env": "^6.0.3",
     "dotenv": "^8.2.0",
     "nodemon": "^2.0.2",
