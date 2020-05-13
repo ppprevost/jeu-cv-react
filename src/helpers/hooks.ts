@@ -1,4 +1,4 @@
-import {useCallback, useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState} from "react";
 import { useGameData } from "../store/GameProvider";
 import { MOVE_LEFT, MOVE_RIGHT } from "../constants";
 import {
@@ -126,9 +126,9 @@ export const useCalculateIntervalDino = () => {
   let [size, interval] = [800, 2300];
   const diff = size - windowSize;
   if(isMobile && size < windowSize){
-    interval += diff * 1.2
+    interval = 2000
   } else {
-  interval += diff * 1.5;
+  interval = 1500;
   }
   useEffect(() => {
     delayRef.current = interval;
