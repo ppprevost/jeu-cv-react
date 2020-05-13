@@ -30,7 +30,6 @@ export function useFetch<T>(
       setIsLoading(true);
       try {
         const fetched = await fetch(url, options);
-        console.log(fetched);
         if (fetched.status >= 400) {
           throw new Error(await fetched.text());
         }
@@ -49,7 +48,6 @@ export function useFetch<T>(
       asyncFetch();
     }
   }, [start]);
-  console.log(response, error);
   return { response, error, isLoading };
 }
 
@@ -70,7 +68,7 @@ export function useInterval(callback: () => void, delay: number | null,condition
     if (delay !== null && !win && !pause && !gameOver && condition) {
       saveCancelRef.current = setInterval(tick, delay);
       setClearInterval(saveCancelRef.current);
-      return () => {console.log('clearInterval'); return clearInterval(saveCancelRef.current)};
+      return () => { return clearInterval(saveCancelRef.current)};
     }
   }, [delay, win, pause, gameOver]);
   return interval;
@@ -100,7 +98,6 @@ export const useSpriteException = () => {
     }
     else if(position.isJumping){setValue(2)}
     else if (position.isCrouching && position.isShooting) {
-      console.log(position.isCrouching, position.isShooting);
       setValue(4);
     } else if (position.isDynamiting) {
       if (position.isCrouching) {
@@ -272,7 +269,6 @@ export const useRadiansMovement = (delay:any)=> {
   useInterval(()=> {
     setDegree(degree+1)
     if (rad >= mathConst) {
-      console.log(':come back');
       setRad(0);
       setDegree(0);
     }

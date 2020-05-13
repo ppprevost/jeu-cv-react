@@ -99,6 +99,7 @@ const Character = React.memo(
     return (
       <>
         <HeroSprite
+            id={"mario"}
           exactSpriteConflict={exactSpriteObject}
           className={`${className} ${position.isHurting && "blink_me"}`}
           src={avatar}

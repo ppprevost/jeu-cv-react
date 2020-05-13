@@ -34,7 +34,7 @@ const ModalImg = styled.div<any>`
   margin: auto auto;
   border: 1px solid #f7f936;
   overflow: ${({ overflow }) => overflow || "auto"};
-  max-height: 291px;
+  max-height: 280px;
   line-height: 30px;
   text-align: center;
   padding: 2rem;
@@ -82,25 +82,42 @@ export const ModalPause: FunctionComponent<{
 });
 
 export const ModalGameOver = (() => {
+  const [
+    {
+      player: { email = "undefined email" } = {},
+    }
+  ] = useGameData();
   const [{player, friend}, dispatch] = useGameData();
   const reset = () => {
     return dispatch({ type: "RESET_GAME" });
   };
-
+  const [typeModal, setTypeModal] = useState("");
   return (
+      <>
+      {typeModal === "comments" && (
+          <TemplateComments setTypeModal={setTypeModal} email={email} />
+      )}
     <ModalTemplate>
       <div>You loose !</div>
-      {player && <div>Mario is very sick</div>}
       {friend.isSick && <div>the princess cannot feel very well</div>}
       <button onClick={reset}>Try again</button>
+      <div className="row">
+        <button
+            className={"col-sm-12"}
+            onClick={() => setTypeModal("comments")}
+        >
+          Add a comments
+        </button>
+      </div>
     </ModalTemplate>
+        </>
   );
 });
 
 export const ModalWin = () => {
   const [
     {
-      player: { email = "undefined email" },
+      player: { email = "undefined email" } = {},
       competency
     }
   ] = useGameData();

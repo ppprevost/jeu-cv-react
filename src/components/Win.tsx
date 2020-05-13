@@ -28,7 +28,6 @@ export const TemplateComments = ({
 
   useEffect(() => {
     if (sendCommented) {
-      console.log(sendCommented);
       const cursor = document.getElementById(
         "form-comments"
       ) as HTMLFormElement;

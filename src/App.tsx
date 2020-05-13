@@ -4,10 +4,9 @@ import background from "./img/fond.png";
 import GameProvider, { useGameData } from "./store/GameProvider";
 import Intro from "./page/Intro";
 import { useWindowSize } from "./helpers/hooks";
+import Tutorial from "./page/Tutorial";
+import {Field} from "./components/Background";
 const Game = lazy(() => import("./page/Game"));
-
-const skarahb =
-  "https://e-cdns-images.dzcdn.net/images/cover/758113bb674a43d1a87a93eb89c16b5e/298x298-000000-100-1-1.jpg";
 
 const App = () => (
   <GameProvider>
@@ -17,9 +16,8 @@ const App = () => (
 
 const Play = () => {
   const { windowHeight } = useWindowSize();
-  const [{ win }] = useGameData();
   const style: CSSProperties = {
-    background: `url("${win ? skarahb : background}")repeat`,
+    background: `url("${ background}")repeat`,
     overflow: "hidden",
     width: 100 + "%",
     margin: "0 auto",
@@ -36,6 +34,9 @@ const Play = () => {
           <Game />
         </Suspense>
       )}
+      {gameType=== "tutorial" && <Tutorial />}
+      <Field />
+
     </div>
   );
 };

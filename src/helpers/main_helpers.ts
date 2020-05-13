@@ -1,4 +1,3 @@
-import explode from "../sound/explode.mp3";
 import doubleKill from "../sound/double_kill.mp3";
 import ultrakill from "../sound/ultrakill.mp3";
 
@@ -39,7 +38,6 @@ export const repercutPositionHero = (state: any, newPosition: string, stop?: boo
         }
         if (newPosition === "isCrouching") {
             initObject = {...state.player.position}
-            console.log('isCrouch', initObject, stop)
             if (stop) {
                 if (!state.player.position.isRunning && !state.player.position.isRunningLeft && !state.player.position.isJumping) {
                     initObject.isIdle = true;
@@ -149,20 +147,13 @@ export const repercutPositionHero = (state: any, newPosition: string, stop?: boo
     return state
 }
 
-const explodeSound = new Audio(explode)
+
 const doubleKillSound = new Audio(doubleKill)
-const ultraKillSound = new Audio(ultrakill)
+
 
 export const playSoundRampage = (dinoLength: number, sound: boolean) => {
     if (sound) {
-        ultraKillSound.currentTime = 0
-        explodeSound.play()
-        explodeSound.volume = 0.8;
-        if (dinoLength >= 3) {
-            ultraKillSound.currentTime = 0
-            ultraKillSound.play()
-            ultraKillSound.volume = 0.4;
-        }
+       
         if (dinoLength < 3 && dinoLength > 1) {
             doubleKillSound.play()
             doubleKillSound.volume = 0.4

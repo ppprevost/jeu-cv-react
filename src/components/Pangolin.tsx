@@ -51,7 +51,6 @@ const Pangolin = ({
 
   useEffect(() => {
     if (hurt) {
-      console.log("hurt: ", hurt);
       delayRef.current = delay;
     }
   }, [hurt]);
@@ -63,7 +62,7 @@ const Pangolin = ({
       setFrame(0);
     }
     if (direction === "right") {
-      console.log(hurt, "hurted");
+      console.log('fdsfsd')
       if (hurt) {
         dispatch({
           type: "ANIMATE_PANGOLIN",

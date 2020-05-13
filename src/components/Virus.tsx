@@ -91,13 +91,12 @@ const Virus = React.memo(
         conditionToConflict(
           friend.x,
           refPosition,
-          friend.width,
+          friend.width/2,
           friend.y,
           y,
           height
         )
       ) {
-        console.log("conflict");
         if (!friend.isSick) {
           makeFriendSick(friend.id);
         }

@@ -15,6 +15,7 @@ import { IPropsDino } from "../components/Virus";
 import watchOutSound from "../sound/OOT_Navi_WatchOut1.mp3";
 
 const findDino = (action: ActionType) => {
+  console.log(action)
   return ({ id }: IPropsDino) => action.payload.id === id;
 };
 

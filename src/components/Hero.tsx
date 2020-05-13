@@ -11,17 +11,13 @@ import avatarLeft from "../img/mario.png";
 import { useInterval, useKeyPress } from "../helpers/hooks";
 import Character from "./Characters";
 import heroHurtSound from "../sound/cri.mp3";
-import marioIsJumping from "../sound/super-mario-bros_jump.mp3";
 
 import {
-  casesConstant,
   intervalSpeedHero,
   jumpSpeed,
   speedPlayer,
   stopJumpingHeight,
-  widthCompetency
 } from "../constants/contants";
-import { Competency } from "./Competency";
 import getItem from "../sound/OOT_Get_SmallItem1.mp3";
 import { IHero, initHeroes } from "../data/player";
 import { getCorrectSprite } from "../helpers/player_helpers";
@@ -46,11 +42,11 @@ const Hero: FunctionComponent<IHero & Partial<State>> = React.memo(
     gameOver,
     direction,
     sound,
-    competency,
     windowInfo
   }) => {
     const [, dispatch] = useGameData();
     const avatarRef = useRef(direction === "right" ? avatar : avatarLeft);
+    console.log('direction: ', direction);
     const { playerIsLanding, stopJumping, animatePlayer } = usePlayerActions();
     const [behavior, setBehavior] = useState(0);
     const delayRef = useRef<number | null>(intervalSpeedHero);
@@ -90,7 +86,6 @@ const Hero: FunctionComponent<IHero & Partial<State>> = React.memo(
             pang.y >= refPositionY.current &&
             pang.y <= refPositionY.current + height / 2
         ) {
-          console.log(': ', );
           dispatch({ type: "CHASE_PANGOLIN", payload:pang });
         }
       })
@@ -164,6 +159,7 @@ const Hero: FunctionComponent<IHero & Partial<State>> = React.memo(
     return (
       <>
         <Character
+
           direction={direction}
           width={width}
           height={height}

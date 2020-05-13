@@ -1,4 +1,5 @@
 import { IHero, initHeroes } from "../data/player";
+
 import {
   ADD_COMPETENCY,
   ADD_PLAYER,
@@ -17,10 +18,13 @@ import {
   competencyArray,
   maskConstant,
 } from "../constants/contants";
-import winner from "../sound/winner.mp3";
+
 import { Competency } from "../components/Competency";
 import { IPropsDino } from "../components/Virus";
 import { AnyElement } from "../components/Pangolin";
+
+import mamamia from "../sound/mario-mamamia.wav";
+const mamaMia = new Audio(mamamia);
 
 export type ActionType = {
   type: string;
@@ -69,12 +73,11 @@ export type State = {
   chrono: { minute: number; second: number };
 };
 
-const winnerSound = new Audio(winner);
 
 export const initialState: State = {
   windowInfo: {},
-  intro: false,
-  gameType: "game",
+  intro: true,
+  gameType: null,
   direction: "right",
   sound: true,
   player: null,
@@ -94,15 +97,6 @@ export const initialState: State = {
   idBullet: 0
 };
 
-const allItemCatched = (competency: Competency[]) => {
-  for (let competence of competency) {
-    if (!competence.catched) {
-      return false;
-    }
-  }
-  return true;
-};
-
 const generateNewFriend = (windowSize:number): Friend => {
   const peach = {
     id: "peach",
@@ -112,7 +106,6 @@ const generateNewFriend = (windowSize:number): Friend => {
     x: windowSize / 2,
     y: 30
   };
-  console.log('peach: ', peach);
   return peach;
 };
 
@@ -150,10 +143,12 @@ const reducer = (state: State, action: ActionType) => {
       state.friend.isSick = false;
       return { ...state };
     case "START_GAME":
-      initHeroes.email = action.payload.email;
-      initHeroes.name = action.payload.name;
-      state.gameType = action.payload.tutorial ? "tutorial" : "game";
-      state.intro = false;
+
+        initHeroes.email = action.payload.email;
+        initHeroes.name = action.payload.name;
+        state.gameType = action.payload.tutorial ? "tutorial" : "game";
+        state.intro = false;
+
       return { ...state };
     case "HIT":
       const actualBox = state.bonus[action.payload.type];
@@ -172,16 +167,24 @@ const reducer = (state: State, action: ActionType) => {
       state.bonus[action.payload.type].hit = true;
       return { ...state };
     case "MOVE_MASK":
-      state.misc[action.payload.id].x = action.payload.x;
-      state.misc[action.payload.id].y = action.payload.y;
+      if(action.payload.id){
+        state.misc[action.payload.id].x = action.payload.x;
+        state.misc[action.payload.id].y = action.payload.y;
+      }
       return { ...state };
     case "REINIT_CASE":
       state.bonus[action.payload.type].hit = false;
       return { ...state };
     case ADD_PLAYER:
+      const configHero = {...initHeroes}
+      if(state.gameType==="tutorial"){
+        mamaMia.play();
+        state.direction = "left";
+      }
+      console.log(configHero, state.gameType)
       return {
         ...state,
-        player: { ...initHeroes }
+        player: { ...configHero }
       };
     case SET_SOUND:
       return { ...state, sound: !state.sound };
@@ -224,7 +227,6 @@ const reducer = (state: State, action: ActionType) => {
       }
       return { ...state };
     case "EXACT_CASE_POSITION":
-      console.log(action);
       state.bonus = { ...state.bonus, [action.payload.type]: action.payload };
       return { ...state };
       return state;
@@ -235,7 +237,7 @@ const reducer = (state: State, action: ActionType) => {
       if(state.chrono.minute ===0 && state.chrono.second === 0 ){
         if(!state.friend.isSick){
            // todo end
-        state.win = true;
+          state.win = true;
         }else {
           state.gameOver = true;
         }
@@ -254,7 +256,7 @@ const reducer = (state: State, action: ActionType) => {
         intro: false,
         gameType: "game" as GameType,
         windowInfo: state.windowInfo,
-        player: { ...initHeroes },
+        player: { ...initHeroes, name:state.player && state.player.name },
         friend:generateNewFriend(state.windowInfo.windowSize)
       };
       state = { ...initialState, ...init };

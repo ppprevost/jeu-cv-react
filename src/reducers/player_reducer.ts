@@ -41,8 +41,9 @@ const reducer = (state: ExistingHero, action: ActionType) => {
       return repercutPositionHero(state, "isCrouching", action.stop);
     case "IS_DOCTOR":
       state.player.maskEfficient += 3;
-      return repercutPositionHero(state, "isDoctor");
-
+      if(!state.player.position.isDoctor){
+        return repercutPositionHero(state, "isDoctor");
+      }
     case STOP_SHOOTING:
       return repercutPositionHero(state, "isShooting", true);
     case STOP_JUMPING:

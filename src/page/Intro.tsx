@@ -1,13 +1,11 @@
-import React, { useState } from "react";
+import React, {useRef, useState} from "react";
 import mario from "../img/intro/M1.png";
 import bowser from "../img/intro/bowser.png";
 import pangolin from "../img/intro/pangolin-afraid.png";
 import virus from "../img/virus.png";
 import logo from "../img/intro/logo-drmario.png";
 import princess from "../img/intro/princess-intro.png";
-
 import ModalTemplate from "../components/Modal";
-
 import sonIntro from "../sound/trex_cri.mp3";
 import styled from "styled-components";
 import { useGameData } from "../store/GameProvider";
@@ -110,7 +108,7 @@ const Intro = () => {
 
   return (
     <div className="intro-game">
-      <ContainerIntro>
+      <ContainerIntro className={"vertical-center"}>
         <LOGOComponent src={logo} />
         {!landscape ? (
           <p style={{ textAlign: "center" }}>Please return your device</p>
@@ -169,21 +167,32 @@ export const ModalVideo = ({ ...props }) => {
 };
 
 export const ModalPreGame = () => {
+  const formRef = useRef<any>(null);
   const [, dispatch] = useGameData();
   const [form, setForm] = useState({});
+  const [tutoWanted, setTutoWanted] = useState(true);
   const startParty = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log()
+
     dispatch({ type: "START_GAME", payload: form });
     introSound.pause();
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const name = e.target.name;
-    setForm({ ...form, [name]: e.target.value });
+    if(name==="tutorial"){
+      setTutoWanted(!tutoWanted)
+      console.log(name, tutoWanted)
+    }
+
+console.log(name, tutoWanted)
+    setForm({ ...form, [name]: name==="tutorial"? tutoWanted:e.target.value });
   };
+
   return (
     <ModalTemplate fontFamily={"inherit"}>
-      <h2 style={{ letterSpacing: 0 }}>Who are you young adventurer ?</h2>
-      <form onSubmit={startParty}>
+      <h2 style={{ letterSpacing: 0 }}>Please enter your name</h2>
+      <form ref={formRef} onSubmit={startParty}>
         <div style={{ marginBottom: "10px" }}>
           <input
             type="text"
@@ -194,16 +203,8 @@ export const ModalPreGame = () => {
           />
         </div>
         <div style={{ marginBottom: "10px" }}>
-          <input
-            type="email"
-            name="email"
-            onChange={handleChange}
-            placeholder="your email"
-          />
-        </div>
-        <div style={{ marginBottom: "10px" }}>
           tutorial
-          <input name="tutorial" onChange={handleChange} disabled type="checkbox" />
+          <input value={'tuto'} name="tutorial" onChange={handleChange} checked={tutoWanted} type="checkbox" />
         </div>
         <div>
           <button type="submit">Send</button>
