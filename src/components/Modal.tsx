@@ -81,20 +81,36 @@ export const ModalPause: FunctionComponent<{
   );
 });
 
-export const ModalGameOver = (() => {
+export const ModalGameOver = () => {
   const [, dispatch] = useGameData();
-console.log('you die')
+  const [typeModal, setTypeModal] = useState("");
   const reset = () => {
     return dispatch({ type: "RESET_GAME" });
   };
 
   return (
     <ModalTemplate>
-      <div>You die !</div>
-      <button onClick={reset}>Try again</button>
+      {typeModal === "" && (
+        <>
+          <div>You die !</div>
+          <div className="row">
+            {" "}
+            <button onClick={() => setTypeModal("comments")}>
+              Add a comments
+            </button>
+          </div>
+          <div className="row">
+            {" "}
+            <button onClick={reset}>Try again</button>
+          </div>
+        </>
+      )}
+      {typeModal === "comments" && (
+        <TemplateComments setTypeModal={setTypeModal} email={""} />
+      )}
     </ModalTemplate>
   );
-});
+};
 
 export const ModalWin = () => {
   const [
@@ -148,7 +164,7 @@ export const ModalWin = () => {
           <button onClick={() => setTypeModal("")}>back</button>
           <div className="mx-auto">
             <iframe
-                title={"skarahb"}
+              title={"skarahb"}
               scrolling="no"
               frameBorder="0"
               allowTransparency={true}

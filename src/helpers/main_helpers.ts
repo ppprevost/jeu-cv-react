@@ -186,3 +186,11 @@ export const competencyFixed = (competencyX:number, competencyWidth:number)=>{
     }
     return competencyX
 }
+
+export function wait(ms: number) {
+    return new Promise(function(resolve) {
+        window.setTimeout(function() {
+            resolve();
+        }, ms);
+    });
+}

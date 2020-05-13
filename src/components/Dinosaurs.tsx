@@ -54,7 +54,8 @@ const Dinosaurs = React.memo(({
       direction,
       gameOver,
       win,
-      windowInfo: { windowSize }
+      windowInfo: { windowSize },
+        gameType,
     }
   ] = useGameData();
   const [frame, setFrame] = useState(0);
@@ -67,6 +68,7 @@ const Dinosaurs = React.memo(({
   useEffect(() => {
     positionInitial.current = x;
   }, []);
+
 
   useInterval(() => {
     const positionHero =
@@ -88,6 +90,9 @@ const Dinosaurs = React.memo(({
       collision();
     }
     if (positionInitial.current === -width) {
+
+
+
       if (refPosition.current > windowSize + width) {
         deleteDinosaurs(id);
         delayDinosaur.current = null;
@@ -97,13 +102,19 @@ const Dinosaurs = React.memo(({
         moveDinosaurs(refPosition, id);
       }
     } else {
+
       if (refPosition.current < -width) {
         deleteDinosaurs(id);
         delayDinosaur.current = null;
         return;
       } else {
-        refPosition.current -= dinoSpeed + speed;
-        moveDinosaurs(refPosition, id);
+        if(gameType==="tutorial" && (refPosition.current - player.x )<= 200){
+          delayDinosaur.current = null;
+        }else {
+          refPosition.current -= dinoSpeed + speed;
+          moveDinosaurs(refPosition, id);
+        }
+
       }
     }
   }, delayDinosaur.current);

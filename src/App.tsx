@@ -4,6 +4,7 @@ import background from "./img/fond.png";
 import GameProvider, { useGameData } from "./store/GameProvider";
 import Intro from "./page/Intro";
 import { useWindowSize } from "./helpers/hooks";
+import Tutorial from "./page/Tutorial";
 const Game = lazy(() => import("./page/Game"));
 
 const skarahb =
@@ -35,6 +36,11 @@ const Play = () => {
         <Suspense fallback={"is loading"}>
           <Game />
         </Suspense>
+      )}
+      {gameType === "tutorial" && (
+          <Suspense fallback={"is loading"}>
+            <Tutorial />
+          </Suspense>
       )}
     </div>
   );

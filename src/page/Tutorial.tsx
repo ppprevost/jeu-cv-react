@@ -1,166 +1,137 @@
 import React, { useEffect, useRef, useState } from "react";
-import Dinosaurs from '../components/Dinosaurs';
-import { Button, Popover, PopoverHeader, PopoverBody } from "reactstrap";
+import Dinosaurs from "../components/Dinosaurs";
+import { Popover, PopoverBody } from "reactstrap";
 import { wait } from "../helpers/main_helpers";
 import { useGameData } from "../store/GameProvider";
-import { createEnemy } from "../helpers/ennemies_helpers";
-import { EnemyInit } from "../data/ennemies";
+import { EnemyInit, peaksInit, raptorInit } from "../data/ennemies";
 import Hero from "../components/Hero";
 import { ADD_PLAYER, MOVE_LEFT } from "../constants";
-import {windowSize} from "../constants/contants";
+import { windowSize } from "../constants/contants";
+import { Field } from "../components/Background";
+import useActionDinosaurs from "../actions/dinosaurs-actions";
+import Bullet from "../components/Bullet";
 
-
-const firstContent = "Be careful, there is a dinosaur just in front of me";
-const shootDino = "Use space to shoot";
+const firstContent = "Be careful, there is a dinosaur";
+const shootDino = "Use space to shoot, or key D to use Dynamite.";
 const dinoIsDead = "That's good, we are safe for now";
 
 const picArrive =
-    "when you see, this pic, you have to maitain up key tu jump. Try it ";
-const again = "you've been hurted again";
+  "When you see this spike, you have to maintain up key to jump. Try it !";
 
-const okPic =
-    "you are okay with the pic";
-const arriveOfVine =
-    "push down to crouch ";
+const okPic = "you are okay with the jump";
+const arriveOfVine = "Push down to crouch. It could be useful for the vines !";
 
-const dynamite = "That's okay, you're ready. And don't forget to use the dynamite."
-
-const newPang = createEnemy(windowSize, "pangolin", {
-    direction: "right",
-    x: 0
-});
+const recap =
+  "Move around, jump and crouch. Shoot and use dynamite during this 10 seconds! Are you ready ?";
 
 const Tutorial = () => {
-    const [{ pangolin, player, bonus, misc }, dispatch] = useGameData();
-    const { width, intervalWithScreen } = casesConstant;
-    const exactPos: Record<any, number> = {
-        left: intervalWithScreen,
-        right: windowSize - (width + intervalWithScreen)
-    };
+  const [{ dino, player, bullets }, dispatch] = useGameData();
+  const { addEnemy, deleteDinosaurs } = useActionDinosaurs();
+  const step1 = async () => {
+    dispatch({ type: ADD_PLAYER });
+    await wait(2000);
+    const raptor = raptorInit();
+    raptor.avatar = raptor.avatar[0];
+    raptor.x = windowSize;
+    addEnemy(raptor);
+    setPopoverOpen(firstContent);
+    await wait(1000);
+    setPopoverOpen("");
+    await wait(1000);
+    setPopoverOpen(shootDino);
+    await wait(2000);
+    setPopoverOpen("");
+    await wait(2000);
+  };
 
-    const step1 = async () => {
-        setPopoverOpen(firstContent);
-        await wait(3000);
-        console.log("srqf");
-        setPopoverOpen("");
-    };
+  const step2 = async () => {
+    setPopoverOpen(dinoIsDead);
+    await wait(2000);
+    setPopoverOpen("");
+    const pics = peaksInit as EnemyInit;
+    pics.x = windowSize;
+    addEnemy(pics);
+    await wait(2000);
+    setPopoverOpen("");
+    setPopoverOpen(picArrive);
+    await wait(8000);
+    setPopoverOpen("");
+  };
 
-    const step2 = async () => {
-        setPopoverOpen(seePangolin);
-        dispatch({ type: "ADD_PANGOLIN", payload: newPang });
-        await wait(6000);
-        setPopoverOpen("");
-    };
+  const step3 = async () => {
+    await wait(2000);
+    setPopoverOpen("");
+    setPopoverOpen(okPic);
+    deleteDinosaurs(0);
+    await wait(2000);
+    setPopoverOpen("");
+    await wait(1000);
+    setPopoverOpen(arriveOfVine);
+    await wait(4000);
+    setPopoverOpen("");
+    await wait(2000);
+    setPopoverOpen(recap);
+    await wait(4000);
+    setPopoverOpen("");
+    await wait(10000);
+    step5();
+  };
 
-    const step3 = async () => {
-        dispatch({ type: ADD_PLAYER });
-        setSpeaker("mario");
-        setPopoverOpen(marioSay);
-        await wait(4000);
-        // princess laugh
-        setPopoverOpen("");
-        dispatch({ type: MOVE_LEFT });
-        await wait(3000);
-    };
+  const step5 = async () => {
+    dispatch({ type: "RESET_GAME" });
+  };
 
-    const step4 = async () => {
-        setPopoverOpen(boxmarioSay);
-        dispatch({
-            type: "EXACT_CASE_POSITION",
-            payload: { ...casesConstant, type: "left", left: (exactPos as any).left }
-        });
-        await wait(4000);
-        setPopoverOpen("");
-        await wait(1000);
-        setPopoverOpen(boxmarioJump);
-        await wait(2000);
-        setPopoverOpen("");
-    };
+  useEffect(() => {
+    (async function() {
+      console.log(dino[0]?.className, player?.position);
+      if (
+        player?.position.isJumping &&
+        dino &&
+        dino[0]?.className === "spike"
+      ) {
+        await step3();
+      }
+    })();
+  }, [player?.position, dino[0]]);
+  const [speaker, setSpeaker] = useState("hero");
+  const [popoverOpen, setPopoverOpen] = useState("");
+  const toggle = () => setPopoverOpen("");
+  useEffect(() => {
+    (async function() {
+      await step1();
+    })();
+  }, []);
 
-    const step5 = async () => {
-        setSpeaker("princess");
-        setPopoverOpen(freeRide);
-        await wait(6000);
-        setPopoverOpen(freeRide2);
-        await wait(7000);
-        setPopoverOpen("");
-        setPopoverOpen("Ready?");
-        await wait(4000);
-        dispatch({ type: "RESET_GAME" });
-    };
+  useEffect(() => {
+    (async function() {
+      console.log(dino[0]?.alive);
+      if (dino[0] && dino[0]?.alive === false) {
+        await step2();
+      }
+    })();
+  }, [dino[0]?.alive]);
 
-    useEffect(() => {
-        if (
-            player &&
-            Object.keys(pangolin).length &&
-            player.x <= Object.values(pangolin)[0].x
-        ) {
-            if (player.position.isRunningLeft) {
-                dispatch({ type: MOVE_LEFT, stop: true });
-            }
-        }
-    }, [player, Object.values(pangolin)[0]]);
-
-    const [showCase, setShowCase] = useState(false);
-    const [speaker, setSpeaker] = useState("princess");
-    const [popoverOpen, setPopoverOpen] = useState("");
-    const toggle = () => setPopoverOpen("");
-    useEffect(() => {
-        (async function() {
-            await wait(1000);
-            await step1();
-            await step2();
-            await step3();
-            await step4();
-        })();
-    }, []);
-
-    useEffect(() => {
-        (async function() {
-            if (player && player.position.isDoctor) {
-                await step5();
-            }
-        })();
-    }, [player && player.position.isDoctor]);
-
-    return (
-        <>
-            {player && <Hero {...player} />}
-            {popoverOpen && <Popover
-              placement="top-end"
-              isOpen={!!popoverOpen}
-              target={speaker}
-              toggle={toggle}
-            >
-              <PopoverBody>{popoverOpen}</PopoverBody>
-            </Popover>}
-            {Object.entries(misc).map(([key, props]) => {
-                return (props as any).type === "mask" ? (
-                    <Mask key={key} {...props} />
-                ) : (
-                    <Mushroom key={key} {...props} />
-                );
-            })}
-            {Object.entries(bonus).map(
-                ([key, { type, bottom, left, height, width, hit }]: any) => (
-                    <Box
-                        key={key}
-                        type={type}
-                        hit={hit}
-                        left={left}
-                        bottom={bottom}
-                        height={height}
-                        width={width}
-                    />
-                )
-            )}
-            <Castle />
-            {Object.entries(pangolin).map(([key, props]) => (
-                <Pangolin key={key} id={key} {...props} />
-            ))}
-            <Friends {...peach} />
-        </>
-    );
+  return (
+    <>
+      {dino.map(elem => (
+        <Dinosaurs {...elem} />
+      ))}
+      {player && <Hero {...player} />}
+      {bullets.length > 0 &&
+        bullets.map(bull => <Bullet key={bull.id} {...bull} />)}
+      {popoverOpen && (
+        <Popover
+          placement="top-end"
+          isOpen={!!popoverOpen}
+          target={speaker}
+          toggle={toggle}
+        >
+          <PopoverBody>{popoverOpen}</PopoverBody>
+        </Popover>
+      )}
+      <Field />
+    </>
+  );
 };
 
 export default Tutorial;

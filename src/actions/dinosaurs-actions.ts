@@ -1,6 +1,7 @@
+import {RefObject} from "react";
 import {useGameData} from "../store/GameProvider";
 import {ADD_DINO, COLLISION, DELETE_DINO, MOVE_DINO} from "../constants";
-import {RefObject} from "react";
+
 import {EnemyInit} from "../data/ennemies";
 
 const useActionDinosaurs = () => {

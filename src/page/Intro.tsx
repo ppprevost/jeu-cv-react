@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect, useEffect } from "react";
 import hunter from "../img/intro/hunter.png";
 import raptor from "../img/intro/raptor.png";
 import pachy from "../img/intro/pachy.png";
@@ -172,16 +172,28 @@ export const ModalVideo = ({ ...props }) => {
 
 export const ModalPreGame = () => {
   const [, dispatch] = useGameData();
-  const [form, setForm] = useState({});
+  const [tutoWanted, setTutoWanted] = useState(false);
+  const [form, setForm] = useState({
+    tutorial: tutoWanted,
+    name: ""
+  });
   const startParty = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     dispatch({ type: "START_GAME", payload: form });
     introSound.pause();
   };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.name === "tutorial") {
+      setTutoWanted(!tutoWanted);
+    }
     const name = e.target.name;
-    setForm({ ...form, [name]: e.target.value });
+    setForm({
+      ...form,
+      [name]: name === "tutorial" ? !tutoWanted : e.target.value
+    });
   };
+
+  // @ts-ignore
   return (
     <ModalTemplate fontFamily={"inherit"}>
       <h2 style={{ letterSpacing: 0 }}>Who are you young adventurer ?</h2>
@@ -195,17 +207,17 @@ export const ModalPreGame = () => {
             placeholder="your name*"
           />
         </div>
+
         <div style={{ marginBottom: "10px" }}>
-          <input
-            type="email"
-            name="email"
-            onChange={handleChange}
-            placeholder="your email"
-          />
-        </div>
-        <div style={{ marginBottom: "10px" }}>
-          tutorial
-          <input name="tutorial" onChange={handleChange} disabled type="checkbox" />
+          <label>
+            <input
+              name="tutorial"
+              onChange={handleChange}
+              checked={tutoWanted}
+              type="checkbox"
+            />
+            <span style={{ marginLeft: "10px" }}>tutorial</span>
+          </label>
         </div>
         <div>
           <button type="submit">Send</button>

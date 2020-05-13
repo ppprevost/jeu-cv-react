@@ -7,6 +7,7 @@ export interface IContainerSprite {
   height: number;
   exactSpriteConflict?: {};
   x: number;
+  id?:string;
   y: number;
   sprite: number;
   src: string;
@@ -31,6 +32,7 @@ const BuildContainerForSprite: FunctionComponent<IContainerSprite> = React.memo(
   zIndex = 20,
   width,
   height,
+    id,
   x,
   y,
   behavior = 0,
@@ -41,6 +43,7 @@ const BuildContainerForSprite: FunctionComponent<IContainerSprite> = React.memo(
 }) => {
   return (
     <div
+        id={id}
       className={className}
       style={{
         width,

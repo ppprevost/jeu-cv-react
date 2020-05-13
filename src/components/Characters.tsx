@@ -78,6 +78,7 @@ const Character = React.memo(({
 
   return (
     <HeroSprite
+        id={"hero"}
       exactSpriteConflict={exactSpriteObject}
       className={`${className} ${position.isHurting && "blink_me"}`}
       src={avatar}
