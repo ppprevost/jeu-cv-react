@@ -12,7 +12,7 @@
     "animate-css-styled-components": "^1.0.2",
     "bootstrap": "^4.4.1",
     "express": "^4.17.1",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "mongodb": "^3.5.0",
     "react": "next",
     "react-combine-reducers": "^1.0.2",
